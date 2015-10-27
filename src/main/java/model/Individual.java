@@ -11,6 +11,9 @@ public class Individual {
     public double fitness;
     private int id;
 
+    public Individual() {
+    }
+
     public Individual(int id, double[] vector, double fitness) {
         this.id = id;
         this.vector = vector;

@@ -12,7 +12,7 @@ public interface Algorithm {
 
     Individual run();
 
-    List<Individual> getPopulation();
+    List<? extends Individual> getPopulation();
 
     TestFunction getTestFunction();
 

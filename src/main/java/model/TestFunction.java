@@ -9,6 +9,14 @@ public interface TestFunction {
 
     double fitness(Individual individual);
 
+    /**
+     * Convenience override for fitness(Individiual individual)
+     *
+     * @param vector
+     * @return fitness for given vector
+     */
+    double fitness(double[] vector);
+
     void constrain(Individual individual);
 
     double[] generateTrial(int dim);
@@ -16,4 +24,5 @@ public interface TestFunction {
     double fixedAccLevel();
 
     double optimum();
+
 }
