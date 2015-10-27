@@ -17,8 +17,13 @@ public interface Algorithm {
     TestFunction getTestFunction();
 
     default Individual getBest() {
-        getPopulation().sort((o1, o2) -> Double.compare(o1.fitness, o2.fitness));
-        return getPopulation().get(0);
+        Individual best = getPopulation().get(0);
+        for (Individual individual : getPopulation()) {
+            if (individual.fitness < best.fitness) best = individual;
+        }
+        return best;
+//        getPopulation().sort((o1, o2) -> Double.compare(o1.fitness, o2.fitness));
+//        return getPopulation().get(0);
     }
 
     String getName();

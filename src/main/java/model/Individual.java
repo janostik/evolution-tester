@@ -9,15 +9,21 @@ public class Individual {
 
     public double[] vector;
     public double fitness;
-    private int id;
+    public String id;
 
     public Individual() {
     }
 
-    public Individual(int id, double[] vector, double fitness) {
+    public Individual(String id, double[] vector, double fitness) {
         this.id = id;
         this.vector = vector;
         this.fitness = fitness;
+    }
+
+    public Individual(Individual individual) {
+        this.id = individual.id;
+        this.vector = individual.vector;
+        this.fitness = individual.fitness;
     }
 
     @Override
@@ -27,21 +33,13 @@ public class Individual {
 
         Individual that = (Individual) o;
 
-        if (id != that.id) return false;
-        if (Double.compare(that.fitness, fitness) != 0) return false;
-        return Arrays.equals(vector, that.vector);
+        return id.equals(that.id);
 
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = id;
-        result = 31 * result + (vector != null ? Arrays.hashCode(vector) : 0);
-        temp = Double.doubleToLongBits(fitness);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        return result;
+        return id.hashCode();
     }
 
     @Override

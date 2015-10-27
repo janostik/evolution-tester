@@ -25,4 +25,8 @@ public interface TestFunction {
 
     double optimum();
 
+    double max(int dim);
+
+    double min(int dim);
+
 }
