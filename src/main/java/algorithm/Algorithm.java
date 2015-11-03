@@ -1,7 +1,7 @@
 package algorithm;
 
 import model.Individual;
-import model.TestFunction;
+import model.tf.TestFunction;
 
 import java.util.List;
 

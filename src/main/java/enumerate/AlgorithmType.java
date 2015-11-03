@@ -5,6 +5,6 @@ package enumerate;
  * TODO: Will be used in program runner
  * Created by jakub on 27/10/15.
  */
-public enum Algorithms {
-    PSO
+public enum AlgorithmType {
+    PSO, NETPSOs
 }

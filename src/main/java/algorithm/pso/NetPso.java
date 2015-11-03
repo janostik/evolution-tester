@@ -1,8 +1,9 @@
 package algorithm.pso;
 
-import model.TestFunction;
+import exception.CostFunctionEvaluationLimitException;
 import model.net.Net;
 import model.net.UnidirectionalEdge;
+import model.tf.TestFunction;
 
 import java.util.Arrays;
 
@@ -29,7 +30,7 @@ public class NetPso extends Pso {
     }
 
     @Override
-    protected void updateParticle(Pso.Particle particle) {
+    protected void updateParticle(Pso.Particle particle, int iteration) throws CostFunctionEvaluationLimitException {
         if (isRepulsive) {
             particle.repulseParticle(best, c1, c2, inertialWeight, velocityLimit);
             testFunction.constrain(particle);
@@ -38,11 +39,13 @@ public class NetPso extends Pso {
             particle.moveParticle(best, c1, c2, inertialWeight, velocityLimit);
             testFunction.constrain(particle);
             particle.fitness = testFunction.fitness(particle);
+            if (cfEvalutionCounter++ > CF_EVALUTION_LIMIT) throw new CostFunctionEvaluationLimitException();
             if (particle.fitness < particle.bestFitness) {
                 particle.bestVector = Arrays.copyOf(particle.vector, particle.vector.length);
                 particle.bestFitness = particle.fitness;
                 net.addEdge(new UnidirectionalEdge(particle, best));
             }
+            updateInertia(iteration);
         }
 
     }
@@ -72,5 +75,10 @@ public class NetPso extends Pso {
             net.removeEdgesForNode(net.getNodeWithHighestDegree());
             repulsiveCycles++;
         }
+    }
+
+    @Override
+    public String getName() {
+        return "NETPSO: Our implementation of PSO Algorithm using complex network analysis";
     }
 }

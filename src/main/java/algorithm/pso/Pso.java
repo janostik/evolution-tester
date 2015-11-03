@@ -1,8 +1,9 @@
 package algorithm.pso;
 
 import algorithm.Algorithm;
+import exception.CostFunctionEvaluationLimitException;
 import model.Individual;
-import model.TestFunction;
+import model.tf.TestFunction;
 import util.RandomUtil;
 
 import java.util.ArrayList;
@@ -14,11 +15,17 @@ import java.util.List;
  */
 public class Pso implements Algorithm {
 
+    protected static final int CF_EVALUTION_LIMIT = 100000;
+
+    public double[] gbestValues = new double[1000];
+
     List<Particle> particles = new ArrayList<>();
     Particle best;
     TestFunction testFunction;
     // Constants
     int swarmSize, iterationLimit, dim;
+
+    int cfEvalutionCounter = 0;
 
     double c1, c2, velocityLimit, inertialWeight = 0.9, finalInertialWeight = 0.4;
 
@@ -42,11 +49,25 @@ public class Pso implements Algorithm {
     public Individual run() {
         for (int i = 0; i < iterationLimit; i++) {
             //Do iteration
-            particles.forEach(this::updateParticle);
-            updateInertia(i);
-            updateGBest();
-            if (shouldExit()) break;
-            finalizeIteration(i);
+            try {
+//                particles.forEach(this::updateParticle);
+
+                for (Particle particle : particles) {
+                    updateParticle(particle, i);
+                    if (cfEvalutionCounter > 0 && cfEvalutionCounter % 100 == 0) {
+                        updateGBest();
+                        gbestValues[cfEvalutionCounter / 100 - 1] = best.fitness;
+                    }
+                }
+
+
+                updateGBest();
+                if (shouldExit()) break;
+                finalizeIteration(i);
+            } catch (CostFunctionEvaluationLimitException ex) {
+                updateGBest();
+                break;
+            }
         }
         return best;
     }
@@ -70,14 +91,16 @@ public class Pso implements Algorithm {
         inertialWeight = (inertialWeight - finalInertialWeight) * ((iterationLimit - i) / (double) iterationLimit) + finalInertialWeight;
     }
 
-    protected void updateParticle(Particle particle) {
+    protected void updateParticle(Particle particle, int iteration) throws CostFunctionEvaluationLimitException {
         particle.moveParticle(best, c1, c2, inertialWeight, velocityLimit);
         testFunction.constrain(particle);
         particle.fitness = testFunction.fitness(particle.vector);
+        if (cfEvalutionCounter++ > CF_EVALUTION_LIMIT) throw new CostFunctionEvaluationLimitException();
         if (particle.fitness < particle.bestFitness) {
             particle.bestVector = Arrays.copyOf(particle.vector, particle.vector.length);
             particle.bestFitness = particle.fitness;
         }
+        updateInertia(iteration);
     }
 
     @Override

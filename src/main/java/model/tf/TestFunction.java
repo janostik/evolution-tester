@@ -1,4 +1,6 @@
-package model;
+package model.tf;
+
+import model.Individual;
 
 /**
  * Basic interface for test functions.
