@@ -29,13 +29,16 @@ import util.RandomUtil;
 
 /**
  *
- * @author adam
+ * EIG SPS LShaDE algorithm
+ * @see <a href="http://goo.gl/OKUrSt">Original paper from CEC2015</a>
+ * 
+ * @author adam on 13/11/2015
  */
 public class EigSpsLShaDE implements Algorithm{
 
     
     /**
-     * Extended Indiivudal for the purposes of LShade algortihm
+     * Extended Individual for the purposes of LShade algortihm
      */
     public class LShadeIndividual extends Individual {
 
