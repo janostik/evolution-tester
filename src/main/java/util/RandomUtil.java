@@ -1,6 +1,8 @@
 package util;
 
 import java.util.Random;
+import org.apache.commons.math3.distribution.CauchyDistribution;
+import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
  * Should contain static access to basic Random functions.
@@ -17,6 +19,24 @@ public class RandomUtil {
     private RandomUtil() {
     }
 
+    public static double cauchy(double a, double b){
+        
+        CauchyDistribution cauchy = new CauchyDistribution(a,b);
+        return cauchy.sample();
+        
+    }
+    
+    public static double normal(double mu, double sigma){
+        
+        NormalDistribution normal = new NormalDistribution(mu,sigma);
+        return normal.sample();
+        
+    }
+    
+    public static Double nextNormal() {
+        return rnd.nextGaussian();
+    }
+    
     public static Double nextDouble() {
         return rnd.nextDouble();
     }
