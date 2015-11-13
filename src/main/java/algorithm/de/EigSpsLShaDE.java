@@ -30,13 +30,13 @@ import util.RandomUtil;
 /**
  *
  * EIG SPS LShaDE algorithm
+ *
  * @see <a href="http://goo.gl/OKUrSt">Original paper from CEC2015</a>
- * 
+ *
  * @author adam on 13/11/2015
  */
-public class EigSpsLShaDE implements Algorithm{
+public class EigSpsLShaDE implements Algorithm {
 
-    
     /**
      * Extended Individual for the purposes of LShade algortihm
      */
@@ -46,7 +46,7 @@ public class EigSpsLShaDE implements Algorithm{
             super(id, vector, fitness);
             this.q = q;
         }
-        
+
         private int q;
 
         public int getQ() {
@@ -56,7 +56,7 @@ public class EigSpsLShaDE implements Algorithm{
         public void setQ(int q) {
             this.q = q;
         }
- 
+
     }
 
     private int D;
@@ -115,12 +115,10 @@ public class EigSpsLShaDE implements Algorithm{
         this.w_ext = w_ext;
         this.p = p;
     }
-    
-    
-    
+
     @Override
     public Individual run() {
-        
+
         /**
          * Initialization
          */
@@ -129,7 +127,7 @@ public class EigSpsLShaDE implements Algorithm{
         this.Aext = new ArrayList<>();
         this.best = null;
         this.bestHistory = new ArrayList<>();
-        
+
         /**
          * Initial population
          */
@@ -138,28 +136,28 @@ public class EigSpsLShaDE implements Algorithm{
         double[] features;
         this.P = new ArrayList<>();
         LShadeIndividual ind;
-        
-        for(int i=0; i<this.NP; i++){
+
+        for (int i = 0; i < this.NP; i++) {
             id = i;
             features = this.f.generateTrial(this.D).clone();
-            ind = new LShadeIndividual(String.valueOf(id), features, this.f.fitness(features),0);
+            ind = new LShadeIndividual(String.valueOf(id), features, this.f.fitness(features), 0);
             this.isBest(ind);
             this.P.add(ind);
             this.FES++;
             this.writeHistory();
         }
-        
+
         /**
          * Initial A SPS
          */
         this.Asps = new ArrayList<>();
         this.Asps.addAll(this.P);
-        
+
         /**
          * Covariance matrix
          */
         double[][] genMatrix = new double[this.NP][this.D];
-        for(int i=0; i<this.P.size(); i++){
+        for (int i = 0; i < this.P.size(); i++) {
             genMatrix[i] = this.P.get(i).vector;
         }
         Covariance cov = new Covariance(genMatrix);
@@ -167,17 +165,17 @@ public class EigSpsLShaDE implements Algorithm{
         EigenDecomposition ed = new EigenDecomposition(this.C);
         this.B = ed.getV();
         this.Bt = ed.getVT();
-        
+
         this.M_F = new double[this.H];
         this.M_ER = new double[this.H];
         this.M_CR = new double[this.H];
-        
-        for(int h=0; h< this.H;h++){
+
+        for (int h = 0; h < this.H; h++) {
             this.M_F[h] = this.Finit;
             this.M_ER[h] = this.ERinit;
             this.M_CR[h] = this.CRinit;
         }
-        
+
         /**
          * Generation iteration;
          */
@@ -192,134 +190,132 @@ public class EigSpsLShaDE implements Algorithm{
         double wSsum, meanS_F1, meanS_F2, meanS_ER, meanS_CR;
         int k = 0;
 
-        
-        while(true){
-            
+        while (true) {
+
             this.G++;
             this.S_F = new ArrayList<>();
             this.S_ER = new ArrayList<>();
             this.S_CR = new ArrayList<>();
             wS = new ArrayList<>();
             EXTsize = (int) (this.w_ext * this.NP);
-            if(EXTsize < 1){
-                EXTsize = 1;
-            }
+//            if (EXTsize < 1) {
+//                EXTsize = 1;
+//            }
             Psize = (int) (this.p * this.NP);
-            if(Psize < 1){
-                Psize = 1;
+            if (Psize < 2) {
+                Psize = 2;
             }
-            
-            newPop = new ArrayList<>(); 
-            
-            for(int i=0; i<this.NP; i++){
+
+            newPop = new ArrayList<>();
+
+            for (int i = 0; i < this.NP; i++) {
 
                 x = this.P.get(i);
                 r = RandomUtil.nextInt(this.H);
                 Fg = RandomUtil.cauchy(this.M_F[r], this.w_F);
-                while(Fg <= 0){
+                while (Fg <= 0) {
                     Fg = RandomUtil.cauchy(this.M_F[r], this.w_F);
                 }
-                if(Fg > 1){
+                if (Fg > 1) {
                     Fg = 1;
                 }
                 ERg = RandomUtil.normal(this.M_ER[r], this.w_ER);
-                if(ERg > 1){
+                if (ERg > 1) {
                     ERg = 1;
                 }
-                if(ERg < 0){
+                if (ERg < 0) {
                     ERg = 0;
                 }
-                
+
                 CRg = RandomUtil.normal(this.M_CR[r], this.w_CR);
-                if(CRg > this.CR_max){
+                if (CRg > this.CR_max) {
                     CRg = this.CR_max;
                 }
-                if(CRg < this.CR_min){
+                if (CRg < this.CR_min) {
                     CRg = this.CR_min;
                 }
-                
+
                 /**
                  * Base parent selection
                  */
-                if(this.P.get(i).getQ() <= this.Q){
+                if (this.P.get(i).getQ() <= this.Q) {
                     pA = new ArrayList<>();
-                    pA.addAll(this.P);  
+                    pA.addAll(this.P);
                 } else {
                     pA = new ArrayList<>();
                     pA.addAll(this.Asps);
                 }
-                
+
                 pBestArray = new ArrayList<>();
                 pBestArray.addAll(this.P);
                 pBestArray.addAll(this.Asps);
                 pBestArray = this.resize(pBestArray, Psize);
-                
+
                 /**
                  * Base equation
                  */
                 v = new double[this.D];
                 pActive = pA.get(i).vector.clone();
                 pbest = this.getBestFromList(pBestArray).vector.clone();
-                rIndexes = this.genRandIndexes(i, this.NP, pA.size()+this.Aext.size());
+                rIndexes = this.genRandIndexes(i, this.NP, pA.size() + this.Aext.size());
                 pr1 = pA.get(rIndexes[0]).vector.clone();
-                if(rIndexes[1] > pA.size()-1){
-                    pr2 = this.Aext.get(rIndexes[1]-pA.size()).vector.clone();
+                if (rIndexes[1] > pA.size() - 1) {
+                    pr2 = this.Aext.get(rIndexes[1] - pA.size()).vector.clone();
                 } else {
                     pr2 = pA.get(rIndexes[1]).vector.clone();
                 }
-                
-                for(int j = 0; j < this.D; j++){
-                    
-                    v[j] = pActive[j] + Fg*(pbest[j] - pActive[j]) + Fg*(pr1[j] - pr2[j]);
-                            
+
+                for (int j = 0; j < this.D; j++) {
+
+                    v[j] = pActive[j] + Fg * (pbest[j] - pActive[j]) + Fg * (pr1[j] - pr2[j]);
+
                 }
-                
+
                 /**
                  * Crossover
                  */
                 u = new double[this.D];
                 jrand = RandomUtil.nextInt(this.D);
-                
-                if(RandomUtil.nextDouble() <= ERg){
-                    
+
+                if (RandomUtil.nextDouble() <= ERg) {
+
                     xoverP = this.Bt.operate(pActive);
                     xoverV = this.Bt.operate(v);
                     xover = new double[this.D];
-                    
-                    for(int j=0; j<this.D; j++){
-                        if(RandomUtil.nextDouble() <= CRg || j == jrand){
+
+                    for (int j = 0; j < this.D; j++) {
+                        if (RandomUtil.nextDouble() <= CRg || j == jrand) {
                             xover[j] = xoverV[j];
                         } else {
                             xover[j] = xoverP[j];
                         }
                     }
-                    
+
                     u = this.B.operate(xover);
-                    
+
                 } else {
-                    
-                    for(int j=0; j<this.D; j++){
-                        if(RandomUtil.nextDouble() <= CRg || j == jrand){
+
+                    for (int j = 0; j < this.D; j++) {
+                        if (RandomUtil.nextDouble() <= CRg || j == jrand) {
                             u[j] = v[j];
                         } else {
                             u[j] = pActive[j];
                         }
                     }
-                    
+
                 }
-                
+
                 /**
                  * Constrain check
                  */
-                for(int d=0;d<this.D;d++){
-                    if(u[d] < this.f.min(this.D)){
-                        u[d] = (this.f.min(this.D) + pActive[d])/2.0;
-                    }
-                    else if(u[d] > this.f.max(this.D)){
-                        u[d] = (this.f.max(this.D) + pActive[d])/2.0;
+                for (int d = 0; d < this.D; d++) {
+                    if (u[d] < this.f.min(this.D)) {
+                        u[d] = (this.f.min(this.D) + pActive[d]) / 2.0;
+                    } else if (u[d] > this.f.max(this.D)) {
+                        u[d] = (this.f.max(this.D) + pActive[d]) / 2.0;
                     }
                 }
-                
+
                 /**
                  * Trial ready
                  */
@@ -329,7 +325,7 @@ public class EigSpsLShaDE implements Algorithm{
                 /**
                  * Trial is better
                  */
-                if(trial.fitness < x.fitness){
+                if (trial.fitness < x.fitness) {
                     newPop.add(trial);
                     this.S_F.add(Fg);
                     this.S_ER.add(ERg);
@@ -338,50 +334,56 @@ public class EigSpsLShaDE implements Algorithm{
                     this.Asps.add(trial);
                     wS.add(Math.abs(trial.fitness - x.fitness));
                 } else {
-                    x.setQ(x.q+1);
+                    pA.get(i).setQ(x.q + 1);
                     newPop.add(x);
                 }
-                
+
                 this.FES++;
                 this.isBest(trial);
                 this.writeHistory();
-                if(this.FES >= this.MAXFES){
+                if (this.FES >= this.MAXFES) {
                     break;
                 }
-                
+
             }
-            
-            if(this.FES >= this.MAXFES){
+
+            if (this.FES >= this.MAXFES) {
                 break;
             }
-            
-            this.C = this.C.scalarMultiply(1-this.alfa);
-            this.NP = (int) Math.round(this.NPinit - (this.FES/(double) this.MAXFES)*(this.NPinit - this.NPmin));
-            wSsum = 0;
-            for(Double num : wS){
-                wSsum += num;
-            }
-            meanS_F1 = 0;
-            meanS_F2 = 0;
-            meanS_ER = 0;
-            meanS_CR = 0;
-            
-            for(int s=0; s < this.S_F.size(); s++){
-                meanS_F1 += (wS.get(s)/wSsum) * this.S_F.get(s) *this.S_F.get(s);
-                meanS_F2 += (wS.get(s)/wSsum) * this.S_F.get(s);
-                meanS_ER += (wS.get(s)/wSsum) * this.S_ER.get(s);
-                meanS_CR += (wS.get(s)/wSsum) * this.S_CR.get(s);
+
+            this.C = this.C.scalarMultiply(1 - this.alfa);
+            this.NP = (int) Math.round(this.NPinit - (this.FES / (double) this.MAXFES) * (this.NPinit - this.NPmin));
+
+            /**
+             * Memories update
+             */
+            if (this.S_F.size() > 0) {
+                wSsum = 0;
+                for (Double num : wS) {
+                    wSsum += num;
+                }
+                meanS_F1 = 0;
+                meanS_F2 = 0;
+                meanS_ER = 0;
+                meanS_CR = 0;
+
+                for (int s = 0; s < this.S_F.size(); s++) {
+                    meanS_F1 += (wS.get(s) / wSsum) * this.S_F.get(s) * this.S_F.get(s);
+                    meanS_F2 += (wS.get(s) / wSsum) * this.S_F.get(s);
+                    meanS_ER += (wS.get(s) / wSsum) * this.S_ER.get(s);
+                    meanS_CR += (wS.get(s) / wSsum) * this.S_CR.get(s);
+                }
+
+                this.M_F[k] = (meanS_F1 / meanS_F2);
+                this.M_ER[k] = meanS_ER / (double) this.S_ER.size();
+                this.M_CR[k] = meanS_CR / (double) this.S_CR.size();
+
+                k++;
+                if (k >= this.H) {
+                    k = 0;
+                }
             }
 
-            this.M_F[k] = (meanS_F1/meanS_F2);
-            this.M_ER[k] = meanS_ER/(double) this.S_ER.size();
-            this.M_CR[k] = meanS_CR/(double) this.S_CR.size();
-
-            k++;
-            if(k >= this.H){
-                k = 0;
-            }
-            
             /**
              * Resize of population and archives
              */
@@ -391,10 +393,9 @@ public class EigSpsLShaDE implements Algorithm{
             this.Aext = this.resizeAext(this.Aext, EXTsize);
 
         }
-        
-        
+
         return this.best;
-        
+
     }
 
     @Override
@@ -411,147 +412,145 @@ public class EigSpsLShaDE implements Algorithm{
     public String getName() {
         return "EIG-SPS-LShaDE";
     }
-    
+
     /**
-     * 
+     *
      * @param list
      * @param size
-     * @return 
+     * @return
      */
-    private List<LShadeIndividual> resizeAext(List<LShadeIndividual> list, int size){
-        
+    private List<LShadeIndividual> resizeAext(List<LShadeIndividual> list, int size) {
+
         List<LShadeIndividual> toRet = new ArrayList<>();
         toRet.addAll(list);
         int index;
-        
-        while(toRet.size()>size){
-            
+
+        while (toRet.size() > size) {
+
             index = RandomUtil.nextInt(toRet.size());
             toRet.remove(index);
-            
+
         }
-        
+
         return toRet;
-        
+
     }
-    
+
     /**
-     * 
+     *
      * @param list
      * @param size
-     * @return 
+     * @return
      */
-    private List<LShadeIndividual> resize(List<LShadeIndividual> list, int size){
-        
+    private List<LShadeIndividual> resize(List<LShadeIndividual> list, int size) {
+
         List<LShadeIndividual> toRet = new ArrayList<>();
         List<LShadeIndividual> tmp = new ArrayList<>();
         tmp.addAll(list);
         int bestIndex;
-        
-        for(int i=0; i<size; i++){
+
+        for (int i = 0; i < size; i++) {
             bestIndex = this.getIndexOfBestFromList(tmp);
             toRet.add(tmp.get(bestIndex));
             tmp.remove(bestIndex);
         }
-        
+
         return toRet;
-        
+
     }
-    
+
     /**
-     * 
+     *
      * @param list
-     * @return 
+     * @return
      */
-    private int getIndexOfBestFromList(List<LShadeIndividual> list){
-        
+    private int getIndexOfBestFromList(List<LShadeIndividual> list) {
+
         LShadeIndividual b = null;
-        int i=0;
-        int index=-1;
-        
-        for(LShadeIndividual ind : list){
-            
-            if(b == null){
+        int i = 0;
+        int index = -1;
+
+        for (LShadeIndividual ind : list) {
+
+            if (b == null) {
                 b = ind;
                 index = i;
-            }
-            else if(ind.fitness < b.fitness){
+            } else if (ind.fitness < b.fitness) {
                 b = ind;
                 index = i;
             }
             i++;
         }
-        
+
         return index;
-        
+
     }
-    
+
     /**
-     * 
+     *
      * @param list
-     * @return 
+     * @return
      */
-    private LShadeIndividual getBestFromList(List<LShadeIndividual> list){
-        
+    private LShadeIndividual getBestFromList(List<LShadeIndividual> list) {
+
         LShadeIndividual b = null;
-        
-        for(LShadeIndividual ind : list){
-            
-            if(b == null){
+
+        for (LShadeIndividual ind : list) {
+
+            if (b == null) {
+                b = ind;
+            } else if (ind.fitness < b.fitness) {
                 b = ind;
             }
-            else if(ind.fitness < b.fitness){
-                b = ind;
-            }
-            
+
         }
-        
+
         return b;
-        
+
     }
-    
+
     /**
-     * 
+     *
      * @param max1
      * @param max2
-     * @return 
+     * @return
      */
-    private int[] genRandIndexes(int index, int max1, int max2){
-        
+    private int[] genRandIndexes(int index, int max1, int max2) {
+
         int a, b;
-        
+
         a = RandomUtil.nextInt(max1);
         b = RandomUtil.nextInt(max2);
-        
-        while(a == b || a == index || b == index){
+
+        while (a == b || a == index || b == index) {
             a = RandomUtil.nextInt(max1);
             b = RandomUtil.nextInt(max2);
         }
-        
-        return new int[]{a,b};
+
+        return new int[]{a, b};
     }
-    
+
     /**
-     * 
+     *
      */
-    private void writeHistory(){
+    private void writeHistory() {
         this.bestHistory.add(this.best);
     }
-    
+
     /**
-     * 
+     *
      * @param ind
-     * @return 
+     * @return
      */
-    private boolean isBest(LShadeIndividual ind){
-        
-        if(this.best == null || ind.fitness < this.best.fitness){
+    private boolean isBest(LShadeIndividual ind) {
+
+        if (this.best == null || ind.fitness < this.best.fitness) {
             this.best = ind;
             return true;
         }
-        
+
         return false;
-        
+
     }
 
     public int getD() {
@@ -833,38 +832,36 @@ public class EigSpsLShaDE implements Algorithm{
     public void setp(double p) {
         this.p = p;
     }
-    
-    
-    
+
     public static void main(String[] args) throws Exception {
-    
+
         int dimension = 10;
-        int NPinit = 113;
-        int NPmin = 72;
-        int MAXFES = 10000*dimension;
-        int funcNumber = 10;
+        int NPinit = 459;
+        int NPmin = 12;
+        int MAXFES = 10000 * dimension;
+        int funcNumber = 1;
         TestFunction tf = new Cec2015(dimension, funcNumber);
-        double Finit = 0.3709;
-        double ERinit = 0.1387;
-        double CRinit = 0.9553;
-        double w_F = 0.8553;
-        double w_ER = 0.0325;
-        double w_CR = 0.2581;
-        double CR_min = 0.9450;
-        double CR_max = 0.9899;
-        int Q = 31;
-        double alfa=0.1957;
-        int H = 730;
-        double w_ext = 1.4141;
-        double p = 0.4105;
-        
+        double Finit = 0.4972;
+        double CRinit = 0.2892;
+        double ERinit = 0.9497;
+        double w_F = 0.1315;
+        double w_CR = 0.3349;
+        double w_ER = 0.9854;
+        double CR_min = 0.6011;
+        double CR_max = 1.1673;
+        int Q = 64;
+        double alfa = 0.6288;
+        int H = 422;
+        double w_ext = 1.9805;
+        double p = 0.0956;
+
         EigSpsLShaDE lshade;
-        
+
         int runs = 10;
         double[] bestArray = new double[runs];
-        
-        for(int k = 0; k<runs;k++){
-        
+
+        for (int k = 0; k < runs; k++) {
+
             lshade = new EigSpsLShaDE(dimension, NPinit, NPmin, MAXFES, tf, Finit, ERinit, CRinit, w_F, w_ER, w_CR, CR_min, CR_max, Q, alfa, H, w_ext, p);
 
             lshade.run();
@@ -872,15 +869,15 @@ public class EigSpsLShaDE implements Algorithm{
             PrintWriter writer;
 
             try {
-                writer = new PrintWriter("CEC2015-1-lshade"+k+".txt", "UTF-8");
+                writer = new PrintWriter("CEC2015-" + funcNumber + "-lshade" + k + ".txt", "UTF-8");
 
                 writer.print("{");
 
-                for(int i=0; i<lshade.getBestHistory().size(); i++){
+                for (int i = 0; i < lshade.getBestHistory().size(); i++) {
 
-                    writer.print(String.format(Locale.US, "%.10f",lshade.getBestHistory().get(i).fitness));
+                    writer.print(String.format(Locale.US, "%.10f", lshade.getBestHistory().get(i).fitness));
 
-                    if(i != lshade.getBestHistory().size()-1){
+                    if (i != lshade.getBestHistory().size() - 1) {
                         writer.print(",");
                     }
 
@@ -897,7 +894,7 @@ public class EigSpsLShaDE implements Algorithm{
             bestArray[k] = lshade.getBest().fitness;
             System.out.println(lshade.getBest().fitness);
         }
-        
+
         System.out.println("=================================");
         System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
         System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
@@ -905,9 +902,8 @@ public class EigSpsLShaDE implements Algorithm{
         System.out.println("Median: " + new Median().evaluate(bestArray));
         System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
         System.out.println("=================================");
-        System.out.println("Solution error: " + (new Mean().evaluate(bestArray)-(funcNumber*100)));
-        
-        
+        System.out.println("Solution error: " + (new Mean().evaluate(bestArray) - (funcNumber * 100)));
+
     }
-    
+
 }
