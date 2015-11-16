@@ -18,7 +18,6 @@ import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.Cec2015;
 import model.tf.TestFunction;
-import org.apache.commons.math3.distribution.CauchyDistribution;
 import org.apache.commons.math3.linear.EigenDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.stat.correlation.Covariance;
@@ -179,9 +178,8 @@ public class EigSpsLShaDE implements Algorithm {
         /**
          * Generation iteration;
          */
-        CauchyDistribution cauchy;
         int r, Psize;
-        double Fg, ERg, CRg, jrand, tmp;
+        double Fg, ERg, CRg, jrand;
         List<LShadeIndividual> pA, newPop, pBestArray;
         double[] v, pbest, pr1, pr2, pActive, u, xover, xoverP, xoverV;
         int[] rIndexes;
@@ -375,8 +373,8 @@ public class EigSpsLShaDE implements Algorithm {
                 }
 
                 this.M_F[k] = (meanS_F1 / meanS_F2);
-                this.M_ER[k] = meanS_ER / (double) this.S_ER.size();
-                this.M_CR[k] = meanS_CR / (double) this.S_CR.size();
+                this.M_ER[k] = meanS_ER;
+                this.M_CR[k] = meanS_CR;
 
                 k++;
                 if (k >= this.H) {
@@ -836,24 +834,24 @@ public class EigSpsLShaDE implements Algorithm {
     public static void main(String[] args) throws Exception {
 
         int dimension = 10;
-        int NPinit = 459;
-        int NPmin = 12;
+        int NPinit = 113;
+        int NPmin = 72;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 1;
+        int funcNumber = 10;
         TestFunction tf = new Cec2015(dimension, funcNumber);
-        double Finit = 0.4972;
-        double CRinit = 0.2892;
-        double ERinit = 0.9497;
-        double w_F = 0.1315;
-        double w_CR = 0.3349;
-        double w_ER = 0.9854;
-        double CR_min = 0.6011;
-        double CR_max = 1.1673;
-        int Q = 64;
-        double alfa = 0.6288;
-        int H = 422;
-        double w_ext = 1.9805;
-        double p = 0.0956;
+        double Finit = 0.3709;
+        double CRinit = 0.9553;
+        double ERinit = 0.1387;
+        double w_F = 0.8553;
+        double w_CR = 0.2581;
+        double w_ER = 0.0325;
+        double CR_min = 0.9450;
+        double CR_max = 0.9899;
+        int Q = 31;
+        double alfa = 0.1957;
+        int H = 730;
+        double w_ext = 1.4141;
+        double p = 0.4105;
 
         EigSpsLShaDE lshade;
 
