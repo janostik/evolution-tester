@@ -94,6 +94,29 @@ public class EigSpsLShaDE implements Algorithm {
     private double w_ext;
     private double p;
 
+    public EigSpsLShaDE(List<Object> settingsList) {
+        
+        this.D = (int) settingsList.get(0);
+        this.NPinit = (int) settingsList.get(1);
+        this.NPmin = (int) settingsList.get(2);
+        this.MAXFES = (int) settingsList.get(3);
+        this.f = (TestFunction) settingsList.get(4);
+        this.Finit = (double) settingsList.get(5);
+        this.ERinit = (double) settingsList.get(6);
+        this.CRinit = (double) settingsList.get(7);
+        this.w_F = (double) settingsList.get(8);
+        this.w_ER = (double) settingsList.get(9);
+        this.w_CR = (double) settingsList.get(10);
+        this.CR_min = (double) settingsList.get(11);
+        this.CR_max = (double) settingsList.get(12);
+        this.Q = (int) settingsList.get(13);
+        this.alfa = (double) settingsList.get(14);
+        this.H = (int) settingsList.get(15);
+        this.w_ext = (double) settingsList.get(16);
+        this.p = (double) settingsList.get(17);
+        
+    }
+
     public EigSpsLShaDE(int D, int NPinit, int NPmin, int MAXFES, TestFunction f, double Finit, double ERinit, double CRinit, double w_F, double w_ER, double w_CR, double CR_min, double CR_max, int Q, double alfa, int H, double w_ext, double p) {
         this.D = D;
         this.NPinit = NPinit;
@@ -840,11 +863,11 @@ public class EigSpsLShaDE implements Algorithm {
         int funcNumber = 10;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         double Finit = 0.3709;
-        double CRinit = 0.9553;
         double ERinit = 0.1387;
+        double CRinit = 0.9553;
         double w_F = 0.8553;
-        double w_CR = 0.2581;
         double w_ER = 0.0325;
+        double w_CR = 0.2581;
         double CR_min = 0.9450;
         double CR_max = 0.9899;
         int Q = 31;
@@ -853,6 +876,26 @@ public class EigSpsLShaDE implements Algorithm {
         double w_ext = 1.4141;
         double p = 0.4105;
 
+        List<Object> list = new ArrayList<>();
+        list.add(dimension);
+        list.add(113);
+        list.add(72);
+        list.add(10000*dimension);
+        list.add(new Cec2015(dimension, funcNumber));
+        list.add(0.3709);
+        list.add(0.1387);
+        list.add(0.9553);
+        list.add(0.8553);
+        list.add(0.0325);
+        list.add(0.2581);
+        list.add(0.9450);
+        list.add(0.9899);
+        list.add(31);
+        list.add(0.1957);
+        list.add(730);
+        list.add(1.4141);
+        list.add(0.4105);
+        
         EigSpsLShaDE lshade;
 
         int runs = 10;
@@ -860,7 +903,8 @@ public class EigSpsLShaDE implements Algorithm {
 
         for (int k = 0; k < runs; k++) {
 
-            lshade = new EigSpsLShaDE(dimension, NPinit, NPmin, MAXFES, tf, Finit, ERinit, CRinit, w_F, w_ER, w_CR, CR_min, CR_max, Q, alfa, H, w_ext, p);
+//            lshade = new EigSpsLShaDE(dimension, NPinit, NPmin, MAXFES, tf, Finit, ERinit, CRinit, w_F, w_ER, w_CR, CR_min, CR_max, Q, alfa, H, w_ext, p);
+            lshade = new EigSpsLShaDE(list);
 
             lshade.run();
 
