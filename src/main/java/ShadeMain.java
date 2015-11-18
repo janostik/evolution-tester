@@ -85,6 +85,8 @@ public class ShadeMain {
             sol_writer = new PrintWriter(home_dir + "CEC2013-Shade/results_" + funcNumber + ".txt", "UTF-8");
             
             sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
             sol_writer.print(String.format(Locale.US, "%.10f", best));
             sol_writer.print(",");
             sol_writer.print(String.format(Locale.US, "%.10f", worst));
@@ -108,6 +110,8 @@ public class ShadeMain {
             System.out.println("=================================");
             
             res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
             res_writer.print(String.format(Locale.US, "%.10f", best));
             res_writer.print(",");
             res_writer.print(String.format(Locale.US, "%.10f", worst));
