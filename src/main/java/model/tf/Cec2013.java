@@ -237,7 +237,11 @@ public class Cec2013 implements TestFunction {
 
     @Override
     public double optimum() {
-        return 0;
+        if(this.func_num < 15){
+            return (this.func_num*100.0)-1500;
+        } else {
+            return (this.func_num*100.0)-1400;
+        }
     }
 
     @Override
