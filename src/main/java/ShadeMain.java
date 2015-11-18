@@ -33,14 +33,14 @@ public class ShadeMain {
 
         ShaDE shade;
 
-        int runs = 2;
+        int runs = 51;
         
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
         double best,worst,median,mean,std;
-        String home_dir = "/Users/adam/";
+        String home_dir = "C:\\Users\\Uživatel\\Documents\\";
 
-        res_writer = new PrintWriter(home_dir + "CEC2013-Shade/results.txt", "UTF-8");
+        res_writer = new PrintWriter(home_dir + "CEC2013-Shade\\results.txt", "UTF-8");
         
         res_writer.print("{");
         
@@ -54,7 +54,7 @@ public class ShadeMain {
                 shade = new ShaDE(dimension, MAXFES, tf, H, NP);
                 shade.run();
 
-                writer = new PrintWriter(home_dir + "CEC2013-Shade/" + funcNumber + "-" + k + ".txt", "UTF-8");
+                writer = new PrintWriter(home_dir + "CEC2013-Shade\\" + funcNumber + "-" + k + ".txt", "UTF-8");
 
                 writer.print("{");
 
@@ -82,7 +82,7 @@ public class ShadeMain {
             mean = new Mean().evaluate(bestArray);
             std = new StandardDeviation().evaluate(bestArray);
 
-            sol_writer = new PrintWriter(home_dir + "CEC2013-Shade/results_" + funcNumber + ".txt", "UTF-8");
+            sol_writer = new PrintWriter(home_dir + "CEC2013-Shade\\results_" + funcNumber + ".txt", "UTF-8");
             
             sol_writer.print("{");
             sol_writer.print(funcNumber);

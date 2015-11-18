@@ -7,6 +7,7 @@ import util.RandomUtil;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.Locale;
 import java.util.Scanner;
 
 /**
@@ -51,6 +52,7 @@ public class Cec2013 implements TestFunction {
             URL resource = Cec2013.class.getResource("/input_data/M_D" + nx + ".txt");
             File fpt = Paths.get(resource.toURI()).toFile();//* Load M data *
             Scanner input = new Scanner(fpt);
+            input.useLocale(Locale.US);
             if (!fpt.exists()) {
                 System.out.println("\n Error: Cannot open input file for reading ");
             }
@@ -67,6 +69,7 @@ public class Cec2013 implements TestFunction {
             fpt = Paths.get(resource.toURI()).toFile();
 
             input = new Scanner(fpt);
+            input.useLocale(Locale.US);
             if (!fpt.exists()) {
                 System.out.println("\n Error: Cannot open input file for reading ");
             }
