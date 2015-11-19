@@ -269,7 +269,7 @@ public class EigSpsLShaDE implements Algorithm {
 
                 pBestArray = new ArrayList<>();
                 pBestArray.addAll(this.P);
-                pBestArray.addAll(this.Asps);
+//                pBestArray.addAll(this.Asps);
                 pBestArray = this.resize(pBestArray, Psize);
 
                 /**
@@ -860,7 +860,7 @@ public class EigSpsLShaDE implements Algorithm {
         int NPinit = 113;
         int NPmin = 72;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 10;
+        int funcNumber = 7;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         double Finit = 0.3709;
         double ERinit = 0.1387;
@@ -877,24 +877,25 @@ public class EigSpsLShaDE implements Algorithm {
         double p = 0.4105;
 
         List<Object> list = new ArrayList<>();
-        list.add(dimension);
-        list.add(113);
-        list.add(72);
-        list.add(10000*dimension);
-        list.add(new Cec2015(dimension, funcNumber));
-        list.add(0.3709);
-        list.add(0.1387);
-        list.add(0.9553);
-        list.add(0.8553);
-        list.add(0.0325);
-        list.add(0.2581);
-        list.add(0.9450);
-        list.add(0.9899);
-        list.add(31);
-        list.add(0.1957);
-        list.add(730);
-        list.add(1.4141);
-        list.add(0.4105);
+        list = new ArrayList<>();
+        list.add(dimension); //dim
+        list.add(54); //NPinit
+        list.add(13); //NPmin
+        list.add(10000*dimension); //MAXFES
+        list.add(new Cec2015(dimension, funcNumber)); //TF
+        list.add(0.1648); //Finit
+        list.add(0.3041); //ERinit
+        list.add(0.3418); //CRinit
+        list.add(0.4402); //w_F
+        list.add(0.1873); //w_ER
+        list.add(0.7929); //w_CR
+        list.add(0.1518); //CR_min
+        list.add(0.3229); //CR_max
+        list.add(231); //Q
+        list.add(0.3434); //alfa
+        list.add(1); //H
+        list.add(1.4542); //w_ext
+        list.add(0.0447); //p
         
         EigSpsLShaDE lshade;
 
@@ -909,6 +910,7 @@ public class EigSpsLShaDE implements Algorithm {
             lshade.run();
 
             PrintWriter writer;
+           
 
             try {
                 writer = new PrintWriter("CEC2015-" + funcNumber + "-lshade" + k + ".txt", "UTF-8");
