@@ -259,17 +259,18 @@ public class EigSpsLShaDE implements Algorithm {
                 /**
                  * Base parent selection
                  */
+                pBestArray = new ArrayList<>();
+                
                 if (this.P.get(i).getQ() <= this.Q) {
                     pA = new ArrayList<>();
                     pA.addAll(this.P);
+                    pBestArray.addAll(this.P);
                 } else {
                     pA = new ArrayList<>();
                     pA.addAll(this.Asps);
+                    pBestArray.addAll(this.Asps);
                 }
 
-                pBestArray = new ArrayList<>();
-                pBestArray.addAll(this.P);
-//                pBestArray.addAll(this.Asps);
                 pBestArray = this.resize(pBestArray, Psize);
 
                 /**
@@ -860,7 +861,7 @@ public class EigSpsLShaDE implements Algorithm {
         int NPinit = 113;
         int NPmin = 72;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 7;
+        int funcNumber = 4;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         double Finit = 0.3709;
         double ERinit = 0.1387;
@@ -879,23 +880,23 @@ public class EigSpsLShaDE implements Algorithm {
         List<Object> list = new ArrayList<>();
         list = new ArrayList<>();
         list.add(dimension); //dim
-        list.add(54); //NPinit
-        list.add(13); //NPmin
+        list.add(484); //NPinit
+        list.add(151); //NPmin
         list.add(10000*dimension); //MAXFES
         list.add(new Cec2015(dimension, funcNumber)); //TF
-        list.add(0.1648); //Finit
-        list.add(0.3041); //ERinit
-        list.add(0.3418); //CRinit
-        list.add(0.4402); //w_F
-        list.add(0.1873); //w_ER
-        list.add(0.7929); //w_CR
-        list.add(0.1518); //CR_min
-        list.add(0.3229); //CR_max
-        list.add(231); //Q
-        list.add(0.3434); //alfa
-        list.add(1); //H
-        list.add(1.4542); //w_ext
-        list.add(0.0447); //p
+        list.add(0.2915); //Finit
+        list.add(0.6455); //ERinit
+        list.add(0.3603); //CRinit
+        list.add(0.0312); //w_F
+        list.add(0.3067); //w_ER
+        list.add(0.2979); //w_CR
+        list.add(0.5660); //CR_min
+        list.add(0.9555); //CR_max
+        list.add(13); //Q
+        list.add(0.2371); //alfa
+        list.add(61); //H
+        list.add(1.5365); //w_ext
+        list.add(0.1907); //p
         
         EigSpsLShaDE lshade;
 
@@ -909,34 +910,34 @@ public class EigSpsLShaDE implements Algorithm {
 
             lshade.run();
 
-            PrintWriter writer;
-           
+//            PrintWriter writer;
+//           
+//
+//            try {
+//                writer = new PrintWriter("CEC2015-" + funcNumber + "-lshade" + k + ".txt", "UTF-8");
+//
+//                writer.print("{");
+//
+//                for (int i = 0; i < lshade.getBestHistory().size(); i++) {
+//
+//                    writer.print(String.format(Locale.US, "%.10f", lshade.getBestHistory().get(i).fitness));
+//
+//                    if (i != lshade.getBestHistory().size() - 1) {
+//                        writer.print(",");
+//                    }
+//
+//                }
+//
+//                writer.print("}");
+//
+//                writer.close();
+//
+//            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+//                Logger.getLogger(EigSpsLShaDE.class.getName()).log(Level.SEVERE, null, ex);
+//            }
 
-            try {
-                writer = new PrintWriter("CEC2015-" + funcNumber + "-lshade" + k + ".txt", "UTF-8");
-
-                writer.print("{");
-
-                for (int i = 0; i < lshade.getBestHistory().size(); i++) {
-
-                    writer.print(String.format(Locale.US, "%.10f", lshade.getBestHistory().get(i).fitness));
-
-                    if (i != lshade.getBestHistory().size() - 1) {
-                        writer.print(",");
-                    }
-
-                }
-
-                writer.print("}");
-
-                writer.close();
-
-            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-                Logger.getLogger(EigSpsLShaDE.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            bestArray[k] = lshade.getBest().fitness;
-            System.out.println(lshade.getBest().fitness);
+            bestArray[k] = lshade.getBest().fitness - tf.optimum();
+            System.out.println(lshade.getBest().fitness - tf.optimum());
         }
 
         System.out.println("=================================");
@@ -946,7 +947,7 @@ public class EigSpsLShaDE implements Algorithm {
         System.out.println("Median: " + new Median().evaluate(bestArray));
         System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
         System.out.println("=================================");
-        System.out.println("Solution error: " + (new Mean().evaluate(bestArray) - (funcNumber * 100)));
+
 
     }
 
