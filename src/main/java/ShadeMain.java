@@ -1,13 +1,9 @@
 
 import algorithm.de.ShaDE;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
-import model.tf.Cec2013;
+import model.tf.Cec2015;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -33,20 +29,20 @@ public class ShadeMain {
 
         ShaDE shade;
 
-        int runs = 2;
+        int runs = 51;
         
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
         double best,worst,median,mean,std;
-        String home_dir = "/Users/adam/";
+        String home_dir = "C:\\Users\\Uživatel\\Documents\\CEC2015-ShadeH1/";
 
-        res_writer = new PrintWriter(home_dir + "CEC2013-Shade/results.txt", "UTF-8");
+        res_writer = new PrintWriter(home_dir + "results.txt", "UTF-8");
         
         res_writer.print("{");
         
-        for (int funcNumber = 1; funcNumber < 29; funcNumber++){
+        for (int funcNumber = 1; funcNumber < 16; funcNumber++){
         
-            tf = new Cec2013(funcNumber);
+            tf = new Cec2015(dimension, funcNumber);
             bestArray = new double[runs];
             
             for (int k = 0; k < runs; k++) {
@@ -54,7 +50,7 @@ public class ShadeMain {
                 shade = new ShaDE(dimension, MAXFES, tf, H, NP);
                 shade.run();
 
-                writer = new PrintWriter(home_dir + "CEC2013-Shade/" + funcNumber + "-" + k + ".txt", "UTF-8");
+                writer = new PrintWriter(home_dir + funcNumber + "-" + k + ".txt", "UTF-8");
 
                 writer.print("{");
 
@@ -82,7 +78,7 @@ public class ShadeMain {
             mean = new Mean().evaluate(bestArray);
             std = new StandardDeviation().evaluate(bestArray);
 
-            sol_writer = new PrintWriter(home_dir + "CEC2013-Shade/results_" + funcNumber + ".txt", "UTF-8");
+            sol_writer = new PrintWriter(home_dir + "results_" + funcNumber + ".txt", "UTF-8");
             
             sol_writer.print("{");
             sol_writer.print(funcNumber);
@@ -100,7 +96,7 @@ public class ShadeMain {
             
             sol_writer.close();
 
-            System.out.println("CEC2013 - f" + funcNumber);
+            System.out.println("CEC2015 - f" + funcNumber);
             System.out.println("=================================");
             System.out.println("Best: " + best);
             System.out.println("Worst: " + worst);
@@ -123,7 +119,7 @@ public class ShadeMain {
             res_writer.print(String.format(Locale.US, "%.10f", std));
             res_writer.print("}");
         
-            if(funcNumber < 28){
+            if(funcNumber < 15){
                res_writer.print(",");
             }
             

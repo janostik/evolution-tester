@@ -44,10 +44,10 @@ public class HMmodShadeMain {
         double Fmin = 0.1;
         double Fmax = 1.5;
         double Fstep = 0.1;
-//        int MAXFES = 10000*D - (D*1000);
-        int MAXFES = 1000;
+        int MAXFES = 10000*D - (D*1000);
+//        int MAXFES = 1000;
         int H = 1;
-        int runs = 2;
+        int runs = 20;
 
         PrintWriter writer = new PrintWriter(home_dir + "HM-" + tf.name() + ".txt", "UTF-8");
         double result;
@@ -97,7 +97,7 @@ public class HMmodShadeMain {
         // TODO code application logic here
         
         TestFunction tf;
-        String home_dir = "/Users/adam/HM-modShade/";
+        String home_dir = "C:\\Users\\Uživatel\\Documents\\HM-modShade/";
         int dimension = 10;
         
         for(int i=1; i<16;i++){
