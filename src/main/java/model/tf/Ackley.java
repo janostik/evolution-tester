@@ -58,4 +58,9 @@ public class Ackley implements TestFunction {
     public double min(int dim) {
         return -32;
     }
+
+    @Override
+    public String name() {
+        return "Ackley";
+    }
 }

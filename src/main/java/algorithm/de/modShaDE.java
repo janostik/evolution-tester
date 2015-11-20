@@ -1,17 +1,11 @@
 package algorithm.de;
 
 import algorithm.Algorithm;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.tf.Cec2015;
+import model.tf.Cec2013;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -20,12 +14,11 @@ import util.RandomUtil;
 
 /**
  *
- * modified ShaDE algorithm
+ * ShaDE algorithm modified for F and CR initialization values.
  *
- * @see <a href="http://goo.gl/eYB26Z">Original SHADE paper from CEC2013</a>
- * modification lies in memory (F, CR) using for single dimensions.
+ * @see <a href="http://goo.gl/eYB26Z">Original paper from CEC2013</a>
  *
- * @author adam on 16/11/2015
+ * @author adam on 20/11/2015
  */
 public class modShaDE implements Algorithm {
 
@@ -41,9 +34,11 @@ public class modShaDE implements Algorithm {
     private List<Individual> bestHistory;
     private double[] M_F;
     private double[] M_CR;
-    private List<double[]> S_F;
-    private List<double[]> S_CR;
+    private List<Double> S_F;
+    private List<Double> S_CR;
     private int H;
+    private double Finit;
+    private double CRinit;
 
     public modShaDE(int D, int MAXFES, TestFunction f, int H, int NP) {
         this.D = D;
@@ -51,6 +46,18 @@ public class modShaDE implements Algorithm {
         this.f = f;
         this.H = H;
         this.NP = NP;
+        this.CRinit = 0.5;
+        this.Finit = 0.5;
+    }
+    
+    public modShaDE(int D, int MAXFES, TestFunction f, int H, int NP, double Finit, double CRinit) {
+        this.D = D;
+        this.MAXFES = MAXFES;
+        this.f = f;
+        this.H = H;
+        this.NP = NP;
+        this.Finit = Finit;
+        this.CRinit = CRinit;
     }
 
     @Override
@@ -63,7 +70,6 @@ public class modShaDE implements Algorithm {
         this.Aext = new ArrayList<>();
         this.best = null;
         this.bestHistory = new ArrayList<>();
-        double[] newM_F, newM_CR;
 
         /**
          * Initial population
@@ -83,27 +89,26 @@ public class modShaDE implements Algorithm {
             this.writeHistory();
         }
 
-        this.M_F = new double[this.D];
-        this.M_CR = new double[this.D];
+        this.M_F = new double[this.H];
+        this.M_CR = new double[this.H];
 
-        for (int d = 0; d < this.D; d++) {
-            this.M_F[d] = 0.5;
-            this.M_CR[d] = 0.5;
+        for (int h = 0; h < this.H; h++) {
+            this.M_F[h] = this.Finit;
+            this.M_CR[h] = this.CRinit;
         }
 
         /**
          * Generation iteration;
          */
         int r, Psize;
-        double Fg, CRg, jrand;
+        double Fg, ERg, CRg, jrand;
         List<Individual> newPop, pBestArray;
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
         Individual trial;
         Individual x;
         List<Double> wS;
-        double wSsum;
-        double[] meanS_F1, meanS_F2, meanS_CR;
+        double wSsum, meanS_F1, meanS_F2, meanS_ER, meanS_CR;
         int k = 0;
         double pmin = 2 / this.NP;
 
@@ -117,11 +122,24 @@ public class modShaDE implements Algorithm {
             newPop = new ArrayList<>();
 
             for (int i = 0; i < this.NP; i++) {
-                
-                newM_F = new double[this.D];
-                newM_CR = new double[this.D];
 
                 x = this.P.get(i);
+                r = RandomUtil.nextInt(this.H);
+                Fg = RandomUtil.cauchy(this.M_F[r], 0.1);
+                while (Fg <= 0) {
+                    Fg = RandomUtil.cauchy(this.M_F[r], 0.1);
+                }
+                if (Fg > 1) {
+                    Fg = 1;
+                }
+
+                CRg = RandomUtil.normal(this.M_CR[r], 0.1);
+                if (CRg > 1) {
+                    CRg = 1;
+                }
+                if (CRg < 0) {
+                    CRg = 0;
+                }
 
                 Psize = (int) RandomUtil.nextDouble(pmin, 0.2);
                 if (Psize < 2) {
@@ -145,26 +163,24 @@ public class modShaDE implements Algorithm {
                     pr2 = this.P.get(rIndexes[1]).vector.clone();
                 }
 
+                for (int j = 0; j < this.D; j++) {
+
+                    v[j] = x.vector[j] + Fg * (pbest[j] - x.vector[j]) + Fg * (pr1[j] - pr2[j]);
+
+                }
+
                 /**
-                 * current-to-pbest/1 mutation and crossover
+                 * Crossover
                  */
                 u = new double[this.D];
                 jrand = RandomUtil.nextInt(this.D);
-                
-                for (int j = 0; j < this.D; j++) {
 
-                    Fg = RandomUtil.cauchy(this.M_F[j], 0.1);
-                    newM_F[j] = Fg;
-                    v[j] = x.vector[j] + Fg * (pbest[j] - x.vector[j]) + Fg * (pr1[j] - pr2[j]);
-                    
-                    CRg = RandomUtil.normal(this.M_CR[j], 0.1);
-                    newM_CR[j] = CRg;
+                for (int j = 0; j < this.D; j++) {
                     if (RandomUtil.nextDouble() <= CRg || j == jrand) {
                         u[j] = v[j];
                     } else {
                         u[j] = x.vector[j];
                     }
-
                 }
 
                 /**
@@ -189,10 +205,8 @@ public class modShaDE implements Algorithm {
                  */
                 if (trial.fitness < x.fitness) {
                     newPop.add(trial);
-                    this.S_F.add(newM_F.clone());
-                    this.S_CR.add(newM_CR.clone());
-//                    this.M_F = newM_F.clone();
-//                    this.M_CR = newM_CR.clone();
+                    this.S_F.add(Fg);
+                    this.S_CR.add(CRg);
                     this.Aext.add(x);
                     wS.add(Math.abs(trial.fitness - x.fitness));
                 } else {
@@ -220,23 +234,23 @@ public class modShaDE implements Algorithm {
                 for (Double num : wS) {
                     wSsum += num;
                 }
-                meanS_F1 = new double[this.D];
-                meanS_F2 = new double[this.D];
-                meanS_CR = new double[this.D];
+                meanS_F1 = 0;
+                meanS_F2 = 0;
+                meanS_CR = 0;
 
                 for (int s = 0; s < this.S_F.size(); s++) {
-                    for(int d = 0; d < this.D; d++){
-                        meanS_F1[d] += (wS.get(s) / wSsum) * this.S_F.get(s)[d] * this.S_F.get(s)[d];
-                        meanS_F2[d] += (wS.get(s) / wSsum) * this.S_F.get(s)[d];
-                        meanS_CR[d] += (wS.get(s) / wSsum) * this.S_CR.get(s)[d];
-                    }
+                    meanS_F1 += (wS.get(s) / wSsum) * this.S_F.get(s) * this.S_F.get(s);
+                    meanS_F2 += (wS.get(s) / wSsum) * this.S_F.get(s);
+                    meanS_CR += (wS.get(s) / wSsum) * this.S_CR.get(s);
                 }
 
-                for(int d = 0; d < this.D; d++){
-                    this.M_F[d] = meanS_F1[d] / meanS_F2[d];
-                    this.M_CR[d] = meanS_CR[d];
-                }
+                this.M_F[k] = (meanS_F1 / meanS_F2);
+                this.M_CR[k] = meanS_CR;
 
+                k++;
+                if (k >= this.H) {
+                    k = 0;
+                }
             }
 
             /**
@@ -503,19 +517,19 @@ public class modShaDE implements Algorithm {
         this.M_CR = M_CR;
     }
 
-    public List<double[]> getS_F() {
+    public List<Double> getS_F() {
         return S_F;
     }
 
-    public void setS_F(List<double[]> S_F) {
+    public void setS_F(List<Double> S_F) {
         this.S_F = S_F;
     }
 
-    public List<double[]> getS_CR() {
+    public List<Double> getS_CR() {
         return S_CR;
     }
 
-    public void setS_CR(List<double[]> S_CR) {
+    public void setS_CR(List<Double> S_CR) {
         this.S_CR = S_CR;
     }
 
@@ -532,48 +546,50 @@ public class modShaDE implements Algorithm {
         int dimension = 10;
         int NP = 100;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 10;
-        TestFunction tf = new Cec2015(dimension, funcNumber);
-        int H = 100;
+        int funcNumber = 21;
+        TestFunction tf = new Cec2013(funcNumber);
+        int H = 1;
+        double CR = 0.8;
+        double F = 0.5;
 
         modShaDE shade;
 
-        int runs = 10;
+        int runs = 2;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new modShaDE(dimension, MAXFES, tf, H, NP);
+            shade = new modShaDE(dimension, MAXFES, tf, H, NP, F, CR);
 
             shade.run();
 
-            PrintWriter writer;
+//            PrintWriter writer;
+//
+//            try {
+//                writer = new PrintWriter("CEC2015-" + funcNumber + "-shade" + k + ".txt", "UTF-8");
+//
+//                writer.print("{");
+//
+//                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+//
+//                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+//
+//                    if (i != shade.getBestHistory().size() - 1) {
+//                        writer.print(",");
+//                    }
+//
+//                }
+//
+//                writer.print("}");
+//
+//                writer.close();
+//
+//            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+//                Logger.getLogger(ShaDE.class.getName()).log(Level.SEVERE, null, ex);
+//            }
 
-            try {
-                writer = new PrintWriter("CEC2015-" + funcNumber + "-modshade" + k + ".txt", "UTF-8");
-
-                writer.print("{");
-
-                for (int i = 0; i < shade.getBestHistory().size(); i++) {
-
-                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
-
-                    if (i != shade.getBestHistory().size() - 1) {
-                        writer.print(",");
-                    }
-
-                }
-
-                writer.print("}");
-
-                writer.close();
-
-            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-                Logger.getLogger(modShaDE.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            bestArray[k] = shade.getBest().fitness;
-            System.out.println(shade.getBest().fitness);
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println(shade.getBest().fitness - tf.optimum());
         }
 
         System.out.println("=================================");
@@ -583,7 +599,6 @@ public class modShaDE implements Algorithm {
         System.out.println("Median: " + new Median().evaluate(bestArray));
         System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
         System.out.println("=================================");
-        System.out.println("Solution error: " + (new Mean().evaluate(bestArray) - (funcNumber * 100)));
 
     }
 

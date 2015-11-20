@@ -94,6 +94,11 @@ public class WineDataset implements TestFunction {
         }
     }
 
+    @Override
+    public String name() {
+        return "wine";
+    }
+
     public class WineCentroid {
 
         private int wine_class;

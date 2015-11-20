@@ -30,5 +30,7 @@ public interface TestFunction {
     double max(int dim);
 
     double min(int dim);
+    
+    String name();
 
 }

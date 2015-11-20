@@ -1339,4 +1339,9 @@ public class Cec2013 implements TestFunction {
         return f;
 
     }
+
+    @Override
+    public String name() {
+        return "CEC2013-f" + this.func_num;
+    }
 }

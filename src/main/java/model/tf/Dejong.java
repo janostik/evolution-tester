@@ -49,4 +49,9 @@ public class Dejong implements TestFunction {
     public double min(int dim) {
         return -10;
     }
+
+    @Override
+    public String name() {
+        return "Dejong";
+    }
 }

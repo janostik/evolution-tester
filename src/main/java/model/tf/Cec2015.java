@@ -1585,5 +1585,10 @@ public class Cec2015 implements TestFunction {
 	    return f;
 		
 	}
+        
+        @Override
+        public String name() {
+            return "CEC2015-f" + this.func_num;
+        }
     
 }

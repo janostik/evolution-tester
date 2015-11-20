@@ -90,6 +90,11 @@ public class IrisDataset implements TestFunction {
         }
         
     }
+
+    @Override
+    public String name() {
+        return "iris";
+    }
     
     public class IrisCentroid {
     
