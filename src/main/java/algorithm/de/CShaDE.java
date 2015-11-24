@@ -2,7 +2,6 @@ package algorithm.de;
 
 import algorithm.Algorithm;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
@@ -11,17 +10,18 @@ import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
+import util.DisipativeRandomUtil;
 import util.RandomUtil;
 
 /**
  *
- * ShaDE algorithm
+ * ShaDE algorithm modified with chaos.
  *
  * @see <a href="http://goo.gl/eYB26Z">Original paper from CEC2013</a>
  *
- * @author adam on 16/11/2015
+ * @author adam on 20/11/2015
  */
-public class ShaDE implements Algorithm {
+public class CShaDE implements Algorithm {
 
     private int D;
     private int G;
@@ -38,13 +38,27 @@ public class ShaDE implements Algorithm {
     private List<Double> S_F;
     private List<Double> S_CR;
     private int H;
+    private double Finit;
+    private double CRinit;
 
-    public ShaDE(int D, int MAXFES, TestFunction f, int H, int NP) {
+    public CShaDE(int D, int MAXFES, TestFunction f, int H, int NP) {
         this.D = D;
         this.MAXFES = MAXFES;
         this.f = f;
         this.H = H;
         this.NP = NP;
+        this.CRinit = 0.5;
+        this.Finit = 0.5;
+    }
+    
+    public CShaDE(int D, int MAXFES, TestFunction f, int H, int NP, double Finit, double CRinit) {
+        this.D = D;
+        this.MAXFES = MAXFES;
+        this.f = f;
+        this.H = H;
+        this.NP = NP;
+        this.Finit = Finit;
+        this.CRinit = CRinit;
     }
 
     @Override
@@ -80,8 +94,8 @@ public class ShaDE implements Algorithm {
         this.M_CR = new double[this.H];
 
         for (int h = 0; h < this.H; h++) {
-            this.M_F[h] = 0.5;
-            this.M_CR[h] = 0.5;
+            this.M_F[h] = this.Finit;
+            this.M_CR[h] = this.CRinit;
         }
 
         /**
@@ -119,9 +133,9 @@ public class ShaDE implements Algorithm {
                 if (Fg > 1) {
                     Fg = 1;
                 }
-                
 
-                CRg = RandomUtil.normal(this.M_CR[r], 0.1);
+//                CRg = RandomUtil.normal(this.M_CR[r], 0.1);
+                CRg = DisipativeRandomUtil.nextDouble();
                 if (CRg > 1) {
                     CRg = 1;
                 }
@@ -154,17 +168,17 @@ public class ShaDE implements Algorithm {
                 for (int j = 0; j < this.D; j++) {
 
                     v[j] = x.vector[j] + Fg * (pbest[j] - x.vector[j]) + Fg * (pr1[j] - pr2[j]);
-
+                    
                 }
 
                 /**
                  * Crossover
                  */
                 u = new double[this.D];
-                jrand = RandomUtil.nextInt(this.D);
+                jrand = DisipativeRandomUtil.nextInt(this.D);
 
                 for (int j = 0; j < this.D; j++) {
-                    if (RandomUtil.nextDouble() <= CRg || j == jrand) {
+                    if (DisipativeRandomUtil.nextDouble() <= CRg || j == jrand) {
                         u[j] = v[j];
                     } else {
                         u[j] = x.vector[j];
@@ -211,8 +225,6 @@ public class ShaDE implements Algorithm {
             }
 
             if (this.FES >= this.MAXFES) {
-                System.out.println(k + ". F - " + Arrays.toString(this.M_F));
-                System.out.println(k + ". CR - " + Arrays.toString(this.M_CR));
                 break;
             }
 
@@ -242,7 +254,7 @@ public class ShaDE implements Algorithm {
                     k = 0;
                 }
             }
-            
+
             /**
              * Resize of population and archives
              */
@@ -536,18 +548,20 @@ public class ShaDE implements Algorithm {
         int dimension = 10;
         int NP = 100;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 15;
+        int funcNumber = 1;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 1;
+        double CR = 0.5;
+        double F = 0.5;
 
-        ShaDE shade;
+        CShaDE shade;
 
         int runs = 10;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new ShaDE(dimension, MAXFES, tf, H, NP);
+            shade = new CShaDE(dimension, MAXFES, tf, H, NP, F, CR);
 
             shade.run();
 

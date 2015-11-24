@@ -97,7 +97,7 @@ public class HMmodShadeMain {
         // TODO code application logic here
         
         TestFunction tf;
-        String home_dir = "C:\\Users\\Uživatel\\Documents\\HM-modShade/";
+        String home_dir = "/Users/adam/HM-modShade/";
         int dimension = 10;
         
         for(int i=1; i<16;i++){

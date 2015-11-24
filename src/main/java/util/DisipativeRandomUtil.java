@@ -1,22 +1,23 @@
 package util;
 
 import java.util.Random;
+import model.chaos.Disipative;
 import org.apache.commons.math3.distribution.CauchyDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
- * Should contain static access to basic Random functions.
- * TODO: In the future change to interface so the basic random and chaos functions are interchangable.
- * Created by jakub on 27/10/15.
+ * Should contain static access to disipative chaos Random functions.
+ * Created by adam on 24/11/15.
  */
-public class RandomUtil {
+public class DisipativeRandomUtil {
 
+    private static Disipative chaos = new Disipative();
     private static Random rnd = new Random();
 
     /*
     Class not to be instantiated
      */
-    private RandomUtil() {
+    private DisipativeRandomUtil() {
     }
     
     public static double cauchy(double a, double b){
@@ -38,11 +39,11 @@ public class RandomUtil {
     }
     
     public static Double nextDouble() {
-        return rnd.nextDouble();
+        return chaos.getRndReal();
     }
 
     public static int nextInt(int bound) {
-        return rnd.nextInt(bound);
+        return chaos.getRndInt(bound);
     }
 
     public static double nextDouble(double min, double max) {

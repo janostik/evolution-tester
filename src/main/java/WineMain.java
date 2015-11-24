@@ -18,7 +18,7 @@ public class WineMain {
         
         int dimension = 39;
         int NP = 100;
-        int MAXFES = 100000;
+        int MAXFES = 10000;
         TestFunction tf = new WineDataset(false);
         int H = 100;
 
@@ -39,7 +39,7 @@ public class WineMain {
         
         int dimension = 39;
         int NP = 100;
-        int MAXFES = 100000;
+        int MAXFES = 10000;
         TestFunction tf = new WineDataset(true);
         int H = 100;
 

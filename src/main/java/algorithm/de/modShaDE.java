@@ -2,10 +2,11 @@ package algorithm.de;
 
 import algorithm.Algorithm;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.tf.Cec2013;
+import model.tf.Cec2015;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -32,10 +33,10 @@ public class modShaDE implements Algorithm {
     private TestFunction f;
     private Individual best;
     private List<Individual> bestHistory;
-    private double[] M_F;
-    private double[] M_CR;
-    private List<Double> S_F;
-    private List<Double> S_CR;
+    private List<double[]> M_F;
+    private List<double[]> M_CR;
+    private List<double[]> S_F;
+    private List<double[]> S_CR;
     private int H;
     private double Finit;
     private double CRinit;
@@ -89,26 +90,37 @@ public class modShaDE implements Algorithm {
             this.writeHistory();
         }
 
-        this.M_F = new double[this.H];
-        this.M_CR = new double[this.H];
+//        this.M_F = new double[this.H];
+//        this.M_CR = new double[this.H];
+        this.M_F = new ArrayList<>();
+        this.M_CR = new ArrayList<>();
+        double[] single_M_F;
+        double[] single_M_CR;
 
         for (int h = 0; h < this.H; h++) {
-            this.M_F[h] = this.Finit;
-            this.M_CR[h] = this.CRinit;
+            single_M_F = new double[this.D];
+            single_M_CR = new double[this.D];
+            for(int dim = 0; dim < this.D; dim++) {
+                single_M_F[h] = this.Finit;
+                single_M_CR[h] = this.CRinit;
+            }
+            this.M_F.add(single_M_F);
+            this.M_CR.add(single_M_CR);
         }
 
         /**
          * Generation iteration;
          */
         int r, Psize;
-        double Fg, ERg, CRg, jrand;
+        double[] Fg, CRg;
+        double jrand, wSsum;
         List<Individual> newPop, pBestArray;
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
         Individual trial;
         Individual x;
         List<Double> wS;
-        double wSsum, meanS_F1, meanS_F2, meanS_ER, meanS_CR;
+        double[] meanS_F1, meanS_F2, meanS_F, meanS_CR;
         int k = 0;
         double pmin = 2 / this.NP;
 
@@ -125,21 +137,41 @@ public class modShaDE implements Algorithm {
 
                 x = this.P.get(i);
                 r = RandomUtil.nextInt(this.H);
-                Fg = RandomUtil.cauchy(this.M_F[r], 0.1);
-                while (Fg <= 0) {
-                    Fg = RandomUtil.cauchy(this.M_F[r], 0.1);
+                Fg = new double[this.D];
+                CRg = new double[this.D];
+                for (int dim = 0; dim < this.D; dim++) {
+                    Fg[dim] = RandomUtil.cauchy(this.M_F.get(r)[dim], 0.1);
+                    while (Fg[dim] <= 0) {
+                        Fg[dim] = RandomUtil.cauchy(this.M_F.get(r)[dim], 0.1);
+                    }
+                    if (Fg[dim] > 1){
+                        Fg[dim] = 1;
+                    }
+                    
+                    CRg[dim] = RandomUtil.normal(this.M_CR.get(r)[dim], 0.1);
+                    if (CRg[dim] > 1) {
+                        CRg[dim] = 1;
+                    }
+                    if (CRg[dim] < 0) {
+                        CRg[dim] = 0;
+                    }
                 }
-                if (Fg > 1) {
-                    Fg = 1;
-                }
-
-                CRg = RandomUtil.normal(this.M_CR[r], 0.1);
-                if (CRg > 1) {
-                    CRg = 1;
-                }
-                if (CRg < 0) {
-                    CRg = 0;
-                }
+                
+//                Fg = RandomUtil.cauchy(this.M_F[r], 0.1);
+//                while (Fg <= 0) {
+//                    Fg = RandomUtil.cauchy(this.M_F[r], 0.1);
+//                }
+//                if (Fg > 1) {
+//                    Fg = 1;
+//                }
+//
+//                CRg = RandomUtil.normal(this.M_CR[r], 0.1);
+//                if (CRg > 1) {
+//                    CRg = 1;
+//                }
+//                if (CRg < 0) {
+//                    CRg = 0;
+//                }
 
                 Psize = (int) RandomUtil.nextDouble(pmin, 0.2);
                 if (Psize < 2) {
@@ -165,7 +197,7 @@ public class modShaDE implements Algorithm {
 
                 for (int j = 0; j < this.D; j++) {
 
-                    v[j] = x.vector[j] + Fg * (pbest[j] - x.vector[j]) + Fg * (pr1[j] - pr2[j]);
+                    v[j] = x.vector[j] + Fg[j] * (pbest[j] - x.vector[j]) + Fg[j] * (pr1[j] - pr2[j]);
 
                 }
 
@@ -176,7 +208,7 @@ public class modShaDE implements Algorithm {
                 jrand = RandomUtil.nextInt(this.D);
 
                 for (int j = 0; j < this.D; j++) {
-                    if (RandomUtil.nextDouble() <= CRg || j == jrand) {
+                    if (RandomUtil.nextDouble() <= CRg[j] || j == jrand) {
                         u[j] = v[j];
                     } else {
                         u[j] = x.vector[j];
@@ -223,6 +255,10 @@ public class modShaDE implements Algorithm {
             }
 
             if (this.FES >= this.MAXFES) {
+                for (int kk = 0; kk < this.H; kk++){               
+                    System.out.println(kk + ". F - " + Arrays.toString(this.M_F.get(kk)));
+                    System.out.println(kk + ". CR - " + Arrays.toString(this.M_CR.get(kk)));
+                }
                 break;
             }
 
@@ -234,24 +270,45 @@ public class modShaDE implements Algorithm {
                 for (Double num : wS) {
                     wSsum += num;
                 }
-                meanS_F1 = 0;
-                meanS_F2 = 0;
-                meanS_CR = 0;
+//                meanS_F1 = 0;
+//                meanS_F2 = 0;
+//                meanS_CR = 0;
+                meanS_F1 = new double[this.D];
+                meanS_F2 = new double[this.D];
+                meanS_CR = new double[this.D];
+                meanS_F = new double[this.D];
 
-                for (int s = 0; s < this.S_F.size(); s++) {
-                    meanS_F1 += (wS.get(s) / wSsum) * this.S_F.get(s) * this.S_F.get(s);
-                    meanS_F2 += (wS.get(s) / wSsum) * this.S_F.get(s);
-                    meanS_CR += (wS.get(s) / wSsum) * this.S_CR.get(s);
+                for (int dim = 0; dim < this.D; dim++ ) {
+                    meanS_F1[dim] = 0;
+                    meanS_F2[dim] = 0;
+                    meanS_CR[dim] = 0;
                 }
+                    
+                for (int s = 0; s < this.S_F.size(); s++) {
 
-                this.M_F[k] = (meanS_F1 / meanS_F2);
-                this.M_CR[k] = meanS_CR;
+                    for (int dim = 0; dim < this.D; dim++ ) {
+
+                        meanS_F1[dim] += (wS.get(s) / wSsum) * this.S_F.get(s)[dim] * this.S_F.get(s)[dim];
+                        meanS_F2[dim] += (wS.get(s) / wSsum) * this.S_F.get(s)[dim];
+                        meanS_CR[dim] += (wS.get(s) / wSsum) * this.S_CR.get(s)[dim];
+
+                    }
+                }
+                
+                for (int dim = 0; dim < this.D; dim++ ) {
+                    meanS_F[dim] = meanS_F1[dim]/meanS_F2[dim];
+                }
+ 
+                this.M_F.set(k,meanS_F);
+                this.M_CR.set(k, meanS_CR);
 
                 k++;
                 if (k >= this.H) {
                     k = 0;
                 }
             }
+            
+            
 
             /**
              * Resize of population and archives
@@ -501,38 +558,6 @@ public class modShaDE implements Algorithm {
         this.bestHistory = bestHistory;
     }
 
-    public double[] getM_F() {
-        return M_F;
-    }
-
-    public void setM_F(double[] M_F) {
-        this.M_F = M_F;
-    }
-
-    public double[] getM_CR() {
-        return M_CR;
-    }
-
-    public void setM_CR(double[] M_CR) {
-        this.M_CR = M_CR;
-    }
-
-    public List<Double> getS_F() {
-        return S_F;
-    }
-
-    public void setS_F(List<Double> S_F) {
-        this.S_F = S_F;
-    }
-
-    public List<Double> getS_CR() {
-        return S_CR;
-    }
-
-    public void setS_CR(List<Double> S_CR) {
-        this.S_CR = S_CR;
-    }
-
     public int getH() {
         return H;
     }
@@ -546,15 +571,15 @@ public class modShaDE implements Algorithm {
         int dimension = 10;
         int NP = 100;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 21;
-        TestFunction tf = new Cec2013(funcNumber);
+        int funcNumber = 14;
+        TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 1;
-        double CR = 0.8;
+        double CR = 0.5;
         double F = 0.5;
 
         modShaDE shade;
 
-        int runs = 2;
+        int runs = 10;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
