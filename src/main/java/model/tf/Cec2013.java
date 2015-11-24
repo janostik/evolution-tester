@@ -2,13 +2,14 @@ package model.tf;
 
 import model.Individual;
 import util.IndividualUtil;
-import util.RandomUtil;
 
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Scanner;
+import util.random.Random;
+import util.random.UniformRandom;
 
 /**
  * Created by jakub on 29/10/15.
@@ -229,7 +230,8 @@ public class Cec2013 implements TestFunction {
     @Override
     public double[] generateTrial(int dim) {
         double[] vector = new double[dim];
-        for (int i = 0; i < dim; i++) vector[i] = RandomUtil.nextDouble(-100, 100);
+        Random rnd = new UniformRandom();
+        for (int i = 0; i < dim; i++) vector[i] = rnd.nextDouble(-100, 100);
         return vector;
     }
 

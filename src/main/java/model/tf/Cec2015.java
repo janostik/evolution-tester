@@ -7,7 +7,8 @@ import java.util.Locale;
 import java.util.Scanner;
 import model.Individual;
 import util.IndividualUtil;
-import util.RandomUtil;
+import util.random.Random;
+import util.random.UniformRandom;
 
 /**
  *
@@ -278,7 +279,8 @@ public class Cec2015 implements TestFunction {
     @Override
     public double[] generateTrial(int dim) {
         double[] vector = new double[dim];
-        for (int i = 0; i < dim; i++) vector[i] = RandomUtil.nextDouble(-100, 100);
+        Random rnd = new UniformRandom();
+        for (int i = 0; i < dim; i++) vector[i] = rnd.nextDouble(-100, 100);
         return vector;
     }
 

@@ -10,7 +10,7 @@ import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
-import util.DisipativeRandomUtil;
+import util.LoziRandomUtil;
 import util.RandomUtil;
 
 /**
@@ -127,15 +127,17 @@ public class CShaDE implements Algorithm {
                 x = this.P.get(i);
                 r = RandomUtil.nextInt(this.H);
                 Fg = RandomUtil.cauchy(this.M_F[r], 0.1);
+//                Fg = LoziRandomUtil.nextDouble();
                 while (Fg <= 0) {
                     Fg = RandomUtil.cauchy(this.M_F[r], 0.1);
+//                    Fg = LoziRandomUtil.nextDouble();
                 }
                 if (Fg > 1) {
                     Fg = 1;
                 }
 
-//                CRg = RandomUtil.normal(this.M_CR[r], 0.1);
-                CRg = DisipativeRandomUtil.nextDouble();
+                CRg = RandomUtil.normal(this.M_CR[r], 0.1);
+//                CRg = LoziRandomUtil.nextDouble();
                 if (CRg > 1) {
                     CRg = 1;
                 }
@@ -175,10 +177,10 @@ public class CShaDE implements Algorithm {
                  * Crossover
                  */
                 u = new double[this.D];
-                jrand = DisipativeRandomUtil.nextInt(this.D);
+                jrand = RandomUtil.nextInt(this.D);
 
                 for (int j = 0; j < this.D; j++) {
-                    if (DisipativeRandomUtil.nextDouble() <= CRg || j == jrand) {
+                    if (LoziRandomUtil.nextDouble() <= CRg || j == jrand) {
                         u[j] = v[j];
                     } else {
                         u[j] = x.vector[j];
@@ -389,12 +391,12 @@ public class CShaDE implements Algorithm {
 
         int a, b;
 
-        a = RandomUtil.nextInt(max1);
-        b = RandomUtil.nextInt(max2);
+        a = LoziRandomUtil.nextInt(max1);
+        b = LoziRandomUtil.nextInt(max2);
 
         while (a == b || a == index || b == index) {
-            a = RandomUtil.nextInt(max1);
-            b = RandomUtil.nextInt(max2);
+            a = LoziRandomUtil.nextInt(max1);
+            b = LoziRandomUtil.nextInt(max2);
         }
 
         return new int[]{a, b};
@@ -548,7 +550,7 @@ public class CShaDE implements Algorithm {
         int dimension = 10;
         int NP = 100;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 1;
+        int funcNumber = 11;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 1;
         double CR = 0.5;

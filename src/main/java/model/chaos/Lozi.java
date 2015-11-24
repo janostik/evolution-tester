@@ -8,7 +8,7 @@ import java.util.Random;
  *
  * @author adam
  */
-public final class Disipative {
+public final class Lozi {
 
     private List<Double[]> chaoticData;
     private double maxVal;
@@ -17,19 +17,20 @@ public final class Disipative {
     private double xRndStart;
     private double yRndStart;
     private int maxRun;
+    private double A;
     private double B;
-    private double k;
 
-    public Disipative(){
+    public Lozi(){
         
         Random rnd = new Random();
-        double rndStart = rnd.nextDouble() * 0.1;
+//        double rndStart = rnd.nextDouble() * 0.1;
+        double rndStart = 0.1;
         this.xRndStart = rndStart;
         this.yRndStart = rndStart;
         this.reevaluation = 0;
         this.maxRun = 500_000;
-        this.B = 0.6;
-        this.k = 8.8;
+        this.A = 1.7;
+        this.B = 0.5;
         this.generateChaoticData();
     }
     
@@ -50,14 +51,8 @@ public final class Disipative {
             x = chaoticList.get(i)[0];
             y = chaoticList.get(i)[1];
             
-            yn = (this.B * y + this.k * Math.sin(x)) % (2*Math.PI);
-            if(yn < 0){
-                yn += (2*Math.PI);
-            }
-            xn = (x + yn) % (2*Math.PI);
-            if(xn < 0){
-                xn += (2*Math.PI);
-            }
+            yn = x;
+            xn = 1 - this.A*Math.abs(x) + this.B * y;
             
             particle = new Double[]{xn, yn};
             chaoticList.add(particle);
@@ -130,30 +125,20 @@ public final class Disipative {
      */
     public static void main(String[] args) {
         
-        Disipative dch = new Disipative();
+        Lozi dch = new Lozi();
         
         double rnd;
         double sum = 0;
         
-        for(int i=0; i< 5000; i++){
+        for(int i=0; i< 10; i++){
             rnd = dch.getRndReal();
             sum += rnd;
-//            System.out.println(rnd);
+            System.out.println(rnd);
         }
         
         System.out.println("=====================");
         System.out.println(sum/5000);
-        
-        sum = 0;
-        
-        for(int i=0; i< 5000; i++){
-            rnd = dch.getRndReal();
-            sum += rnd;
-//            System.out.println(rnd);
-        }
-        
-        System.out.println("=====================");
-        System.out.println(sum/5000);
+
         
     }
     

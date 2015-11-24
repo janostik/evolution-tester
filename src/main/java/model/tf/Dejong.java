@@ -1,9 +1,10 @@
 package model.tf;
 
 import model.Individual;
-import util.RandomUtil;
 
 import java.util.stream.DoubleStream;
+import util.random.Random;
+import util.random.UniformRandom;
 
 /**
  * Created by jakub on 27/10/15.
@@ -26,7 +27,8 @@ public class Dejong implements TestFunction {
     @Override
     public double[] generateTrial(int dim) {
         double[] vector = new double[dim];
-        for (int i = 0; i < dim; i++) vector[i] = RandomUtil.nextDouble(-10, 10);
+        Random rnd = new UniformRandom();
+        for (int i = 0; i < dim; i++) vector[i] = rnd.nextDouble(-10, 10);
         return vector;
     }
 

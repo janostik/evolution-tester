@@ -7,7 +7,8 @@ import model.Individual;
 import org.apache.commons.math3.ml.clustering.DoublePoint;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
-import util.RandomUtil;
+import util.random.Random;
+import util.random.UniformRandom;
 
 /**
  *
@@ -58,9 +59,10 @@ public class WineDataset implements TestFunction {
     @Override
     public double[] generateTrial(int dim) {
         double[] vector = new double[dim];
+        Random rnd = new UniformRandom();
         
         for(int i = 0; i < dim; i++){
-            vector[i] = RandomUtil.nextDouble(this.min(i), this.max(i));
+            vector[i] = rnd.nextDouble(this.min(i), this.max(i));
         }
         
         return vector;

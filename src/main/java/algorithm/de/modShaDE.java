@@ -571,7 +571,7 @@ public class modShaDE implements Algorithm {
         int dimension = 10;
         int NP = 100;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 14;
+        int funcNumber = 5;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 1;
         double CR = 0.5;
