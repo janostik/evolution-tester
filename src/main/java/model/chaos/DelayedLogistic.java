@@ -40,26 +40,4 @@ public final class DelayedLogistic extends Chaos {
         
     }
     
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        
-        DelayedLogistic dch = new DelayedLogistic();
-        
-        double rnd;
-        double sum = 0;
-        
-        for(int i=0; i< 10; i++){
-            rnd = dch.getRndReal();
-            sum += rnd;
-            System.out.println(rnd);
-        }
-        
-        System.out.println("=====================");
-        System.out.println(sum/5000);
-
-        
-    }
-    
 }

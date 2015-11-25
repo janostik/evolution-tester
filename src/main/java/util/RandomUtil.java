@@ -5,6 +5,7 @@ import org.apache.commons.math3.distribution.CauchyDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
+ * WILL BE REMOVED AFTER REFACTORING.
  * Should contain static access to basic Random functions.
  * TODO: In the future change to interface so the basic random and chaos functions are interchangable.
  * Created by jakub on 27/10/15.

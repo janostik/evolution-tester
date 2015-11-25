@@ -4,7 +4,7 @@ package util.random;
  *
  * @author adam on 25/11/2015
  */
-public class Tinkerbell implements Random {
+public class TinkerbellRandom implements Random {
 
     final private static model.chaos.Tinkerbell rnd = new model.chaos.Tinkerbell();
 

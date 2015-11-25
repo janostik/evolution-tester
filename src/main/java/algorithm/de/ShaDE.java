@@ -2,7 +2,6 @@ package algorithm.de;
 
 import algorithm.Algorithm;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
@@ -11,7 +10,7 @@ import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
-import util.RandomUtil;
+import util.OtherDistributionsUtil;
 
 /**
  *
@@ -19,7 +18,7 @@ import util.RandomUtil;
  *
  * @see <a href="http://goo.gl/eYB26Z">Original paper from CEC2013</a>
  *
- * @author adam on 16/11/2015
+ * @author adam on 16/11/2015 update 25/11/2015
  */
 public class ShaDE implements Algorithm {
 
@@ -38,13 +37,16 @@ public class ShaDE implements Algorithm {
     private List<Double> S_F;
     private List<Double> S_CR;
     private int H;
+    private util.random.Random rndGenerator;
+    int id;
 
-    public ShaDE(int D, int MAXFES, TestFunction f, int H, int NP) {
+    public ShaDE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
         this.D = D;
         this.MAXFES = MAXFES;
         this.f = f;
         this.H = H;
         this.NP = NP;
+        this.rndGenerator = rndGenerator;
     }
 
     @Override
@@ -61,20 +63,7 @@ public class ShaDE implements Algorithm {
         /**
          * Initial population
          */
-        int id = 0;
-        double[] features;
-        this.P = new ArrayList<>();
-        Individual ind;
-
-        for (int i = 0; i < this.NP; i++) {
-            id = i;
-            features = this.f.generateTrial(this.D).clone();
-            ind = new Individual(String.valueOf(id), features, this.f.fitness(features));
-            this.isBest(ind);
-            this.P.add(ind);
-            this.FES++;
-            this.writeHistory();
-        }
+        initializePopulation();
 
         this.M_F = new double[this.H];
         this.M_CR = new double[this.H];
@@ -88,16 +77,17 @@ public class ShaDE implements Algorithm {
          * Generation iteration;
          */
         int r, Psize;
-        double Fg, ERg, CRg, jrand;
+        double Fg, CRg;
         List<Individual> newPop, pBestArray;
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
         Individual trial;
         Individual x;
         List<Double> wS;
-        double wSsum, meanS_F1, meanS_F2, meanS_ER, meanS_CR;
+        double wSsum, meanS_F1, meanS_F2, meanS_CR;
         int k = 0;
         double pmin = 2 / this.NP;
+        List<double[]> parents;
 
         while (true) {
 
@@ -111,17 +101,17 @@ public class ShaDE implements Algorithm {
             for (int i = 0; i < this.NP; i++) {
 
                 x = this.P.get(i);
-                r = RandomUtil.nextInt(this.H);
-                Fg = RandomUtil.cauchy(this.M_F[r], 0.1);
+                r = rndGenerator.nextInt(this.H);
+                Fg = OtherDistributionsUtil.cauchy(this.M_F[r], 0.1);
                 while (Fg <= 0) {
-                    Fg = RandomUtil.cauchy(this.M_F[r], 0.1);
+                    Fg = OtherDistributionsUtil.cauchy(this.M_F[r], 0.1);
                 }
                 if (Fg > 1) {
                     Fg = 1;
                 }
                 
 
-                CRg = RandomUtil.normal(this.M_CR[r], 0.1);
+                CRg = OtherDistributionsUtil.normal(this.M_CR[r], 0.1);
                 if (CRg > 1) {
                     CRg = 1;
                 }
@@ -129,7 +119,7 @@ public class ShaDE implements Algorithm {
                     CRg = 0;
                 }
 
-                Psize = (int) RandomUtil.nextDouble(pmin, 0.2);
+                Psize = (int) rndGenerator.nextDouble(pmin, 0.2);
                 if (Psize < 2) {
                     Psize = 2;
                 }
@@ -139,9 +129,8 @@ public class ShaDE implements Algorithm {
                 pBestArray = this.resize(pBestArray, Psize);
 
                 /**
-                 * Base equation
+                 * Parent selection
                  */
-                v = new double[this.D];
                 pbest = this.getBestFromList(pBestArray).vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size());
                 pr1 = this.P.get(rIndexes[0]).vector.clone();
@@ -150,37 +139,26 @@ public class ShaDE implements Algorithm {
                 } else {
                     pr2 = this.P.get(rIndexes[1]).vector.clone();
                 }
-
-                for (int j = 0; j < this.D; j++) {
-
-                    v[j] = x.vector[j] + Fg * (pbest[j] - x.vector[j]) + Fg * (pr1[j] - pr2[j]);
-
-                }
+                parents = new ArrayList<>();
+                parents.add(x.vector);
+                parents.add(pbest);
+                parents.add(pr1);
+                parents.add(pr2);
+                
+                /**
+                 * Mutation
+                 */               
+                v = mutation(parents, Fg);
 
                 /**
                  * Crossover
                  */
-                u = new double[this.D];
-                jrand = RandomUtil.nextInt(this.D);
-
-                for (int j = 0; j < this.D; j++) {
-                    if (RandomUtil.nextDouble() <= CRg || j == jrand) {
-                        u[j] = v[j];
-                    } else {
-                        u[j] = x.vector[j];
-                    }
-                }
+                u = crossover(CRg, v, x.vector);
 
                 /**
                  * Constrain check
                  */
-                for (int d = 0; d < this.D; d++) {
-                    if (u[d] < this.f.min(this.D)) {
-                        u[d] = (this.f.min(this.D) + x.vector[d]) / 2.0;
-                    } else if (u[d] > this.f.max(this.D)) {
-                        u[d] = (this.f.max(this.D) + x.vector[d]) / 2.0;
-                    }
-                }
+                u = constrainCheck(u, x.vector);
 
                 /**
                  * Trial ready
@@ -211,8 +189,6 @@ public class ShaDE implements Algorithm {
             }
 
             if (this.FES >= this.MAXFES) {
-                System.out.println(k + ". F - " + Arrays.toString(this.M_F));
-                System.out.println(k + ". CR - " + Arrays.toString(this.M_CR));
                 break;
             }
 
@@ -255,7 +231,109 @@ public class ShaDE implements Algorithm {
         return this.best;
 
     }
+    
+    protected double[] mutation(List<double[]> parents, double F){
+        
+        /**
+         * Parents:
+         * x
+         * pbest
+         * pr1
+         * pr2
+         */
+        
+        double[] v = new double[this.D];
+        for (int j = 0; j < this.D; j++) {
 
+            v[j] = parents.get(0)[j] + F * (parents.get(1)[j] - parents.get(0)[j]) + F * (parents.get(2)[j] - parents.get(3)[j]);
+
+        }
+        
+        return v;
+        
+    }
+    
+    /**
+     * 
+     * @param u
+     * @param x
+     * @return 
+     */
+    protected double[] constrainCheck(double[] u, double[] x){
+        /**
+         * Constrain check
+         */
+        for (int d = 0; d < this.D; d++) {
+            if (u[d] < this.f.min(this.D)) {
+                u[d] = (this.f.min(this.D) + x[d]) / 2.0;
+            } else if (u[d] > this.f.max(this.D)) {
+                u[d] = (this.f.max(this.D) + x[d]) / 2.0;
+            }
+        }
+        
+        return u;
+    }
+    
+    /**
+     * 
+     * @param CR
+     * @param v
+     * @param x
+     * @return 
+     */
+    protected double[] crossover(double CR, double[] v, double[] x){
+        
+        /**
+         * Crossover
+         */
+        double[] u = new double[this.D];
+        int jrand = rndGenerator.nextInt(this.D);
+
+        for (int j = 0; j < this.D; j++) {
+            if (getRandomCR() <= CR || j == jrand) {
+                u[j] = v[j];
+            } else {
+                u[j] = x[j];
+            }
+        }
+        
+        return u;
+        
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    protected double getRandomCR(){
+        return rndGenerator.nextDouble();
+    }
+
+    /**
+     * Creation of initial population.
+     */
+    protected void initializePopulation(){
+        
+        /**
+         * Initial population
+         */
+        id = 0;
+        double[] features;
+        this.P = new ArrayList<>();
+        Individual ind;
+
+        for (int i = 0; i < this.NP; i++) {
+            id = i;
+            features = this.f.generateTrial(this.D).clone();
+            ind = new Individual(String.valueOf(id), features, this.f.fitness(features));
+            this.isBest(ind);
+            this.P.add(ind);
+            this.FES++;
+            this.writeHistory();
+        }
+        
+    }
+    
     @Override
     public List<? extends Individual> getPopulation() {
         return this.P;
@@ -285,7 +363,7 @@ public class ShaDE implements Algorithm {
 
         while (toRet.size() > size) {
 
-            index = RandomUtil.nextInt(toRet.size());
+            index = rndGenerator.nextInt(toRet.size());
             toRet.remove(index);
 
         }
@@ -369,20 +447,21 @@ public class ShaDE implements Algorithm {
 
     /**
      *
+     * @param index
      * @param max1
      * @param max2
      * @return
      */
-    private int[] genRandIndexes(int index, int max1, int max2) {
+    protected int[] genRandIndexes(int index, int max1, int max2) {
 
         int a, b;
 
-        a = RandomUtil.nextInt(max1);
-        b = RandomUtil.nextInt(max2);
+        a = rndGenerator.nextInt(max1);
+        b = rndGenerator.nextInt(max2);
 
         while (a == b || a == index || b == index) {
-            a = RandomUtil.nextInt(max1);
-            b = RandomUtil.nextInt(max2);
+            a = rndGenerator.nextInt(max1);
+            b = rndGenerator.nextInt(max2);
         }
 
         return new int[]{a, b};
@@ -411,6 +490,7 @@ public class ShaDE implements Algorithm {
 
     }
 
+    // <editor-fold defaultstate="collapsed" desc="getters and setters">
     public int getD() {
         return D;
     }
@@ -531,14 +611,24 @@ public class ShaDE implements Algorithm {
         this.H = H;
     }
 
+    public util.random.Random getRndGenerator() {
+        return rndGenerator;
+    }
+
+    public void setRndGenerator(util.random.Random rndGenerator) {
+        this.rndGenerator = rndGenerator;
+    }
+    //</editor-fold>
+
     public static void main(String[] args) throws Exception {
 
         int dimension = 10;
         int NP = 100;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 15;
+        int funcNumber = 12;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 1;
+        util.random.Random generator = new util.random.UniformRandom();
 
         ShaDE shade;
 
@@ -547,7 +637,7 @@ public class ShaDE implements Algorithm {
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new ShaDE(dimension, MAXFES, tf, H, NP);
+            shade = new ShaDE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
 

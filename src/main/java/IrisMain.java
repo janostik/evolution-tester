@@ -21,9 +21,10 @@ public class IrisMain {
         int MAXFES = 100000;
         TestFunction tf = new IrisDataset(false);
         int H = 100;
+        util.random.Random generator = new util.random.UniformRandom();
 
         ShaDE shade;
-        shade = new ShaDE(dimension, MAXFES, tf, H, NP);
+        shade = new ShaDE(dimension, MAXFES, tf, H, NP, generator);
 
         shade.run();
         
@@ -42,9 +43,10 @@ public class IrisMain {
         int MAXFES = 100000;
         TestFunction tf = new IrisDataset(true);
         int H = 100;
+        util.random.Random generator = new util.random.UniformRandom();
 
         ShaDE shade;
-        shade = new ShaDE(dimension, MAXFES, tf, H, NP);
+        shade = new ShaDE(dimension, MAXFES, tf, H, NP, generator);
 
         shade.run();
         
