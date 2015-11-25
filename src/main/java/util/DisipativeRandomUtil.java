@@ -1,7 +1,7 @@
 package util;
 
 import java.util.Random;
-import model.chaos.Disipative;
+import model.chaos.Dissipative;
 import org.apache.commons.math3.distribution.CauchyDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
@@ -11,7 +11,7 @@ import org.apache.commons.math3.distribution.NormalDistribution;
  */
 public class DisipativeRandomUtil {
 
-    private static Disipative chaos = new Disipative();
+    private static Dissipative chaos = new Dissipative();
     private static Random rnd = new Random();
 
     /*

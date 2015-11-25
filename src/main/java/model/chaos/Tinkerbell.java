@@ -1,18 +1,27 @@
 package model.chaos;
 
+import java.util.Random;
+
 /**
  *
  * @author adam
  */
-public final class Lozi extends Chaos {
+public final class Tinkerbell extends Chaos {
 
     private double A;
     private double B;
+    private double C;
+    private double D;
 
-    public Lozi(){
+    public Tinkerbell(){
 
-        A = 1.7;
-        B = 0.5;
+        A = 0.9;
+        B = -0.6;
+        C = 2;
+        D = 0.5;
+        Random rnd = new Random();
+        super.xRndStart = -((rnd.nextDouble() * 0.09) + 0.01);
+        super.yRndStart = rnd.nextDouble() * 0.1;
         super.generateChaoticData();
     }
 
@@ -28,9 +37,9 @@ public final class Lozi extends Chaos {
     protected Double[] getNextParticle(double x, double y){
 
         double xn,yn;
-        
-        yn = x;
-        xn = 1 - this.A*Math.abs(x) + this.B * y;
+
+        xn = Math.pow(x,2) - Math.pow(y,2) + A*x + B*y;
+        yn = 2*x*y + C*x + D*y;
         
         return new Double[]{xn, yn};
         
@@ -41,7 +50,7 @@ public final class Lozi extends Chaos {
      */
     public static void main(String[] args) {
         
-        Lozi dch = new Lozi();
+        Tinkerbell dch = new Tinkerbell();
         
         double rnd;
         double sum = 0;

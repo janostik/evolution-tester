@@ -1,18 +1,23 @@
 package model.chaos;
 
+import java.util.Random;
+
 /**
  *
  * @author adam
  */
-public final class Lozi extends Chaos {
+public final class Burgers extends Chaos {
 
     private double A;
     private double B;
 
-    public Lozi(){
+    public Burgers(){
 
-        A = 1.7;
-        B = 0.5;
+        A = 0.75;
+        B = 1.75;
+        Random rnd = new Random();
+        super.xRndStart = -((rnd.nextDouble() * 0.09) + 0.01);
+        super.yRndStart = (rnd.nextDouble() * 0.09) + 0.01;
         super.generateChaoticData();
     }
 
@@ -28,9 +33,9 @@ public final class Lozi extends Chaos {
     protected Double[] getNextParticle(double x, double y){
 
         double xn,yn;
-        
-        yn = x;
-        xn = 1 - this.A*Math.abs(x) + this.B * y;
+
+        xn = A*x - Math.pow(y,2);
+        yn = B*y + x*y;
         
         return new Double[]{xn, yn};
         
@@ -41,7 +46,7 @@ public final class Lozi extends Chaos {
      */
     public static void main(String[] args) {
         
-        Lozi dch = new Lozi();
+        Burgers dch = new Burgers();
         
         double rnd;
         double sum = 0;

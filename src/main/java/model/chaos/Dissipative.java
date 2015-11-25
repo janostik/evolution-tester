@@ -4,18 +4,18 @@ package model.chaos;
  *
  * @author adam
  */
-public final class Lozi extends Chaos {
+public class Dissipative extends Chaos {
 
-    private double A;
     private double B;
+    private double k;
 
-    public Lozi(){
+    public Dissipative(){
 
-        A = 1.7;
-        B = 0.5;
+        B = 0.6;
+        k = 8.8;
         super.generateChaoticData();
     }
-
+    
     /**
      * 
      * OVERRIDE THIS METHOD FOR DIFFERENT TYPES OF CHAOS.
@@ -29,8 +29,14 @@ public final class Lozi extends Chaos {
 
         double xn,yn;
         
-        yn = x;
-        xn = 1 - this.A*Math.abs(x) + this.B * y;
+        yn = (B * y + k * Math.sin(x)) % (2*Math.PI);
+        if(yn < 0){
+            yn += (2*Math.PI);
+        }
+        xn = (x + yn) % (2*Math.PI);
+        if(xn < 0){
+            xn += (2*Math.PI);
+        }
         
         return new Double[]{xn, yn};
         
@@ -41,7 +47,7 @@ public final class Lozi extends Chaos {
      */
     public static void main(String[] args) {
         
-        Lozi dch = new Lozi();
+        Dissipative dch = new Dissipative();
         
         double rnd;
         double sum = 0;
@@ -53,7 +59,7 @@ public final class Lozi extends Chaos {
         }
         
         System.out.println("=====================");
-        System.out.println(sum/5000);
+        System.out.println(sum/10);
 
         
     }

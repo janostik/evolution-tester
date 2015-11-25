@@ -1,18 +1,22 @@
 package model.chaos;
 
+import java.util.Random;
+
 /**
  *
  * @author adam
  */
-public final class Lozi extends Chaos {
+public final class DelayedLogistic extends Chaos {
 
     private double A;
-    private double B;
 
-    public Lozi(){
+    public DelayedLogistic(){
 
-        A = 1.7;
-        B = 0.5;
+        A = 2.27;
+        Random rnd = new Random();
+        double start = (rnd.nextDouble() * 0.1) + 0.8;
+        super.xRndStart = start;
+        super.yRndStart = start;
         super.generateChaoticData();
     }
 
@@ -28,9 +32,9 @@ public final class Lozi extends Chaos {
     protected Double[] getNextParticle(double x, double y){
 
         double xn,yn;
-        
+
+        xn = A*x*(1-y);
         yn = x;
-        xn = 1 - this.A*Math.abs(x) + this.B * y;
         
         return new Double[]{xn, yn};
         
@@ -41,7 +45,7 @@ public final class Lozi extends Chaos {
      */
     public static void main(String[] args) {
         
-        Lozi dch = new Lozi();
+        DelayedLogistic dch = new DelayedLogistic();
         
         double rnd;
         double sum = 0;
