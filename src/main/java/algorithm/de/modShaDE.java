@@ -122,7 +122,7 @@ public class modShaDE implements Algorithm {
         List<Double> wS;
         double[] meanS_F1, meanS_F2, meanS_F, meanS_CR;
         int k = 0;
-        double pmin = 2 / this.NP;
+        double pmin = 2 / (double) this.NP;
 
         while (true) {
 

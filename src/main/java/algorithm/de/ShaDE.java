@@ -21,23 +21,23 @@ import util.OtherDistributionsUtil;
  * @author adam on 16/11/2015 update 25/11/2015
  */
 public class ShaDE implements Algorithm {
-
-    private int D;
-    private int G;
-    private int NP;
-    private List<Individual> Aext;
-    private List<Individual> P;
-    private int FES;
-    private int MAXFES;
-    private TestFunction f;
-    private Individual best;
-    private List<Individual> bestHistory;
-    private double[] M_F;
-    private double[] M_CR;
-    private List<Double> S_F;
-    private List<Double> S_CR;
-    private int H;
-    private util.random.Random rndGenerator;
+    
+    int D;
+    int G;
+    int NP;
+    List<Individual> Aext;
+    List<Individual> P;
+    int FES;
+    int MAXFES;
+    TestFunction f;
+    Individual best;
+    List<Individual> bestHistory;
+    double[] M_F;
+    double[] M_CR;
+    List<Double> S_F;
+    List<Double> S_CR;
+    int H;
+    util.random.Random rndGenerator;
     int id;
 
     public ShaDE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
@@ -86,7 +86,7 @@ public class ShaDE implements Algorithm {
         List<Double> wS;
         double wSsum, meanS_F1, meanS_F2, meanS_CR;
         int k = 0;
-        double pmin = 2 / this.NP;
+        double pmin = 2 / (double) this.NP;
         List<double[]> parents;
 
         while (true) {
@@ -355,7 +355,7 @@ public class ShaDE implements Algorithm {
      * @param size
      * @return
      */
-    private List<Individual> resizeAext(List<Individual> list, int size) {
+    protected List<Individual> resizeAext(List<Individual> list, int size) {
 
         List<Individual> toRet = new ArrayList<>();
         toRet.addAll(list);
@@ -378,7 +378,7 @@ public class ShaDE implements Algorithm {
      * @param size
      * @return
      */
-    private List<Individual> resize(List<Individual> list, int size) {
+    protected List<Individual> resize(List<Individual> list, int size) {
 
         List<Individual> toRet = new ArrayList<>();
         List<Individual> tmp = new ArrayList<>();
@@ -400,7 +400,7 @@ public class ShaDE implements Algorithm {
      * @param list
      * @return
      */
-    private int getIndexOfBestFromList(List<Individual> list) {
+    protected int getIndexOfBestFromList(List<Individual> list) {
 
         Individual b = null;
         int i = 0;
@@ -427,7 +427,7 @@ public class ShaDE implements Algorithm {
      * @param list
      * @return
      */
-    private Individual getBestFromList(List<Individual> list) {
+    protected Individual getBestFromList(List<Individual> list) {
 
         Individual b = null;
 
@@ -470,7 +470,7 @@ public class ShaDE implements Algorithm {
     /**
      *
      */
-    private void writeHistory() {
+    protected void writeHistory() {
         this.bestHistory.add(this.best);
     }
 
@@ -479,7 +479,7 @@ public class ShaDE implements Algorithm {
      * @param ind
      * @return
      */
-    private boolean isBest(Individual ind) {
+    protected boolean isBest(Individual ind) {
 
         if (this.best == null || ind.fitness < this.best.fitness) {
             this.best = ind;
@@ -625,7 +625,7 @@ public class ShaDE implements Algorithm {
         int dimension = 10;
         int NP = 100;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 12;
+        int funcNumber = 9;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 1;
         util.random.Random generator = new util.random.UniformRandom();
