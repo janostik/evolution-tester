@@ -1,8 +1,11 @@
 
+import algorithm.Algorithm;
 import algorithm.de.AShaDE;
 import algorithm.de.CShaDE;
 import algorithm.de.ShaDE;
 import algorithm.de.modShaDE;
+import algorithm.pso.NetPso;
+import algorithm.pso.Pso;
 import java.io.PrintWriter;
 import java.util.Locale;
 import java.util.stream.DoubleStream;
@@ -246,9 +249,9 @@ public class ShadeMain {
         PrintWriter writer, sol_writer,res_writer;
         double best,worst,median,mean,std;
 
-//        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
-//        
-//        res_writer.print("{");
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        
+        res_writer.print("{");
         
         for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
         
@@ -260,23 +263,23 @@ public class ShadeMain {
                 shade = new AShaDE(dimension, MAXFES, tf, H, NP, generator);
                 shade.run();
 
-//                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
-//
-//                writer.print("{");
-//
-//                for (int i = 0; i < shade.getBestHistory().size(); i++) {
-//
-//                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
-//
-//                    if (i != shade.getBestHistory().size() - 1) {
-//                        writer.print(",");
-//                    }
-//
-//                }
-//
-//                writer.print("}");
-//
-//                writer.close();
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+
+                    if (i != shade.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
 
                 bestArray[k] = shade.getBest().fitness - tf.optimum();
 
@@ -288,23 +291,23 @@ public class ShadeMain {
             mean = new Mean().evaluate(bestArray);
             std = new StandardDeviation().evaluate(bestArray);
 
-//            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
-//            
-//            sol_writer.print("{");
-//            sol_writer.print(funcNumber);
-//            sol_writer.print(",");
-//            sol_writer.print(String.format(Locale.US, "%.10f", best));
-//            sol_writer.print(",");
-//            sol_writer.print(String.format(Locale.US, "%.10f", worst));
-//            sol_writer.print(",");
-//            sol_writer.print(String.format(Locale.US, "%.10f", median));
-//            sol_writer.print(",");
-//            sol_writer.print(String.format(Locale.US, "%.10f", mean));
-//            sol_writer.print(",");
-//            sol_writer.print(String.format(Locale.US, "%.10f", std));
-//            sol_writer.print("}");
-//            
-//            sol_writer.close();
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
 
             System.out.println(tf.name());
             System.out.println("=================================");
@@ -315,29 +318,29 @@ public class ShadeMain {
             System.out.println("Std: " + std);
             System.out.println("=================================");
             
-//            res_writer.print("{");
-//            res_writer.print(funcNumber);
-//            res_writer.print(",");
-//            res_writer.print(String.format(Locale.US, "%.10f", best));
-//            res_writer.print(",");
-//            res_writer.print(String.format(Locale.US, "%.10f", worst));
-//            res_writer.print(",");
-//            res_writer.print(String.format(Locale.US, "%.10f", median));
-//            res_writer.print(",");
-//            res_writer.print(String.format(Locale.US, "%.10f", mean));
-//            res_writer.print(",");
-//            res_writer.print(String.format(Locale.US, "%.10f", std));
-//            res_writer.print("}");
-//        
-//            if(funcNumber < maxFuncNum){
-//               res_writer.print(",");
-//            }
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
             
         }
 
-//        res_writer.print("}");
-//        
-//        res_writer.close();
+        res_writer.print("}");
+        
+        res_writer.close();
         
     }
     
@@ -761,9 +764,9 @@ public class ShadeMain {
             
         }
 
-//        res_writer.print("}");
-//        
-//        res_writer.close();
+        res_writer.print("}");
+        
+        res_writer.close();
         
     }
     
@@ -815,11 +818,215 @@ public class ShadeMain {
 
     }
     
+        public static void psoMainCEC2015(String path) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        Algorithm algorithm;
+
+        double[] bestArray;
+        PrintWriter sol_writer,res_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        
+        res_writer.print("{");
+        
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            for (int k = 0; k < runs; k++) {
+
+                algorithm = new Pso(swarmSize, MAXFES, dimension, c1, c2, maxVelocity, new Cec2015(dimension, funcNumber));
+
+                algorithm.run();
+
+                bestArray[k] = algorithm.getBest().fitness - tf.optimum();
+
+            }
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+            System.out.println(tf.name());
+            System.out.println("=================================");
+            System.out.println("Best: " + best);
+            System.out.println("Worst: " + worst);
+            System.out.println("Median: " + median);
+            System.out.println("Mean: " + mean);
+            System.out.println("Std: " + std);
+            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        
+    }
+
+    public static void netPsoMainCEC2015(String path) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        Algorithm algorithm;
+
+        double[] bestArray;
+        PrintWriter sol_writer,res_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        
+        res_writer.print("{");
+        
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            for (int k = 0; k < runs; k++) {
+
+                algorithm = new NetPso(swarmSize, MAXFES, dimension, c1, c2, maxVelocity, new Cec2015(dimension, funcNumber), degreeLimit, repulsiveRoundsLimit, maxRepulsionIteration);
+
+                algorithm.run();
+
+                bestArray[k] = algorithm.getBest().fitness - tf.optimum();
+
+            }
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+            System.out.println(tf.name());
+            System.out.println("=================================");
+            System.out.println("Best: " + best);
+            System.out.println("Worst: " + worst);
+            System.out.println("Median: " + median);
+            System.out.println("Mean: " + mean);
+            System.out.println("Std: " + std);
+            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        
+    }
+        
+    /**
+     * Overall
+     */
     public static final int dimension = 10;
-    public static final int NP = 100;
     public static final int MAXFES = 10000 * dimension;
-    public static final int runs = 2;
-    public static final String home_dir = "/Users/adam/";
+    public static final int runs = 51;
+    public static final String home_dir = "C:\\Users\\Uživatel\\Documents/";
+    
+    /**
+     * PSO
+     */
+    private static final int swarmSize = 40;
+    private static final double c1 = 2;
+    private static final double c2 = 2;
+    private static final double maxVelocity = 0.2;
+    
+    /**
+     * NetPSO
+     */
+    private static final int degreeLimit = 40;//20
+    private static final int repulsiveRoundsLimit = 20;//20
+    private static final int maxRepulsionIteration = 2400;
+    
+    /**
+     * DE
+     */
+    public static final int NP = 10;
+    
+    
     
     /**
      * @param args the command line arguments
@@ -829,11 +1036,12 @@ public class ShadeMain {
         
         util.random.Random chGenerator;
         String chaosName; 
-        String path = "CEC2015-AShade-plot/";
-        int H = 1;
+        String path = "CEC2015-PSO/";
         
-        agingShadePlotDataGenerationCEC2015(path, H);
-        
+        psoMainCEC2015(path);
+//        int H = NP;
+//        agingShadeMainCEC2015(path, H);
+//        
 //        chGenerator = new util.random.BurgersRandom();
 //        chaosName = "Burgers/";
 //        chaosShadeMainCEC2015(path+chaosName, H, chGenerator);

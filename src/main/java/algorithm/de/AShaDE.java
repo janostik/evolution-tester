@@ -300,7 +300,7 @@ public class AShaDE extends ShaDE {
      */
     protected boolean stdDecrease(){
         
-        int start = 20, end = 10;
+        int start = 20, end = 5;
         
         int stdMinSize = (int) (start - (FES/(double)MAXFES)*(start-end));
         
