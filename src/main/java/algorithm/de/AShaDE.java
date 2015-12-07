@@ -250,13 +250,13 @@ public class AShaDE extends ShaDE {
                 }
             }
             
-            if(stdDecrease()){
-//                newPop = replaceOldWithNew(newPop, killCount);
-                newPop = replaceBadWithNew(newPop, killCount);
-                for (AgingIndividual newPop1 : newPop) {
-                    newPop1.age = 0;
-                }
-            }
+//            if(stdDecrease()){
+////                newPop = replaceOldWithNew(newPop, killCount);
+//                newPop = replaceBadWithNew(newPop, killCount);
+//                for (AgingIndividual newPop1 : newPop) {
+//                    newPop1.age = 0;
+//                }
+//            }
             
 //            if(G == ageAdaptationStart){
 //                for (AgingIndividual newPop1 : newPop) {

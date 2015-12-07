@@ -31,7 +31,7 @@ public class CShaDE extends ShaDE {
      */
     @Override
     protected double getRandomCR(){
-        return chaosGenerator.nextDouble();
+        return rndGenerator.nextDouble();
     }
     
     /**

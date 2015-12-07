@@ -1024,7 +1024,7 @@ public class ShadeMain {
     /**
      * DE
      */
-    public static final int NP = 10;
+    public static final int NP = 100;
     
     
     
@@ -1036,31 +1036,33 @@ public class ShadeMain {
         
         util.random.Random chGenerator;
         String chaosName; 
-        String path = "CEC2015-PSO/";
+        String path = "CEC2015-ShadePSonly/";
         
-        psoMainCEC2015(path);
+//        netPsoMainCEC2015(path);
+        int H = NP;
+//        agingShadePlotDataGenerationCEC2015(path, H);
 //        int H = NP;
 //        agingShadeMainCEC2015(path, H);
-//        
-//        chGenerator = new util.random.BurgersRandom();
-//        chaosName = "Burgers/";
-//        chaosShadeMainCEC2015(path+chaosName, H, chGenerator);
-//        
-//        chGenerator = new util.random.DelayedLogisticRandom();
-//        chaosName = "DelayedLogistic/";
-//        chaosShadeMainCEC2015(path+chaosName, H, chGenerator);
-//        
-//        chGenerator = new util.random.DissipativeRandom();
-//        chaosName = "Dissipative/";
-//        chaosShadeMainCEC2015(path+chaosName, H, chGenerator);
-//        
-//        chGenerator = new util.random.LoziRandom();
-//        chaosName = "Lozi/";
-//        chaosShadeMainCEC2015(path+chaosName, H, chGenerator);
-//        
-//        chGenerator = new util.random.TinkerbellRandom();
-//        chaosName = "Tinkerbell/";
-//        chaosShadeMainCEC2015(path+chaosName, H, chGenerator);
+        
+        chGenerator = new util.random.BurgersRandom();
+        chaosName = "Burgers/";
+        chaosShadeMainCEC2015(path+chaosName, H, chGenerator);
+        
+        chGenerator = new util.random.DelayedLogisticRandom();
+        chaosName = "DelayedLogistic/";
+        chaosShadeMainCEC2015(path+chaosName, H, chGenerator);
+        
+        chGenerator = new util.random.DissipativeRandom();
+        chaosName = "Dissipative/";
+        chaosShadeMainCEC2015(path+chaosName, H, chGenerator);
+        
+        chGenerator = new util.random.LoziRandom();
+        chaosName = "Lozi/";
+        chaosShadeMainCEC2015(path+chaosName, H, chGenerator);
+        
+        chGenerator = new util.random.TinkerbellRandom();
+        chaosName = "Tinkerbell/";
+        chaosShadeMainCEC2015(path+chaosName, H, chGenerator);
         
     }
     
