@@ -625,7 +625,7 @@ public class ShaDE implements Algorithm {
         int dimension = 10;
         int NP = 100;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 9;
+        int funcNumber = 14;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 1;
         util.random.Random generator = new util.random.UniformRandom();
