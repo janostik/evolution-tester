@@ -273,7 +273,7 @@ public class DErand1bin implements Algorithm {
      */
     protected boolean isBest(Individual ind) {
 
-        if (best == null || best.fitness < ind.fitness) {
+        if (best == null || ind.fitness < best.fitness) {
             best = ind;
             return true;
         }
@@ -400,7 +400,7 @@ public class DErand1bin implements Algorithm {
         int dimension = 10;
         int NP = 100;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 4;
+        int funcNumber = 14;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         util.random.Random generator = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8;

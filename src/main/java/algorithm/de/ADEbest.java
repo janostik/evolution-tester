@@ -439,7 +439,7 @@ public class ADEbest extends DEbest{
         int dimension = 10;
         int NP = 100;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 1;
+        int funcNumber = 11;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         util.random.Random generator = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8;
