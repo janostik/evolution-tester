@@ -1362,7 +1362,6 @@ public class ShadeMain {
         
         util.random.Random chGenerator;
         String chaosName; 
-        String path = "CEC2015-MCshadePSub/";
         
         String path = "CEC2015-DErand1bin/";
         classicDErand1binMainCEC2015(path);
