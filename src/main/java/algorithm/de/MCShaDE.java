@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
+import model.chaos.RankedChaosGenerator;
 import model.tf.Cec2015;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import util.OtherDistributionsUtil;
-import util.random.Random;
 
 /**
  *
@@ -18,44 +18,13 @@ import util.random.Random;
  */
 public class MCShaDE extends ShaDE {
 
-    List<ChaosGenerator> chaosGenerator;
+    List<RankedChaosGenerator> chaosGenerator;
     int chosenChaos;
 
-    /**
-     * Chaos generator with rank.
-     */
-    public static class ChaosGenerator {
-
-        util.random.Random chaos;
-        double rank;
-
-        public ChaosGenerator() {
-        }
-
-        public ChaosGenerator(util.random.Random chaos, double rank) {
-            this.chaos = chaos;
-            this.rank = rank;
-        }
-
-        public static List<ChaosGenerator> getAllChaosGenerators() {
-
-            List<ChaosGenerator> list = new ArrayList<>();
-
-            list.add(new ChaosGenerator(new util.random.BurgersRandom(), 0.2));
-            list.add(new ChaosGenerator(new util.random.DelayedLogisticRandom(), 0.2));
-            list.add(new ChaosGenerator(new util.random.DissipativeRandom(), 0.2));
-            list.add(new ChaosGenerator(new util.random.LoziRandom(), 0.2));
-            list.add(new ChaosGenerator(new util.random.TinkerbellRandom(), 0.2));
-
-            return list;
-
-        }
-
-    }
 
     public MCShaDE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
         super(D, MAXFES, f, H, NP, rndGenerator);
-        chaosGenerator = ChaosGenerator.getAllChaosGenerators();
+        chaosGenerator = RankedChaosGenerator.getAllChaosGenerators();
     }
 
     @Override
@@ -259,7 +228,7 @@ public class MCShaDE extends ShaDE {
             difference = rankSum / 100.0;
             chaosGenerator.get(chosenChaos).rank += difference;
 
-            for (ChaosGenerator chaos : chaosGenerator) {
+            for (RankedChaosGenerator chaos : chaosGenerator) {
                 chaos.rank = chaos.rank / (rankSum + difference);
             }
         }
