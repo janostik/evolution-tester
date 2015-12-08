@@ -251,16 +251,19 @@ public class MCShaDE extends ShaDE {
      */
     protected void updateRankings() {
 
-        double rankSum = 0, difference;
+        if(chaosGenerator.get(chosenChaos).rank < 0.6){
+            double rankSum = 0, difference;
 
-        rankSum = chaosGenerator.stream().map((chaos) -> chaos.rank).reduce(rankSum, (accumulator, _item) -> accumulator + _item);
+            rankSum = chaosGenerator.stream().map((chaos) -> chaos.rank).reduce(rankSum, (accumulator, _item) -> accumulator + _item);
 
-        difference = rankSum / 100.0;
-        chaosGenerator.get(chosenChaos).rank += difference;
+            difference = rankSum / 100.0;
+            chaosGenerator.get(chosenChaos).rank += difference;
 
-        for (ChaosGenerator chaos : chaosGenerator) {
-            chaos.rank = chaos.rank / (rankSum + difference);
+            for (ChaosGenerator chaos : chaosGenerator) {
+                chaos.rank = chaos.rank / (rankSum + difference);
+            }
         }
+
 
     }
 
@@ -336,7 +339,7 @@ public class MCShaDE extends ShaDE {
         int dimension = 10;
         int NP = 100;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 3;
+        int funcNumber = 11;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 1;
         util.random.Random generator = new util.random.UniformRandom();
