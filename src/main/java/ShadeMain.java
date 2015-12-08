@@ -1144,7 +1144,7 @@ public class ShadeMain {
         
         util.random.Random chGenerator;
         String chaosName; 
-        String path = "CEC2015-MCshadePS/";
+        String path = "CEC2015-MCshadePSub/";
         
 //        netPsoMainCEC2015(path);
         int H = NP;
