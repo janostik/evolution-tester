@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.tf.Cec2015;
+import model.ap.AP;
+import model.tf.APSinTF;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -139,6 +140,12 @@ public class DErand1bin implements Algorithm {
 
     }
 
+    protected void constrain(Individual individual){
+        
+        tf.constrain(individual);
+        
+    }
+    
     /**
      *
      * @param parentArray
@@ -248,6 +255,7 @@ public class DErand1bin implements Algorithm {
         ind.id = String.valueOf(id);
         id++;
         ind.vector = vector;
+        constrain(ind);
         ind.fitness = tf.fitness(vector);
         FES++;
         isBest(ind);
@@ -398,17 +406,20 @@ public class DErand1bin implements Algorithm {
     public static void main(String[] args) throws Exception {
 
         int dimension = 10;
-        int NP = 100;
-        int MAXFES = 10000 * dimension;
+        int NP = 10;
+        int MAXFES = 1000 * dimension;
         int funcNumber = 14;
-        TestFunction tf = new Cec2015(dimension, funcNumber);
+//        TestFunction tf = new Cec2015(dimension, funcNumber);
+        APSinTF tf = new APSinTF();
         util.random.Random generator = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8;
+        AP ap = new AP();
 
         Algorithm de;
 
-        int runs = 10;
+        int runs = 1;
         double[] bestArray = new double[runs];
+        Integer[] discrete;
 
         for (int k = 0; k < runs; k++) {
 
@@ -418,6 +429,16 @@ public class DErand1bin implements Algorithm {
 
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());
+            
+            /**
+             * Final AP equation.
+             */
+            discrete = tf.discretizeVector(de.getBest().vector);
+            
+            System.out.println("=================================");
+            System.out.println("Equation: \n" + ap.getEquation(discrete));
+            System.out.println("=================================");
+            
         }
 
         System.out.println("=================================");
@@ -427,6 +448,8 @@ public class DErand1bin implements Algorithm {
         System.out.println("Median: " + new Median().evaluate(bestArray));
         System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
         System.out.println("=================================");
+        
+        
 
     }
 }
