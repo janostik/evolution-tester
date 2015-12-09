@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.ap.AP;
-import model.tf.APSinTF;
+import model.tf.APAckleyTF;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -407,10 +407,10 @@ public class DErand1bin implements Algorithm {
 
         int dimension = 10;
         int NP = 10;
-        int MAXFES = 1000 * dimension;
+        int MAXFES = 10000 * dimension;
         int funcNumber = 14;
 //        TestFunction tf = new Cec2015(dimension, funcNumber);
-        APSinTF tf = new APSinTF();
+        APAckleyTF tf = new APAckleyTF();
         util.random.Random generator = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8;
         AP ap = new AP();

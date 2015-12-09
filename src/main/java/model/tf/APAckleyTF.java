@@ -8,7 +8,7 @@ import util.RandomUtil;
  *
  * @author adam
  */
-public class APSinTF implements TestFunction {
+public class APAckleyTF implements TestFunction {
 
     public AP ap = new AP();
 
@@ -22,7 +22,7 @@ public class APSinTF implements TestFunction {
 
         Integer[] discrete = this.discretizeVector(vector);
 
-        double min = 0, max = 10, x;
+        double min = -32, max = 32, x;
         double fitness = 0;
 
         for (int i = 0; i < 101; i++) {
@@ -49,7 +49,10 @@ public class APSinTF implements TestFunction {
 
     private double squaredDistance(double x, Integer[] vector) {
 
-        return Math.pow(ap.dsh(vector, x) - Math.sin(x), 2);
+        Ackley ack = new Ackley();
+        double[] array = new double[]{x};
+        
+        return Math.pow(ap.dsh(vector, x) - ack.fitness(array), 2);
 
     }
 

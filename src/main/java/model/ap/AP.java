@@ -5,14 +5,21 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import model.ap.objects.AP_Const;
+import model.ap.objects.AP_Abs;
 import model.ap.objects.AP_Cos;
+import model.ap.objects.AP_Div;
+import model.ap.objects.AP_Exp;
+import model.ap.objects.AP_MinusOne;
+import model.ap.objects.AP_Mod;
+import model.ap.objects.AP_Multiply;
+import model.ap.objects.AP_One;
 import model.ap.objects.AP_Plus;
 import model.ap.objects.AP_Sin;
 import model.ap.objects.AP_Sub;
+import model.ap.objects.AP_Tan;
+import model.ap.objects.AP_Zero;
 import model.ap.objects.AP_object;
 import model.ap.objects.AP_t;
-import util.RandomUtil;
 
 /**
  *
@@ -31,34 +38,60 @@ public class AP {
         /**
          * There should be initialization of all GFS sets
          */
-        this.GFSall = new ArrayList<>();
-        this.GFSall.add(new AP_Plus());
-        this.GFSall.add(new AP_Sub());
-        this.GFSall.add(new AP_Sin());
-        this.GFSall.add(new AP_Cos());
-        this.GFSall.add(new AP_t());
-        this.GFSall.add(new AP_Const());
-
-        this.GFS_2 = new ArrayList<>();
-        this.GFS_2.add(new AP_Plus());
-        this.GFS_2.add(new AP_Sub());
-        this.GFS_2.add(new AP_Sin());
-        this.GFS_2.add(new AP_Cos());
-        this.GFS_2.add(new AP_t());
-        this.GFS_2.add(new AP_Const());
-
-        this.GFS_1 = new ArrayList<>();
-        this.GFS_1.add(new AP_Sin());
-        this.GFS_1.add(new AP_Cos());
-        this.GFS_1.add(new AP_t());
-        this.GFS_1.add(new AP_Const());
-
-        this.GFS_0 = new ArrayList<>();
-        this.GFS_0.add(new AP_t());
-        this.GFS_0.add(new AP_Const());
+        this.createGFS();
 
     }
 
+    /**
+     * Creates GFSs
+     */
+    private void createGFS(){
+        
+        this.GFSall = new ArrayList<>();
+        this.GFS_2 = new ArrayList<>();
+        this.GFS_1 = new ArrayList<>();
+        this.GFS_0 = new ArrayList<>();
+        
+        this.GFSall.add(new AP_Plus());
+        this.GFSall.add(new AP_Sub());
+        this.GFSall.add(new AP_Multiply());
+        this.GFSall.add(new AP_Div());
+        this.GFSall.add(new AP_Mod());
+        
+        this.GFSall.add(new AP_Sin());
+        this.GFSall.add(new AP_Cos());
+        this.GFSall.add(new AP_Tan());
+        this.GFSall.add(new AP_Abs());
+        this.GFSall.add(new AP_Exp());
+
+        this.GFSall.add(new AP_t());
+        this.GFSall.add(new AP_One());
+        this.GFSall.add(new AP_Zero());
+        this.GFSall.add(new AP_MinusOne());
+ 
+        for(AP_object ob : this.GFSall){
+            
+            switch(ob.argCount()){
+                case 2:
+                    this.GFS_2.add(ob);
+                    break;
+                case 1:
+                    this.GFS_2.add(ob);
+                    this.GFS_1.add(ob);
+                    break;
+                case 0:
+                    this.GFS_2.add(ob);
+                    this.GFS_1.add(ob);
+                    this.GFS_0.add(ob);
+                    break;
+                default:
+                    break;
+            }
+            
+        }
+        
+    }
+    
     /**
      * Discrete Set Handling method
      *
@@ -225,12 +258,12 @@ public class AP {
     public static void main(String[] args) {
 
         AP ap = new AP();
-        Integer[] vector = new Integer[4];
+        Integer[] vector = new Integer[]{0,0,1,2};
         double x = 1;
 
-        for (int i = 0; i < vector.length; i++) {
-            vector[i] = RandomUtil.nextInt(6);
-        }
+//        for (int i = 0; i < vector.length; i++) {
+//            vector[i] = RandomUtil.nextInt(6);
+//        }
 
         Integer[] gfscode = ap.getGFScode(vector);
 
