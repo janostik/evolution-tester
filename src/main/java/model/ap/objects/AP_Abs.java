@@ -36,5 +36,10 @@ public class AP_Abs implements AP_object{
     public double compute(List<Double> array) {
         return Math.abs(array.get(0));
     }
+
+    @Override
+    public String createEq(List<String> array) {
+        return "Abs[" + array.get(0) + "]";
+    }
     
 }

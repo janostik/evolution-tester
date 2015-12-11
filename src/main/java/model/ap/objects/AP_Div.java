@@ -22,9 +22,16 @@ public class AP_Div implements AP_object{
     @Override
     public double compute(){
         if(b == 0){
-            return Double.MAX_VALUE;
+            return Double.NaN;
         }
-        return a/b;
+        
+        double res = a / b;
+        
+//        if(Double.isNaN(res) || Double.isInfinite(res)) {
+//            return 0;
+//        }
+        
+        return res;
     }
 
     @Override
@@ -40,9 +47,25 @@ public class AP_Div implements AP_object{
     @Override
     public double compute(List<Double> array) {
         if(array.get(0) == 0){
-            return Double.MAX_VALUE;
+            return Double.NaN;
         }
-        return array.get(1)/array.get(0);
+        
+        double res = array.get(1) / array.get(0);
+        
+//        if(Double.isNaN(res) || Double.isInfinite(res)) {
+//            return 0;
+//        }
+        
+        return res;
+    }
+    
+    @Override
+    public String createEq(List<String> array) {
+//        if(Double.parseDouble(array.get(1)) == 0){
+//            return "0";
+//        }
+        
+        return "Divide[" + array.get(1) + "," + array.get(0) + "]";
     }
     
 }

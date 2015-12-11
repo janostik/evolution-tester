@@ -6,44 +6,41 @@ import java.util.List;
  *
  * @author adam
  */
-public class AP_Sub implements AP_object{
+public class AP_Sqrt implements AP_object{
     
     public double a;
-    public double b;
 
-    public AP_Sub() {
+    public AP_Sqrt() {
     }
     
-    public AP_Sub(double a, double b) {
+    public AP_Sqrt(double a) {
         this.a = a;
-        this.b = b;
     }
     
     @Override
     public double compute(){
-        return a-b;
+        return Math.sqrt(Math.abs(a));
     }
 
     @Override
     public int argCount() {
-        return 2;
+        return 1;
     }
     
     @Override
     public String toString(){
-        return "Sub";
+        return "Sqrt";
     }
-
 
     @Override
     public double compute(List<Double> array) {
-        return array.get(1)-array.get(0);
+        return Math.sqrt(Math.abs(array.get(0)));
     }
     
     @Override
     public String createEq(List<String> array) {
-
-        return "Subtract[" + array.get(1) + "," + array.get(0) + "]";
+//        double d = Double.parseDouble(array.get(0));
+        return "Sqrt[Abs[" + array.get(0) + "]]";
     }
     
 }

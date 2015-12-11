@@ -39,4 +39,10 @@ public class AP_Multiply implements AP_object{
         return array.get(1)*array.get(0);
     }
     
+    @Override
+    public String createEq(List<String> array) {
+
+        return "Times[" + array.get(1) + "," + array.get(0) + "]";
+    }
+    
 }

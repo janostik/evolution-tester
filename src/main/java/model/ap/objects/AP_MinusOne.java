@@ -37,4 +37,9 @@ public class AP_MinusOne implements AP_object {
         return -1;
     }
     
+    @Override
+    public String createEq(List<String> array) {
+        return Double.toString(-1);
+    }
+    
 }

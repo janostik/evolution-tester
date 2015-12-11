@@ -1,16 +1,14 @@
-package model.tf;
+package model.tf.ap;
 
 import model.Individual;
-import model.ap.AP;
+import model.tf.Ackley;
 import util.RandomUtil;
 
 /**
  *
  * @author adam
  */
-public class APAckleyTF implements TestFunction {
-
-    public AP ap = new AP();
+public class APAckleyTF extends APtf {
 
     @Override
     public double fitness(Individual individual) {
@@ -93,7 +91,7 @@ public class APAckleyTF implements TestFunction {
 
     @Override
     public double max(int dim) {
-        return 20;
+        return this.ap.getGFSsize();
     }
 
     @Override

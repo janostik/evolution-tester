@@ -37,4 +37,9 @@ public class AP_Zero implements AP_object {
         return 0;
     }
     
+    @Override
+    public String createEq(List<String> array) {
+        return Double.toString(0);
+    }
+    
 }

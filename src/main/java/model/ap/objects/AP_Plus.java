@@ -39,4 +39,10 @@ public class AP_Plus implements AP_object{
         return array.get(1)+array.get(0);
     }
     
+    @Override
+    public String createEq(List<String> array) {
+
+        return "Plus[" + array.get(1) + "," + array.get(0) + "]";
+    }
+    
 }

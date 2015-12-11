@@ -37,4 +37,9 @@ public class AP_Exp implements AP_object{
         return Math.exp(array.get(0));
     }
     
+    @Override
+    public String createEq(List<String> array) {
+        return "Exp[" + array.get(0) + "]";
+    }
+    
 }

@@ -1,25 +1,34 @@
 package model.ap;
 
+import static java.lang.Double.NaN;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import model.ap.objects.AP_Abs;
+import model.ap.objects.AP_Const;
 import model.ap.objects.AP_Cos;
+import model.ap.objects.AP_Cube;
 import model.ap.objects.AP_Div;
+import model.ap.objects.AP_Euler;
 import model.ap.objects.AP_Exp;
+import model.ap.objects.AP_Ln;
 import model.ap.objects.AP_MinusOne;
 import model.ap.objects.AP_Mod;
 import model.ap.objects.AP_Multiply;
 import model.ap.objects.AP_One;
+import model.ap.objects.AP_Pi;
 import model.ap.objects.AP_Plus;
+import model.ap.objects.AP_Quad;
 import model.ap.objects.AP_Sin;
+import model.ap.objects.AP_Sqrt;
 import model.ap.objects.AP_Sub;
 import model.ap.objects.AP_Tan;
 import model.ap.objects.AP_Zero;
+import model.ap.objects.AP_aTOb;
 import model.ap.objects.AP_object;
-import model.ap.objects.AP_t;
+import model.ap.objects.AP_x;
 
 /**
  *
@@ -32,6 +41,8 @@ public class AP {
     List<AP_object> GFS_1;
     List<AP_object> GFS_2;
     int D;
+    
+    public String equation;
 
     public AP() {
 
@@ -56,18 +67,26 @@ public class AP {
         this.GFSall.add(new AP_Sub());
         this.GFSall.add(new AP_Multiply());
         this.GFSall.add(new AP_Div());
-        this.GFSall.add(new AP_Mod());
+//        this.GFSall.add(new AP_Mod());
+//        this.GFSall.add(new AP_aTOb());
         
-        this.GFSall.add(new AP_Sin());
-        this.GFSall.add(new AP_Cos());
-        this.GFSall.add(new AP_Tan());
-        this.GFSall.add(new AP_Abs());
-        this.GFSall.add(new AP_Exp());
+//        this.GFSall.add(new AP_Sin());
+//        this.GFSall.add(new AP_Cos());
+//        this.GFSall.add(new AP_Tan());
+//        this.GFSall.add(new AP_Abs());
+//        this.GFSall.add(new AP_Exp());
+//        this.GFSall.add(new AP_Quad());
+//        this.GFSall.add(new AP_Sqrt());
+//        this.GFSall.add(new AP_Cube());
+//        this.GFSall.add(new AP_Ln());
 
-        this.GFSall.add(new AP_t());
+        this.GFSall.add(new AP_x());
         this.GFSall.add(new AP_One());
-        this.GFSall.add(new AP_Zero());
+//        this.GFSall.add(new AP_Zero());
         this.GFSall.add(new AP_MinusOne());
+//        this.GFSall.add(new AP_Const());
+//        this.GFSall.add(new AP_Pi());
+//        this.GFSall.add(new AP_Euler());
  
         for(AP_object ob : this.GFSall){
             
@@ -105,8 +124,12 @@ public class AP {
 
         Integer[] gfs_code = getGFScode(vector);
         Queue<Double> queue = new LinkedList<>();
+        Queue<String> strQueue = new LinkedList<>();
         AP_object cur_object;
         List<Double> array;
+        List<String> strArray;
+        StringBuilder eq = new StringBuilder("");
+        double tmp_result;
 
         for (int i = gfs_code.length - 1; i > -1; i--) {
 
@@ -129,33 +152,66 @@ public class AP {
             }
 
             array = new ArrayList<>();
+            strArray = new ArrayList<>();
 
             if (cur_object != null) {
 
                 switch (cur_object.argCount()) {
                     case 0:
                         array.add(x);
-                        queue.add(cur_object.compute(array));
+                        strArray.add("x");
+                        tmp_result = cur_object.compute(array);
+//                        if(tmp_result == 0 || tmp_result == NaN){
+//                            tmp_result = 1;
+//                        }
+                        queue.add(tmp_result);
+                        strQueue.add(cur_object.createEq(strArray));
                         break;
                     case 1:
                         array.add(queue.remove());
-                        queue.add(cur_object.compute(array));
+                        strArray.add(strQueue.remove());
+                        tmp_result = cur_object.compute(array);
+//                        if(tmp_result == 0 || tmp_result == NaN){
+//                            tmp_result = 1;
+//                        }
+                        queue.add(tmp_result);
+                        strQueue.add(cur_object.createEq(strArray));
                         break;
                     case 2:
                         array.add(queue.remove());
+                        strArray.add(strQueue.remove());
                         array.add(queue.remove());
-                        queue.add(cur_object.compute(array));
+                        strArray.add(strQueue.remove());
+                        tmp_result = cur_object.compute(array);
+//                        if(tmp_result == 0 || tmp_result == NaN){
+//                            tmp_result = 1;
+//                        }
+                        queue.add(tmp_result); 
+                        strQueue.add(cur_object.createEq(strArray));
                         break;
                     default:
                         array.add(queue.remove());
+                        strArray.add(strQueue.remove());
                         array.add(queue.remove());
+                        strArray.add(strQueue.remove());
                         array.add(queue.remove());
-                        queue.add(cur_object.compute(array));
+                        strArray.add(strQueue.remove());
+                        tmp_result = cur_object.compute(array);
+//                        if(tmp_result == 0 || tmp_result == NaN){
+//                            tmp_result = 1;
+//                        }
+                        queue.add(tmp_result);
+                        strQueue.add(cur_object.createEq(strArray));
                         break;
                 }
+                
+//                eq.insert(0, cur_object.toString() + " ");
             }
 
         }
+        
+//        equation = eq.toString();
+        equation = strQueue.remove();
 
         return queue.remove();
 
@@ -214,42 +270,20 @@ public class AP {
 
     }
     
-    public String getEquation(Integer[] vector){
-        
-        this.D = vector.length;
-
-        Integer[] gfs_code = getGFScode(vector);
-        AP_object cur_object;
-        String out = "";
-
-        for (int i = 0; i < gfs_code.length; i++) {
-
-            switch (gfs_code[i]) {
-                case -1:
-                    cur_object = null;
-                    break;
-                case 0:
-                    cur_object = this.GFS_0.get(vector[i] % this.GFS_0.size());
-                    break;
-                case 1:
-                    cur_object = this.GFS_1.get(vector[i] % this.GFS_1.size());
-                    break;
-                case 2:
-                    cur_object = this.GFS_2.get(vector[i] % this.GFS_2.size());
-                    break;
-                default:
-                    cur_object = this.GFSall.get(vector[i] % this.GFSall.size());
-                    break;
-            }
-
-            if (cur_object != null) {
-                out += cur_object.toString() + "\n";
-            }
-
-        }
-
-        return out;
-        
+    /**
+     * 
+     * @return 
+     */
+    public String getEquation(){
+        return equation;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public int getGFSsize(){
+        return this.GFSall.size();
     }
 
     /**
@@ -257,23 +291,29 @@ public class AP {
      */
     public static void main(String[] args) {
 
-        AP ap = new AP();
-        Integer[] vector = new Integer[]{0,0,1,2};
-        double x = 1;
+//        AP ap = new AP();
+//        Integer[] vector = new Integer[]{1,2,13,11,11,14,14,14,20,20,20,20,20,20,20,20,20,20,20,20};
+//        double x = 1;
+//
+////        for (int i = 0; i < vector.length; i++) {
+////            vector[i] = RandomUtil.nextInt(ap.getGFSsize());
+////        }
+//
+//        Integer[] gfscode = ap.getGFScode(vector);
+//
+//        System.out.println("Input: " + Arrays.toString(vector));
+//
+//        System.out.println("GFS code: " + Arrays.toString(gfscode));
+//
+//        System.out.println("Result: " + ap.dsh(vector, x));
+//        
+//        System.out.println("Equation: \n" + ap.getEquation());
 
-//        for (int i = 0; i < vector.length; i++) {
-//            vector[i] = RandomUtil.nextInt(6);
-//        }
-
-        Integer[] gfscode = ap.getGFScode(vector);
-
-        System.out.println("Input: " + Arrays.toString(vector));
-
-        System.out.println("GFS code: " + Arrays.toString(gfscode));
-
-        System.out.println("Result: " + ap.dsh(vector, x));
+        AP_Ln log = new AP_Ln();
+        List<Double> list = new ArrayList<>();
+        list.add(-1.0);
         
-        System.out.println("Equation: \n" + ap.getEquation(vector));
+        System.out.println(log.compute(list));
 
     }
 

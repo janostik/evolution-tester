@@ -6,40 +6,40 @@ import java.util.List;
  *
  * @author adam
  */
-public class AP_One implements AP_object {
+public class AP_Cube implements AP_object{
     
-    public double t;
+    public double a;
 
-    public AP_One() {
+    public AP_Cube() {
     }
     
-    public AP_One(double t) {
-        this.t = t;
+    public AP_Cube(double a) {
+        this.a = a;
     }
     
     @Override
     public double compute(){
-        return t;
+        return Math.pow(a, 3);
     }
 
     @Override
     public int argCount() {
-        return 0;
-    }
-    
-    @Override
-    public String toString(){
-        return Double.toString(1);
-    }
-
-    @Override
-    public double compute(List<Double> a) {
         return 1;
     }
     
     @Override
+    public String toString(){
+        return "x^3";
+    }
+
+    @Override
+    public double compute(List<Double> array) {
+        return Math.pow(array.get(0), 3);
+    }
+
+    @Override
     public String createEq(List<String> array) {
-        return Double.toString(1);
+        return "Power[" + array.get(0) + ",3]";
     }
     
 }

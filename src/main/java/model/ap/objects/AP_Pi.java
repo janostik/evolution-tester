@@ -6,20 +6,20 @@ import java.util.List;
  *
  * @author adam
  */
-public class AP_One implements AP_object {
+public class AP_Pi implements AP_object {
     
     public double t;
 
-    public AP_One() {
+    public AP_Pi() {
     }
     
-    public AP_One(double t) {
+    public AP_Pi(double t) {
         this.t = t;
     }
     
     @Override
     public double compute(){
-        return t;
+        return Math.PI;
     }
 
     @Override
@@ -29,17 +29,17 @@ public class AP_One implements AP_object {
     
     @Override
     public String toString(){
-        return Double.toString(1);
+        return "PI";
     }
 
     @Override
     public double compute(List<Double> a) {
-        return 1;
+        return Math.PI;
     }
     
     @Override
     public String createEq(List<String> array) {
-        return Double.toString(1);
+        return "PI";
     }
     
 }

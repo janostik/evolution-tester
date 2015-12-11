@@ -37,4 +37,9 @@ public class AP_Sin implements AP_object{
         return Math.sin(array.get(0));
     }
     
+    @Override
+    public String createEq(List<String> array) {
+        return "Sin[" + array.get(0) + "]";
+    }
+    
 }
