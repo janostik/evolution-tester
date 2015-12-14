@@ -67,26 +67,26 @@ public class AP {
         this.GFSall.add(new AP_Sub());
         this.GFSall.add(new AP_Multiply());
         this.GFSall.add(new AP_Div());
-//        this.GFSall.add(new AP_Mod());
-//        this.GFSall.add(new AP_aTOb());
+        this.GFSall.add(new AP_Mod());
+        this.GFSall.add(new AP_aTOb());
         
-//        this.GFSall.add(new AP_Sin());
-//        this.GFSall.add(new AP_Cos());
-//        this.GFSall.add(new AP_Tan());
-//        this.GFSall.add(new AP_Abs());
-//        this.GFSall.add(new AP_Exp());
-//        this.GFSall.add(new AP_Quad());
-//        this.GFSall.add(new AP_Sqrt());
-//        this.GFSall.add(new AP_Cube());
-//        this.GFSall.add(new AP_Ln());
+        this.GFSall.add(new AP_Sin());
+        this.GFSall.add(new AP_Cos());
+        this.GFSall.add(new AP_Tan());
+        this.GFSall.add(new AP_Abs());
+        this.GFSall.add(new AP_Exp());
+        this.GFSall.add(new AP_Quad());
+        this.GFSall.add(new AP_Sqrt());
+        this.GFSall.add(new AP_Cube());
+        this.GFSall.add(new AP_Ln());
 
         this.GFSall.add(new AP_x());
         this.GFSall.add(new AP_One());
-//        this.GFSall.add(new AP_Zero());
+        this.GFSall.add(new AP_Zero());
         this.GFSall.add(new AP_MinusOne());
-//        this.GFSall.add(new AP_Const());
-//        this.GFSall.add(new AP_Pi());
-//        this.GFSall.add(new AP_Euler());
+        this.GFSall.add(new AP_Const());
+        this.GFSall.add(new AP_Pi());
+        this.GFSall.add(new AP_Euler());
  
         for(AP_object ob : this.GFSall){
             

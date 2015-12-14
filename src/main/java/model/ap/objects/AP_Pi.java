@@ -29,7 +29,7 @@ public class AP_Pi implements AP_object {
     
     @Override
     public String toString(){
-        return "PI";
+        return "Pi";
     }
 
     @Override
@@ -39,7 +39,7 @@ public class AP_Pi implements AP_object {
     
     @Override
     public String createEq(List<String> array) {
-        return "PI";
+        return "Pi";
     }
     
 }
