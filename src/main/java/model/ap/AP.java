@@ -72,7 +72,7 @@ public class AP {
         
         this.GFSall.add(new AP_Sin());
         this.GFSall.add(new AP_Cos());
-        this.GFSall.add(new AP_Tan());
+//        this.GFSall.add(new AP_Tan());
         this.GFSall.add(new AP_Abs());
         this.GFSall.add(new AP_Exp());
         this.GFSall.add(new AP_Quad());

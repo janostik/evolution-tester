@@ -8,6 +8,7 @@ import java.util.stream.DoubleStream;
 import model.Individual;
 import model.ap.AP;
 import model.tf.TestFunction;
+import model.tf.ap.APgeMath;
 import model.tf.ap.APquintic;
 import model.tf.ap.APsextic;
 import model.tf.ap.APtf;
@@ -416,19 +417,19 @@ public class AP_DErand1bin implements Algorithm {
 
     public static void main(String[] args) throws Exception {
 
-        int dimension = 20;
+        int dimension = 100;
         int NP = 100;
         int MAXFES = 10000 * dimension;
         int funcNumber = 14;
 //        TestFunction tf = new Cec2015(dimension, funcNumber);
-        APtf tf = new APsextic();
+        APtf tf = new APgeMath();
         util.random.Random generator = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8, min;
         AP ap = new AP();
 
         Algorithm de;
 
-        int runs = 10;
+        int runs = 2;
         double[] bestArray = new double[runs];
         int i, best;
 

@@ -3,6 +3,7 @@ package model.tf.ap;
 import model.Individual;
 import model.ap.AP;
 import model.tf.TestFunction;
+import util.RandomUtil;
 
 /**
  *
@@ -24,12 +25,25 @@ public class APtf implements TestFunction {
 
     @Override
     public void constrain(Individual individual) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (int i = 0; i < individual.vector.length; i++) {
+
+            if (individual.vector[i] > this.max(individual.vector.length)) {
+                individual.vector[i] = this.max(individual.vector.length);
+            }
+            if (individual.vector[i] < this.min(individual.vector.length)) {
+                individual.vector[i] = this.min(individual.vector.length);
+            }
+
+        }
     }
 
     @Override
     public double[] generateTrial(int dim) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        double[] trial = new double[dim];
+        for (int i = 0; i < dim; i++) {
+            trial[i] = RandomUtil.nextInt((int) (this.max(dim) + 1));
+        }
+        return trial;
     }
 
     @Override
@@ -39,17 +53,17 @@ public class APtf implements TestFunction {
 
     @Override
     public double optimum() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 0;
     }
 
     @Override
     public double max(int dim) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return (this.ap.getGFSsize()-1);
     }
 
     @Override
     public double min(int dim) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 0;
     }
 
     @Override

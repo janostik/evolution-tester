@@ -1,12 +1,15 @@
-package algorithm.de;
+package algorithm.de.ap;
 
 import algorithm.Algorithm;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.tf.Cec2015;
+import model.ap.AP;
 import model.tf.TestFunction;
+import model.tf.ap.APgeMath;
+import model.tf.ap.APtf;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -20,18 +23,18 @@ import util.OtherDistributionsUtil;
  *
  * @author adam on 16/11/2015 update 25/11/2015
  */
-public class ShaDE implements Algorithm {
+public class AP_ShaDE implements Algorithm {
     
     int D;
     int G;
     int NP;
-    List<Individual> Aext;
-    List<Individual> P;
+    List<AP_Individual> Aext;
+    List<AP_Individual> P;
     int FES;
     int MAXFES;
     TestFunction f;
-    Individual best;
-    List<Individual> bestHistory;
+    AP_Individual best;
+    List<AP_Individual> bestHistory;
     double[] M_F;
     double[] M_CR;
     List<Double> S_F;
@@ -40,7 +43,17 @@ public class ShaDE implements Algorithm {
     util.random.Random rndGenerator;
     int id;
 
-    public ShaDE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
+    public class AP_Individual extends Individual{
+        
+        public String equation;
+
+        private AP_Individual(String valueOf, double[] u, double fitness) {
+            super(valueOf, u, fitness);
+        }
+ 
+    }
+    
+    public AP_ShaDE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
         this.D = D;
         this.MAXFES = MAXFES;
         this.f = f;
@@ -50,7 +63,7 @@ public class ShaDE implements Algorithm {
     }
 
     @Override
-    public Individual run() {
+    public AP_Individual run() {
 
         /**
          * Initialization
@@ -78,11 +91,11 @@ public class ShaDE implements Algorithm {
          */
         int r, Psize;
         double Fg, CRg;
-        List<Individual> newPop, pBestArray;
+        List<AP_Individual> newPop, pBestArray;
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
-        Individual trial;
-        Individual x;
+        AP_Individual trial;
+        AP_Individual x;
         List<Double> wS;
         double wSsum, meanS_F1, meanS_F2, meanS_CR;
         int k = 0;
@@ -109,7 +122,6 @@ public class ShaDE implements Algorithm {
                 if (Fg > 1) {
                     Fg = 1;
                 }
-                
 
                 CRg = OtherDistributionsUtil.normal(this.M_CR[r], 0.1);
                 if (CRg > 1) {
@@ -164,7 +176,8 @@ public class ShaDE implements Algorithm {
                  * Trial ready
                  */
                 id++;
-                trial = new Individual(String.valueOf(id), u, f.fitness(u));
+                trial = new AP_Individual(String.valueOf(id), u, f.fitness(u));
+                trial.equation = ((APtf) f).ap.equation;
 
                 /**
                  * Trial is better
@@ -203,6 +216,10 @@ public class ShaDE implements Algorithm {
                 meanS_F1 = 0;
                 meanS_F2 = 0;
                 meanS_CR = 0;
+                
+                if(Double.isInfinite(wSsum)){
+                    wSsum = Double.MAX_VALUE;
+                }
 
                 for (int s = 0; s < this.S_F.size(); s++) {
                     meanS_F1 += (wS.get(s) / wSsum) * this.S_F.get(s) * this.S_F.get(s);
@@ -211,6 +228,11 @@ public class ShaDE implements Algorithm {
                 }
 
                 this.M_F[k] = (meanS_F1 / meanS_F2);
+                
+                if(Double.isNaN(this.M_F[k])){
+                    OtherDistributionsUtil.cauchy(this.M_F[k], 0.1);
+                }
+                
                 this.M_CR[k] = meanS_CR;
 
                 k++;
@@ -246,7 +268,7 @@ public class ShaDE implements Algorithm {
         for (int j = 0; j < this.D; j++) {
 
             v[j] = parents.get(0)[j] + F * (parents.get(1)[j] - parents.get(0)[j]) + F * (parents.get(2)[j] - parents.get(3)[j]);
-
+            
         }
         
         return v;
@@ -260,15 +282,28 @@ public class ShaDE implements Algorithm {
      * @return 
      */
     protected double[] constrainCheck(double[] u, double[] x){
-        /**
-         * Constrain check
-         */
-        for (int d = 0; d < this.D; d++) {
-            if (u[d] < this.f.min(this.D)) {
-                u[d] = (this.f.min(this.D) + x[d]) / 2.0;
-            } else if (u[d] > this.f.max(this.D)) {
-                u[d] = (this.f.max(this.D) + x[d]) / 2.0;
+//        /**
+//         * Constrain check
+//         */
+//        for (int d = 0; d < this.D; d++) {
+//            if (u[d] < this.f.min(this.D)) {
+//                u[d] = (this.f.min(this.D) + x[d]) / 2.0;
+//            } else if (u[d] > this.f.max(this.D)) {
+//                u[d] = (this.f.max(this.D) + x[d]) / 2.0;
+//            }
+//        }
+//        
+//        return u;
+
+        for (int i = 0; i < u.length; i++) {
+
+            if (u[i] > f.max(u.length)) {
+                u[i] = f.max(u.length);
             }
+            if (u[i] < f.min(u.length)) {
+                u[i] = f.min(u.length);
+            }
+
         }
         
         return u;
@@ -295,6 +330,7 @@ public class ShaDE implements Algorithm {
             } else {
                 u[j] = x[j];
             }
+
         }
         
         return u;
@@ -320,12 +356,13 @@ public class ShaDE implements Algorithm {
         id = 0;
         double[] features;
         this.P = new ArrayList<>();
-        Individual ind;
+        AP_Individual ind;
 
         for (int i = 0; i < this.NP; i++) {
             id = i;
             features = this.f.generateTrial(this.D).clone();
-            ind = new Individual(String.valueOf(id), features, this.f.fitness(features));
+            ind = new AP_Individual(String.valueOf(id), features, this.f.fitness(features));
+            ind.equation = ((APtf) f).ap.equation;
             this.isBest(ind);
             this.P.add(ind);
             this.FES++;
@@ -355,9 +392,9 @@ public class ShaDE implements Algorithm {
      * @param size
      * @return
      */
-    protected List<Individual> resizeAext(List<Individual> list, int size) {
+    protected List<AP_Individual> resizeAext(List<AP_Individual> list, int size) {
 
-        List<Individual> toRet = new ArrayList<>();
+        List<AP_Individual> toRet = new ArrayList<>();
         toRet.addAll(list);
         int index;
 
@@ -378,10 +415,10 @@ public class ShaDE implements Algorithm {
      * @param size
      * @return
      */
-    protected List<Individual> resize(List<Individual> list, int size) {
+    protected List<AP_Individual> resize(List<AP_Individual> list, int size) {
 
-        List<Individual> toRet = new ArrayList<>();
-        List<Individual> tmp = new ArrayList<>();
+        List<AP_Individual> toRet = new ArrayList<>();
+        List<AP_Individual> tmp = new ArrayList<>();
         tmp.addAll(list);
         int bestIndex;
 
@@ -400,13 +437,13 @@ public class ShaDE implements Algorithm {
      * @param list
      * @return
      */
-    protected int getIndexOfBestFromList(List<Individual> list) {
+    protected int getIndexOfBestFromList(List<AP_Individual> list) {
 
-        Individual b = null;
+        AP_Individual b = null;
         int i = 0;
         int index = -1;
 
-        for (Individual ind : list) {
+        for (AP_Individual ind : list) {
 
             if (b == null) {
                 b = ind;
@@ -427,11 +464,11 @@ public class ShaDE implements Algorithm {
      * @param list
      * @return
      */
-    protected Individual getBestFromList(List<Individual> list) {
+    protected AP_Individual getBestFromList(List<AP_Individual> list) {
 
-        Individual b = null;
+        AP_Individual b = null;
 
-        for (Individual ind : list) {
+        for (AP_Individual ind : list) {
 
             if (b == null) {
                 b = ind;
@@ -479,7 +516,7 @@ public class ShaDE implements Algorithm {
      * @param ind
      * @return
      */
-    protected boolean isBest(Individual ind) {
+    protected boolean isBest(AP_Individual ind) {
 
         if (this.best == null || ind.fitness < this.best.fitness) {
             this.best = ind;
@@ -515,19 +552,19 @@ public class ShaDE implements Algorithm {
         this.NP = NP;
     }
 
-    public List<Individual> getAext() {
+    public List<AP_Individual> getAext() {
         return Aext;
     }
 
-    public void setAext(List<Individual> Aext) {
+    public void setAext(List<AP_Individual> Aext) {
         this.Aext = Aext;
     }
 
-    public List<Individual> getP() {
+    public List<AP_Individual> getP() {
         return P;
     }
 
-    public void setP(List<Individual> P) {
+    public void setP(List<AP_Individual> P) {
         this.P = P;
     }
 
@@ -559,15 +596,15 @@ public class ShaDE implements Algorithm {
         return best;
     }
 
-    public void setBest(Individual best) {
+    public void setBest(AP_Individual best) {
         this.best = best;
     }
 
-    public List<Individual> getBestHistory() {
+    public List<AP_Individual> getBestHistory() {
         return bestHistory;
     }
 
-    public void setBestHistory(List<Individual> bestHistory) {
+    public void setBestHistory(List<AP_Individual> bestHistory) {
         this.bestHistory = bestHistory;
     }
 
@@ -622,52 +659,57 @@ public class ShaDE implements Algorithm {
 
     public static void main(String[] args) throws Exception {
 
-        int dimension = 10;
+        int dimension = 300;
         int NP = 100;
-        int MAXFES = 10000 * dimension;
-        int funcNumber = 14;
-        TestFunction tf = new Cec2015(dimension, funcNumber);
-        int H = 1;
+        int H = NP;
+        int MAXFES = 20000 * dimension;
+
+        APtf tf = new APgeMath();
         util.random.Random generator = new util.random.UniformRandom();
+        double min;
+        AP ap = new AP();
 
-        ShaDE shade;
+        Algorithm de;
 
-        int runs = 10;
+        int runs = 2;
         double[] bestArray = new double[runs];
+        int i, best;
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new ShaDE(dimension, MAXFES, tf, H, NP, generator);
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+            
+            de = new AP_ShaDE(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            de.run();
 
-//            PrintWriter writer;
-//
-//            try {
-//                writer = new PrintWriter("CEC2015-" + funcNumber + "-shade" + k + ".txt", "UTF-8");
-//
-//                writer.print("{");
-//
-//                for (int i = 0; i < shade.getBestHistory().size(); i++) {
-//
-//                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
-//
-//                    if (i != shade.getBestHistory().size() - 1) {
-//                        writer.print(",");
-//                    }
-//
-//                }
-//
-//                writer.print("}");
-//
-//                writer.close();
-//
-//            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-//                Logger.getLogger(ShaDE.class.getName()).log(Level.SEVERE, null, ex);
-//            }
+            bestArray[k] = de.getBest().fitness - tf.optimum();
+            System.out.println(de.getBest().fitness - tf.optimum());
+            
+            /**
+             * Final AP equation.
+             */
 
-            bestArray[k] = shade.getBest().fitness - tf.optimum();
-            System.out.println(shade.getBest().fitness - tf.optimum());
+            System.out.println("=================================");
+            System.out.println("Equation: \n" + ((AP_Individual) de.getBest()).equation);
+            System.out.println("Vector: \n" + Arrays.toString(((AP_Individual) de.getBest()).vector));
+            System.out.println("=================================");
+            
+            for(AP_Individual ind : ((AP_ShaDE)de).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+                if(ind.fitness == 0){
+                    System.out.println("Solution found in " + i + " CFE");
+                    break;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+            
         }
 
         System.out.println("=================================");
