@@ -8,8 +8,8 @@ import java.util.stream.DoubleStream;
 import model.Individual;
 import model.ap.AP;
 import model.tf.TestFunction;
-import model.tf.ap.APgeMath;
-import model.tf.ap.APtf;
+import model.tf.ap.logic.APlogicTest2;
+import model.tf.ap.logic.APlogictf;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -19,7 +19,7 @@ import util.random.Random;
  *
  * @author adam 3/11/2015
  */
-public class AP_DErand1bin implements Algorithm {
+public class AP_logic_DErand1bin1 implements Algorithm {
 
     public class AP_Individual extends Individual{
         
@@ -42,7 +42,7 @@ public class AP_DErand1bin implements Algorithm {
     double F;
     double CR;
 
-    public AP_DErand1bin(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR) {
+    public AP_logic_DErand1bin1(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR) {
         this.D = D;
         this.G = 0;
         this.NP = NP;
@@ -266,7 +266,8 @@ public class AP_DErand1bin implements Algorithm {
         ind.vector = vector;
         constrain(ind);
         ind.fitness = tf.fitness(vector);
-        ind.equation = ((APtf) tf).ap.equation;
+//        ind.equation = ((APtf) tf).ap.equation;
+        ind.equation = ((APlogictf) tf).ap.equation;
         FES++;
         isBest(ind);
         writeHistory();
@@ -415,20 +416,20 @@ public class AP_DErand1bin implements Algorithm {
 
     public static void main(String[] args) throws Exception {
 
-        int dimension = 40;
-        int NP = 100;
+        int dimension = 200;
+        int NP = 300;
         int MAXFES = 1000 * dimension;
 //        int funcNumber = 14;
 //        TestFunction tf = new Cec2015(dimension, funcNumber);
-        APtf tf = new APgeMath();
-//        APlogictf tf = new APlogicTest1();
+//        APtf tf = new APgeMath();
+        APlogictf tf = new APlogicTest2();
         util.random.Random generator = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8, min;
         AP ap = new AP();
 
         Algorithm de;
 
-        int runs = 2;
+        int runs = 10;
         double[] bestArray = new double[runs];
         int i, best;
 
@@ -438,7 +439,7 @@ public class AP_DErand1bin implements Algorithm {
             i = 0;
             min = Double.MAX_VALUE;
             
-            de = new AP_DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
+            de = new AP_logic_DErand1bin1(dimension, NP, MAXFES, tf, generator, f, cr);
 
             de.run();
 
@@ -454,7 +455,7 @@ public class AP_DErand1bin implements Algorithm {
             System.out.println("Vector: \n" + Arrays.toString(((AP_Individual) de.getBest()).vector));
             System.out.println("=================================");
             
-            for(AP_Individual ind : ((AP_DErand1bin)de).getBestHistory()){
+            for(AP_Individual ind : ((AP_logic_DErand1bin1)de).getBestHistory()){
                 i++;
                 if(ind.fitness < min){
                     min = ind.fitness;

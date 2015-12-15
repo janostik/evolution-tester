@@ -54,11 +54,11 @@ public class APlogic {
         this.GFSall.add(new AP_Nand());
         this.GFSall.add(new AP_Or());
         this.GFSall.add(new AP_Nor());
-        this.GFSall.add(new AP_Xor());
+//        this.GFSall.add(new AP_Xor());
         
-        this.GFSall.add(new AP_Not());
+//        this.GFSall.add(new AP_Not());
 
-        this.GFSall.add(new AP_x1());
+//        this.GFSall.add(new AP_x1());
         this.GFSall.add(new AP_x2());
         this.GFSall.add(new AP_x3());
         this.GFSall.add(new AP_x4());

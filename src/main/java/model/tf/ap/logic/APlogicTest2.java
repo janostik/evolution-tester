@@ -4,15 +4,12 @@ import model.Individual;
 import util.RandomUtil;
 
 /**
- *
- * ACKLEY by POINTS {-5, 5}
  * 
  * @author adam
  */
-public class APlogicTest1 extends APlogictf {
+public class APlogicTest2 extends APlogictf {
 
-//    double[] y = new double[]{1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0};
-    double[] y = new double[]{0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0};
+    double[] y = new double[]{0,1,1,1,0,0,0,1};
     
     @Override
     public double fitness(Individual individual) {
@@ -120,8 +117,8 @@ public class APlogicTest1 extends APlogictf {
 
     public static void main(String[] args) throws Exception {
     
-        double[] vector = new double[]{2.857481736208676, 0.0, 0.07803940472664017, 0.8734934120699474, 7.388681515010331, 7.645281601281256, 4.975248610551839, 6.643119054776584, 0.41486800904424204, 5.852177650140193, 3.7665379608169545, 1.670325464480811, 0.0, 1.6929767880424151, 9.0, 4.446748622687251, 2.6164571965221572, 6.021284631700405, 4.216965520110615, 5.354614824991822, 9.0, 5.963074860240194, 9.0, 0.0, 3.655294522628684, 5.60436692838893, 5.2562393374829, 9.0, 6.0992393474359705, 9.0};
-        APlogictf tf = new APlogicTest1();
+        double[] vector = new double[]{0,1,2,3,4,5};
+        APlogictf tf = new APlogicTest2();
         
         System.out.println(tf.fitness(vector));
         System.out.println(tf.ap.equation);
