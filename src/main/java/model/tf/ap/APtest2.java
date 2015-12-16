@@ -1,16 +1,13 @@
-package model.tf;
+package model.tf.ap;
 
 import model.Individual;
-import model.ap.AP;
 import util.RandomUtil;
 
 /**
  *
  * @author adam
  */
-public class APSinTF implements TestFunction {
-
-    public AP ap = new AP();
+public class APtest2 extends APtf {
 
     @Override
     public double fitness(Individual individual) {
@@ -22,7 +19,7 @@ public class APSinTF implements TestFunction {
 
         Integer[] discrete = this.discretizeVector(vector);
 
-        double min = 0, max = 10, x;
+        double min = -5, max = 5, x;
         double fitness = 0;
 
         for (int i = 0; i < 101; i++) {
@@ -49,7 +46,8 @@ public class APSinTF implements TestFunction {
 
     private double squaredDistance(double x, Integer[] vector) {
 
-        return Math.pow(ap.dsh(vector, x) - Math.sin(x), 2);
+        
+        return Math.pow(ap.dsh(vector, x) - (2*Math.sin(x)+x), 2);
 
     }
 
@@ -90,7 +88,7 @@ public class APSinTF implements TestFunction {
 
     @Override
     public double max(int dim) {
-        return 10;
+        return this.ap.getGFSsize();
     }
 
     @Override
@@ -103,4 +101,13 @@ public class APSinTF implements TestFunction {
         return "AP_sin_function";
     }
 
+    public static void main(String[] args) throws Exception {
+    
+        double[] vector = new double[]{1,2,13,11,11,14,14,14,20,20,20,20,20,20,20,20,20,20,20,20};
+        APtf tf = new APtest2();
+        
+        System.out.println(tf.fitness(vector));
+        
+    }
+    
 }

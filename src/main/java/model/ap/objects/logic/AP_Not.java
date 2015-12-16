@@ -1,49 +1,46 @@
-package model.ap.objects;
+package model.ap.objects.logic;
 
+import model.ap.objects.*;
 import java.util.List;
 
 /**
  *
  * @author adam
  */
-public class AP_Sub implements AP_object{
+public class AP_Not implements AP_object{
     
     public double a;
-    public double b;
 
-    public AP_Sub() {
+    public AP_Not() {
     }
     
-    public AP_Sub(double a, double b) {
+    public AP_Not(double a) {
         this.a = a;
-        this.b = b;
     }
     
     @Override
     public double compute(){
-        return a-b;
+        return (a+1) % 2;
     }
 
     @Override
     public int argCount() {
-        return 2;
+        return 1;
     }
     
     @Override
     public String toString(){
-        return "Sub";
+        return "Not";
     }
-
 
     @Override
     public double compute(List<Double> array) {
-        return array.get(1)-array.get(0);
+        return (array.get(0)+1) % 2;
     }
     
     @Override
     public String createEq(List<String> array) {
-
-        return "Subtract[" + array.get(1) + "," + array.get(0) + "]";
+        return "Mod[" + array.get(0) + "+1, 2]";
     }
     
 }

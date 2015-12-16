@@ -1,12 +1,15 @@
-package algorithm.de;
+package algorithm.de.ap;
 
 import algorithm.Algorithm;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.tf.Cec2015;
+import model.ap.AP;
 import model.tf.TestFunction;
+import model.tf.ap.logic.APlogicTest2;
+import model.tf.ap.logic.APlogictf;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -16,23 +19,30 @@ import util.random.Random;
  *
  * @author adam 3/11/2015
  */
-public class DErand1bin implements Algorithm {
+public class AP_logic_DErand1bin1 implements Algorithm {
 
+    public class AP_Individual extends Individual{
+        
+        public String equation;
+ 
+    }
+
+    AP ap;
     int D;
     int G;
     int NP;
-    List<Individual> P;
+    List<AP_Individual> P;
     int FES;
     int MAXFES;
     TestFunction tf;
-    Individual best;
-    List<Individual> bestHistory;
+    AP_Individual best;
+    List<AP_Individual> bestHistory;
     util.random.Random rndGenerator;
     int id;
     double F;
     double CR;
 
-    public DErand1bin(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR) {
+    public AP_logic_DErand1bin1(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR) {
         this.D = D;
         this.G = 0;
         this.NP = NP;
@@ -45,7 +55,7 @@ public class DErand1bin implements Algorithm {
     }
 
     @Override
-    public Individual run() {
+    public AP_Individual run() {
 
         /**
          * Initial population
@@ -55,10 +65,10 @@ public class DErand1bin implements Algorithm {
             return best;
         }
 
-        List<Individual> newPop;
-        Individual x, trial;
+        List<AP_Individual> newPop;
+        AP_Individual x, trial;
         double[] u, v;
-        Individual[] parrentArray;
+        AP_Individual[] parrentArray;
 
         /**
          * generation itteration
@@ -175,9 +185,9 @@ public class DErand1bin implements Algorithm {
      * @param xIndex
      * @return
      */
-    protected Individual[] getParents(int xIndex) {
+    protected AP_Individual[] getParents(int xIndex) {
 
-        Individual[] parrentArray = new Individual[4];
+        AP_Individual[] parrentArray = new AP_Individual[4];
         List<Integer> indexes = new ArrayList<>();
         int index;
 
@@ -248,14 +258,16 @@ public class DErand1bin implements Algorithm {
      * @param vector
      * @return
      */
-    protected Individual makeIndividualFromVector(double[] vector) {
+    protected AP_Individual makeIndividualFromVector(double[] vector) {
 
-        Individual ind = new Individual();
+        AP_Individual ind = new AP_Individual();
         ind.id = String.valueOf(id);
         id++;
         ind.vector = vector;
         constrain(ind);
         ind.fitness = tf.fitness(vector);
+//        ind.equation = ((APtf) tf).ap.equation;
+        ind.equation = ((APlogictf) tf).ap.equation;
         FES++;
         isBest(ind);
         writeHistory();
@@ -278,7 +290,7 @@ public class DErand1bin implements Algorithm {
      * @param ind
      * @return
      */
-    protected boolean isBest(Individual ind) {
+    protected boolean isBest(AP_Individual ind) {
 
         if (best == null || ind.fitness < best.fitness) {
             best = ind;
@@ -301,7 +313,7 @@ public class DErand1bin implements Algorithm {
 
     @Override
     public String getName() {
-        return "DErand1bin";
+        return "AP_DErand1bin";
     }
 
     // <editor-fold defaultstate="collapsed" desc="getters and setters">
@@ -329,11 +341,11 @@ public class DErand1bin implements Algorithm {
         this.NP = NP;
     }
 
-    public List<Individual> getP() {
+    public List<AP_Individual> getP() {
         return P;
     }
 
-    public void setP(List<Individual> P) {
+    public void setP(List<AP_Individual> P) {
         this.P = P;
     }
 
@@ -361,11 +373,11 @@ public class DErand1bin implements Algorithm {
         this.tf = f;
     }
 
-    public List<Individual> getBestHistory() {
+    public List<AP_Individual> getBestHistory() {
         return bestHistory;
     }
 
-    public void setBestHistory(List<Individual> bestHistory) {
+    public void setBestHistory(List<AP_Individual> bestHistory) {
         this.bestHistory = bestHistory;
     }
 
@@ -404,27 +416,57 @@ public class DErand1bin implements Algorithm {
 
     public static void main(String[] args) throws Exception {
 
-        int dimension = 10;
-        int NP = 10;
-        int MAXFES = 10000 * dimension;
-        int funcNumber = 14;
-        TestFunction tf = new Cec2015(dimension, funcNumber);
+        int dimension = 200;
+        int NP = 300;
+        int MAXFES = 1000 * dimension;
+//        int funcNumber = 14;
+//        TestFunction tf = new Cec2015(dimension, funcNumber);
+//        APtf tf = new APgeMath();
+        APlogictf tf = new APlogicTest2();
         util.random.Random generator = new util.random.UniformRandom();
-        double f = 0.5, cr = 0.8;
+        double f = 0.5, cr = 0.8, min;
+        AP ap = new AP();
 
         Algorithm de;
 
-        int runs = 1;
+        int runs = 10;
         double[] bestArray = new double[runs];
+        int i, best;
 
         for (int k = 0; k < runs; k++) {
 
-            de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+            
+            de = new AP_logic_DErand1bin1(dimension, NP, MAXFES, tf, generator, f, cr);
 
             de.run();
 
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());
+            
+            /**
+             * Final AP equation.
+             */
+
+            System.out.println("=================================");
+            System.out.println("Equation: \n" + ((AP_Individual) de.getBest()).equation);
+            System.out.println("Vector: \n" + Arrays.toString(((AP_Individual) de.getBest()).vector));
+            System.out.println("=================================");
+            
+            for(AP_Individual ind : ((AP_logic_DErand1bin1)de).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+                if(ind.fitness == 0){
+                    System.out.println("Solution found in " + i + " CFE");
+                    break;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
             
         }
 

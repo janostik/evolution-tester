@@ -1,27 +1,28 @@
-package model.ap.objects;
+package model.ap.objects.logic;
 
+import model.ap.objects.*;
 import java.util.List;
 
 /**
  *
  * @author adam
  */
-public class AP_Sub implements AP_object{
+public class AP_And implements AP_object{
     
     public double a;
     public double b;
 
-    public AP_Sub() {
+    public AP_And() {
     }
     
-    public AP_Sub(double a, double b) {
+    public AP_And(double a, double b) {
         this.a = a;
         this.b = b;
     }
     
     @Override
     public double compute(){
-        return a-b;
+        return a*b;
     }
 
     @Override
@@ -31,19 +32,18 @@ public class AP_Sub implements AP_object{
     
     @Override
     public String toString(){
-        return "Sub";
+        return "BitAnd";
     }
-
 
     @Override
     public double compute(List<Double> array) {
-        return array.get(1)-array.get(0);
+        return array.get(1)*array.get(0);
     }
     
     @Override
     public String createEq(List<String> array) {
 
-        return "Subtract[" + array.get(1) + "," + array.get(0) + "]";
+        return "BitAnd[" + array.get(1) + "," + array.get(0) + "]";
     }
     
 }

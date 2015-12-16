@@ -6,41 +6,40 @@ import java.util.List;
  *
  * @author adam
  */
-public class AP_Cos implements AP_object {
+public class AP_Euler implements AP_object {
     
-    public double a;
+    public double t;
 
-    public AP_Cos() {
+    public AP_Euler() {
     }
     
-    public AP_Cos(double a) {
-        this.a = a;
+    public AP_Euler(double t) {
+        this.t = t;
     }
     
     @Override
     public double compute(){
-        return Math.cos(a);
+        return Math.E;
     }
 
     @Override
     public int argCount() {
-        return 1;
+        return 0;
     }
     
     @Override
     public String toString(){
-        return "Cos";
+        return "E";
     }
 
     @Override
-    public double compute(List<Double> array) {
-        return Math.cos(array.get(0));
+    public double compute(List<Double> a) {
+        return Math.E;
     }
-
+    
     @Override
     public String createEq(List<String> array) {
-        return "Cos[" + array.get(0) + "]";
+        return "E";
     }
-
     
 }

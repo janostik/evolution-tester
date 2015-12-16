@@ -6,14 +6,14 @@ import java.util.List;
  *
  * @author adam
  */
-public class AP_t implements AP_object{
+public class AP_One implements AP_object {
     
     public double t;
 
-    public AP_t() {
+    public AP_One() {
     }
     
-    public AP_t(double t) {
+    public AP_One(double t) {
         this.t = t;
     }
     
@@ -29,12 +29,17 @@ public class AP_t implements AP_object{
     
     @Override
     public String toString(){
-        return "t";
+        return Double.toString(1);
     }
 
     @Override
-    public double compute(List<Double> array) {
-        return array.get(0);
+    public double compute(List<Double> a) {
+        return 1;
+    }
+    
+    @Override
+    public String createEq(List<String> array) {
+        return Double.toString(1);
     }
     
 }

@@ -137,7 +137,7 @@ public class AShaDE extends ShaDE {
                     CRg = 0;
                 }
 
-                Psize = (int) rndGenerator.nextDouble(pmin, 0.2);
+                Psize = (int) (rndGenerator.nextDouble(pmin, 0.2) * this.NP);
                 if (Psize < 2) {
                     Psize = 2;
                 }

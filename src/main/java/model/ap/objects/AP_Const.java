@@ -35,8 +35,13 @@ public class AP_Const implements AP_object {
 
     @Override
     public double compute(List<Double> a) {
-        t = RandomUtil.nextDouble();
+        t = RandomUtil.nextDouble(-10, 10);
         return t;
+    }
+
+    @Override
+    public String createEq(List<String> array) {
+        return Double.toString(t);
     }
     
 }

@@ -1,40 +1,27 @@
 package model.ap;
 
-import static java.lang.Double.NaN;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import model.ap.objects.AP_Abs;
-import model.ap.objects.AP_Const;
-import model.ap.objects.AP_Cos;
-import model.ap.objects.AP_Cube;
-import model.ap.objects.AP_Div;
-import model.ap.objects.AP_Euler;
-import model.ap.objects.AP_Exp;
 import model.ap.objects.AP_Ln;
-import model.ap.objects.AP_MinusOne;
-import model.ap.objects.AP_Mod;
-import model.ap.objects.AP_Multiply;
-import model.ap.objects.AP_One;
-import model.ap.objects.AP_Pi;
-import model.ap.objects.AP_Plus;
-import model.ap.objects.AP_Quad;
-import model.ap.objects.AP_Sin;
-import model.ap.objects.AP_Sqrt;
-import model.ap.objects.AP_Sub;
-import model.ap.objects.AP_Tan;
-import model.ap.objects.AP_Zero;
-import model.ap.objects.AP_aTOb;
 import model.ap.objects.AP_object;
-import model.ap.objects.AP_x;
+import model.ap.objects.logic.AP_And;
+import model.ap.objects.logic.AP_Nand;
+import model.ap.objects.logic.AP_Nor;
+import model.ap.objects.logic.AP_Not;
+import model.ap.objects.logic.AP_Or;
+import model.ap.objects.logic.AP_Xor;
+import model.ap.objects.logic.AP_x1;
+import model.ap.objects.logic.AP_x2;
+import model.ap.objects.logic.AP_x3;
+import model.ap.objects.logic.AP_x4;
 
 /**
  *
  * @author adam on 09/12/2015
  */
-public class AP {
+public class APlogic {
 
     List<AP_object> GFSall;
     List<AP_object> GFS_0;
@@ -44,7 +31,7 @@ public class AP {
     
     public String equation;
 
-    public AP() {
+    public APlogic() {
 
         /**
          * There should be initialization of all GFS sets
@@ -63,30 +50,19 @@ public class AP {
         this.GFS_1 = new ArrayList<>();
         this.GFS_0 = new ArrayList<>();
         
-        this.GFSall.add(new AP_Plus());
-        this.GFSall.add(new AP_Sub());
-        this.GFSall.add(new AP_Multiply());
-        this.GFSall.add(new AP_Div());
-        this.GFSall.add(new AP_Mod());
-        this.GFSall.add(new AP_aTOb());
+        this.GFSall.add(new AP_And());
+        this.GFSall.add(new AP_Nand());
+        this.GFSall.add(new AP_Or());
+        this.GFSall.add(new AP_Nor());
+//        this.GFSall.add(new AP_Xor());
         
-        this.GFSall.add(new AP_Sin());
-        this.GFSall.add(new AP_Cos());
-//        this.GFSall.add(new AP_Tan());
-        this.GFSall.add(new AP_Abs());
-        this.GFSall.add(new AP_Exp());
-        this.GFSall.add(new AP_Quad());
-        this.GFSall.add(new AP_Sqrt());
-        this.GFSall.add(new AP_Cube());
-        this.GFSall.add(new AP_Ln());
+//        this.GFSall.add(new AP_Not());
 
-        this.GFSall.add(new AP_x());
-        this.GFSall.add(new AP_One());
-        this.GFSall.add(new AP_Zero());
-        this.GFSall.add(new AP_MinusOne());
-        this.GFSall.add(new AP_Const());
-        this.GFSall.add(new AP_Pi());
-        this.GFSall.add(new AP_Euler());
+//        this.GFSall.add(new AP_x1());
+        this.GFSall.add(new AP_x2());
+        this.GFSall.add(new AP_x3());
+        this.GFSall.add(new AP_x4());
+
  
         for(AP_object ob : this.GFSall){
             
@@ -309,11 +285,32 @@ public class AP {
 //        
 //        System.out.println("Equation: \n" + ap.getEquation());
 
-        AP_Ln log = new AP_Ln();
-        List<Double> list = new ArrayList<>();
-        list.add(-1.0);
+        AP_object log = new AP_Not();
+        List<Double> list;
+        
+        list = new ArrayList<>();
+        list.add(0.0);
+//        list.add(0.0);
         
         System.out.println(log.compute(list));
+        
+        list = new ArrayList<>();
+//        list.add(0.0);
+        list.add(1.0);
+        
+        System.out.println(log.compute(list));
+        
+//        list = new ArrayList<>();
+//        list.add(1.0);
+//        list.add(0.0);
+//        
+//        System.out.println(log.compute(list));
+//        
+//        list = new ArrayList<>();
+//        list.add(1.0);
+//        list.add(1.0);
+//        
+//        System.out.println(log.compute(list));
 
     }
 

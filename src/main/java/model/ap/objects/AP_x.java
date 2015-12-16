@@ -6,44 +6,40 @@ import java.util.List;
  *
  * @author adam
  */
-public class AP_Sub implements AP_object{
+public class AP_x implements AP_object{
     
-    public double a;
-    public double b;
+    public double x;
 
-    public AP_Sub() {
+    public AP_x() {
     }
     
-    public AP_Sub(double a, double b) {
-        this.a = a;
-        this.b = b;
+    public AP_x(double x) {
+        this.x = x;
     }
     
     @Override
     public double compute(){
-        return a-b;
+        return x;
     }
 
     @Override
     public int argCount() {
-        return 2;
+        return 0;
     }
     
     @Override
     public String toString(){
-        return "Sub";
+        return "x";
     }
-
 
     @Override
     public double compute(List<Double> array) {
-        return array.get(1)-array.get(0);
+        return array.get(0);
     }
     
     @Override
     public String createEq(List<String> array) {
-
-        return "Subtract[" + array.get(1) + "," + array.get(0) + "]";
+        return array.get(0);
     }
     
 }
