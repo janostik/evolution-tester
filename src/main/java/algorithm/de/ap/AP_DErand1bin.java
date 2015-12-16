@@ -415,9 +415,9 @@ public class AP_DErand1bin implements Algorithm {
 
     public static void main(String[] args) throws Exception {
 
-        int dimension = 40;
+        int dimension = 100;
         int NP = 100;
-        int MAXFES = 1000 * dimension;
+        int MAXFES = 20000 * dimension;
 //        int funcNumber = 14;
 //        TestFunction tf = new Cec2015(dimension, funcNumber);
         APtf tf = new APgeMath();

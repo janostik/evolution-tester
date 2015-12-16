@@ -515,19 +515,9 @@ public class EigSpsLShaDE implements Algorithm {
      */
     private LShadeIndividual getBestFromList(List<LShadeIndividual> list) {
 
-        LShadeIndividual b = null;
+        int index = RandomUtil.nextInt(list.size());
 
-        for (LShadeIndividual ind : list) {
-
-            if (b == null) {
-                b = ind;
-            } else if (ind.fitness < b.fitness) {
-                b = ind;
-            }
-
-        }
-
-        return b;
+        return list.get(index);
 
     }
 

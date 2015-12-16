@@ -1,6 +1,8 @@
 package algorithm.de;
 
+import java.util.List;
 import java.util.stream.DoubleStream;
+import model.Individual;
 import model.tf.Cec2015;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -23,6 +25,20 @@ public class CShaDE extends ShaDE {
     @Override
     public String getName() {
         return "CShaDE";
+    }
+    
+    /**
+     *
+     * @param list
+     * @return
+     */
+    @Override
+    protected Individual getRandBestFromList(List<Individual> list) {
+
+        int index = chaosGenerator.nextInt(list.size());
+
+        return list.get(index);
+
     }
     
     /**

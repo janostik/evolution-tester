@@ -149,7 +149,7 @@ public class AShaDE extends ShaDE {
                 /**
                  * Parent selection
                  */
-                pbest = this.getBestFromList(pBestArray).vector.clone();
+                pbest = this.getRandBestFromList(pBestArray).vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size());
                 pr1 = this.P.get(rIndexes[0]).vector.clone();
                 if (rIndexes[1] > this.NP - 1) {

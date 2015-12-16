@@ -108,8 +108,8 @@ public class MCShaDE extends ShaDE {
                 /**
                  * Parent selection
                  */
-                pbest = this.getBestFromList(pBestArray).vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size());
+                pbest = this.getRandBestFromList(pBestArray).vector.clone();
                 pr1 = this.P.get(rIndexes[0]).vector.clone();
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
@@ -214,7 +214,21 @@ public class MCShaDE extends ShaDE {
         return this.best;
 
     }
+    
+    /**
+     *
+     * @param list
+     * @return
+     */
+    @Override
+    protected Individual getRandBestFromList(List<Individual> list) {
 
+        int index = chaosGenerator.get(chosenChaos).chaos.nextInt(list.size());
+
+        return list.get(index);
+
+    }
+    
     /**
      * Updates rank values for chaos generators.
      */
@@ -308,7 +322,7 @@ public class MCShaDE extends ShaDE {
         int dimension = 10;
         int NP = 100;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 11;
+        int funcNumber = 14;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 1;
         util.random.Random generator = new util.random.UniformRandom();
