@@ -1366,8 +1366,8 @@ public class ShadeMain {
         String path = "CEC2015-DErand1bin/";
         classicDErand1binMainCEC2015(path);
         
-//        String path = "CEC2015-MC-DErand1bin/";
-//        multiChaosDErand1binMainCEC2015(path);
+        path = "CEC2015-MC-DErand1bin/";
+        multiChaosDErand1binMainCEC2015(path);
 
 //        netPsoMainCEC2015(path);
 //        int H = NP;
