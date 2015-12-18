@@ -8,7 +8,7 @@ import java.util.stream.DoubleStream;
 import model.Individual;
 import model.ap.AP;
 import model.tf.TestFunction;
-import model.tf.ap.APgeMath;
+import model.tf.ap.AP3sine;
 import model.tf.ap.APtf;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -417,10 +417,10 @@ public class AP_DErand1bin implements Algorithm {
 
         int dimension = 100;
         int NP = 100;
-        int MAXFES = 20000 * dimension;
+        int MAXFES = 1000 * dimension;
 //        int funcNumber = 14;
 //        TestFunction tf = new Cec2015(dimension, funcNumber);
-        APtf tf = new APgeMath();
+        APtf tf = new AP3sine();
 //        APlogictf tf = new APlogicTest1();
         util.random.Random generator = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8, min;
@@ -428,7 +428,7 @@ public class AP_DErand1bin implements Algorithm {
 
         Algorithm de;
 
-        int runs = 2;
+        int runs = 10;
         double[] bestArray = new double[runs];
         int i, best;
 

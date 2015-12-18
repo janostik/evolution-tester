@@ -28,37 +28,9 @@ public class APsextic extends APtf {
   0.13364}, {0.72, 0.120237}, {0.76, 0.103056}, {0.8, 
   0.082944}, {0.84, 0.0611553}, {0.88, 0.0394134}, {0.92, 
   0.0199691}, {0.96, 0.00566467}, {1., 0.}};
-    
-    @Override
-    public double fitness(Individual individual) {
-        return this.fitness(individual.vector);
-    }
 
     @Override
-    public double fitness(double[] vector) {
-
-        Integer[] discrete = this.discretizeVector(vector);
-
-        double fitness = 0;
-
-        fitness = this.squaredDistance(discrete);
-
-        return fitness;
-
-    }
-
-    public Integer[] discretizeVector(double[] vector) {
-        int dim = vector.length;
-        Integer[] discrete = new Integer[dim];
-
-        for (int i = 0; i < dim; i++) {
-            discrete[i] = (int) Math.round(vector[i]);
-        }
-
-        return discrete;
-    }
-
-    private double squaredDistance(Integer[] vector) {
+    protected double getDistance(double[] vector) {
 
         double sum = 0, a, b;
         

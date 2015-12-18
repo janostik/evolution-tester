@@ -18,7 +18,7 @@ public class APAckleyTF extends APtf {
     @Override
     public double fitness(double[] vector) {
 
-        Integer[] discrete = this.discretizeVector(vector);
+//        Integer[] discrete = this.discretizeVector(vector);
 
         double min = -32, max = 32, x;
         double fitness = 0;
@@ -26,7 +26,7 @@ public class APAckleyTF extends APtf {
         for (int i = 0; i < 101; i++) {
 
             x = min + ((max - min) / 100.0) * i;
-            fitness += this.squaredDistance(x, discrete);
+            fitness += this.getDistance(x, vector);
 
         }
 
@@ -45,7 +45,7 @@ public class APAckleyTF extends APtf {
         return discrete;
     }
 
-    private double squaredDistance(double x, Integer[] vector) {
+    protected double getDistance(double x, double[] vector) {
 
         Ackley ack = new Ackley();
         double[] array = new double[]{x};

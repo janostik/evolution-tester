@@ -462,7 +462,7 @@ public class EigSPSLShadeMain {
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
         double best,worst,median,mean,std;
-        String home_dir = "/Users/adam/CEC2015-LShade/";
+        String home_dir = "C:\\Users\\wiki\\CEC2015-LShade/";
 
         res_writer = new PrintWriter(home_dir + "results.txt", "UTF-8");
         

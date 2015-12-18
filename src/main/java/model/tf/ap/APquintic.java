@@ -27,37 +27,9 @@ public class APquintic extends APtf {
   0.223086}, {0.68, 0.196529}, {0.72, 0.166996}, {0.76, 
   0.135601}, {0.8, 0.10368}, {0.84, 0.0728039}, {0.88, 
   0.0447879}, {0.92, 0.0217055}, {0.96, 0.0059007}, {1., 0.}};
-    
-    @Override
-    public double fitness(Individual individual) {
-        return this.fitness(individual.vector);
-    }
 
     @Override
-    public double fitness(double[] vector) {
-
-        Integer[] discrete = this.discretizeVector(vector);
-
-        double fitness = 0;
-
-        fitness = this.squaredDistance(discrete);
-
-        return fitness;
-
-    }
-
-    public Integer[] discretizeVector(double[] vector) {
-        int dim = vector.length;
-        Integer[] discrete = new Integer[dim];
-
-        for (int i = 0; i < dim; i++) {
-            discrete[i] = (int) Math.round(vector[i]);
-        }
-
-        return discrete;
-    }
-
-    private double squaredDistance(Integer[] vector) {
+    protected double getDistance(double[] vector) {
 
         double sum = 0, a, b;
         
