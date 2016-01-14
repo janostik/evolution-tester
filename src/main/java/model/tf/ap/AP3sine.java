@@ -1,12 +1,8 @@
 package model.tf.ap;
 
-import org.apache.commons.math3.stat.descriptive.moment.Mean;
-import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.commons.math3.stat.descriptive.summary.Sum;
 
 /**
- *
- * EUR USD
  * 
  * @author adam
  */
@@ -51,7 +47,7 @@ public class AP3sine extends APtf {
 
     @Override
     public String name() {
-        return "AP_ge_mathematica";
+        return "AP_3sine_mathematica";
     }
 
     @Override

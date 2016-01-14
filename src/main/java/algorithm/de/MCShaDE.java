@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.chaos.RankedChaosGenerator;
-import model.tf.Cec2015;
+import model.tf.Cec2014;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -323,13 +323,13 @@ public class MCShaDE extends ShaDE {
         int NP = 100;
         int MAXFES = 10000 * dimension;
         int funcNumber = 14;
-        TestFunction tf = new Cec2015(dimension, funcNumber);
+        TestFunction tf = new Cec2014(dimension, funcNumber);
         int H = 1;
         util.random.Random generator = new util.random.UniformRandom();
 
         MCShaDE shade;
 
-        int runs = 10;
+        int runs = 2;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {

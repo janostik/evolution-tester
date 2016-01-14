@@ -67,7 +67,7 @@ public class APconst {
 //        this.GFSall.add(new AP_Ln());
 
         this.GFSall.add(new AP_x());
-        this.GFSall.add(new AP_Const_static());
+//        this.GFSall.add(new AP_Const_static());
 //        this.GFSall.add(new AP_One());
 //        this.GFSall.add(new AP_Zero());
 //        this.GFSall.add(new AP_MinusOne());
@@ -107,7 +107,9 @@ public class APconst {
         int dim = vector.length;
         Integer[] discrete = new Integer[dim];
 
-        double tmp, min = -100, max = 100, dindex, diff, delta;
+        double min = -100, max = 100;
+        
+        double dindex, diff, delta;
         int  imax = this.GFSall.size() - 1, dis_index;
         diff = (max - min);
         delta = 1.0 /(double) this.GFSall.size();

@@ -4,29 +4,20 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import model.ap.objects.AP_Abs;
 import model.ap.objects.AP_Const;
 import model.ap.objects.AP_Cos;
-import model.ap.objects.AP_Cube;
 import model.ap.objects.AP_Div;
-import model.ap.objects.AP_Euler;
-import model.ap.objects.AP_Exp;
-import model.ap.objects.AP_Ln;
-import model.ap.objects.AP_MinusOne;
-import model.ap.objects.AP_Mod;
 import model.ap.objects.AP_Multiply;
-import model.ap.objects.AP_One;
-import model.ap.objects.AP_Pi;
 import model.ap.objects.AP_Plus;
-import model.ap.objects.AP_Quad;
 import model.ap.objects.AP_Sin;
-import model.ap.objects.AP_Sqrt;
 import model.ap.objects.AP_Sub;
-import model.ap.objects.AP_Tan;
-import model.ap.objects.AP_Zero;
-import model.ap.objects.AP_aTOb;
 import model.ap.objects.AP_object;
 import model.ap.objects.AP_x;
+import model.tf.ap.APtf;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
+import org.apache.commons.math3.stat.descriptive.rank.Max;
+import org.apache.commons.math3.stat.descriptive.rank.Median;
+import org.apache.commons.math3.stat.descriptive.rank.Min;
 
 /**
  *
@@ -69,7 +60,7 @@ public class AP {
 //        this.GFSall.add(new AP_aTOb());
         
         this.GFSall.add(new AP_Sin());
-//        this.GFSall.add(new AP_Cos());
+        this.GFSall.add(new AP_Cos());
 //        this.GFSall.add(new AP_Tan());
 //        this.GFSall.add(new AP_Abs());
 //        this.GFSall.add(new AP_Exp());
@@ -285,12 +276,138 @@ public class AP {
     }
 
     /**
+     * 
+     * @param vector
+     * @return 
+     */
+    public Integer[] discretizeVector(double[] vector) {
+        int dim = vector.length;
+        Integer[] discrete = new Integer[dim];
+
+        double min = -100, max = 100;
+        
+        double dindex, diff, delta;
+        int  imax = this.GFSall.size() - 1, dis_index;
+        diff = (max - min);
+        delta = 1.0 /(double) this.GFSall.size();
+
+        for (int i = 0; i < dim; i++) {
+            dis_index = 0;
+//            tmp = Math.round(vector[i]);
+            dindex = (vector[i] - min) / diff;
+            
+            dindex -= delta;
+            while(dindex > 0 && dis_index != imax){
+                dindex -= delta;
+                dis_index++;
+            }
+            
+            discrete[i] = dis_index;
+        }
+
+        return discrete;
+    }
+    
+    /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
 
-//        AP ap = new AP();
-//        Integer[] vector = new Integer[]{1,2,13,11,11,14,14,14,20,20,20,20,20,20,20,20,20,20,20,20};
+        AP ap = new AP();
+        APtf aptf = new APtf();
+        int dim;
+        Integer[] vector, gfs_code;
+        int runs = 1001;
+        double[] length_array;
+        double length;
+        
+        dim = 10;
+        length_array = new double[runs];
+        for(int i=0; i<runs; i++){
+            
+            vector = ap.discretizeVector(aptf.generateTrial(dim));
+            gfs_code = ap.getGFScode(vector);
+            
+            length = dim;
+            
+            for(int j = 0; j < dim; j++){
+                if(gfs_code[j] == -1){
+                    length = j;
+                    break;
+                }
+            }
+            
+            length_array[i] = length;
+
+        }
+        
+        System.out.println("DIM: " + dim);
+        System.out.println("RUNS: " + runs);
+        System.out.println("===================");
+        System.out.println("Mean: " + new Mean().evaluate(length_array));
+        System.out.println("Median: " + new Median().evaluate(length_array));
+        System.out.println("Min: " + new Min().evaluate(length_array));
+        System.out.println("Max: " + new Max().evaluate(length_array));
+        System.out.println("===================");
+        
+        dim = 50;
+        length_array = new double[runs];
+        for(int i=0; i<runs; i++){
+            
+            vector = ap.discretizeVector(aptf.generateTrial(dim));
+            gfs_code = ap.getGFScode(vector);
+            length = dim;
+            
+            for(int j = 0; j < dim; j++){
+                if(gfs_code[j] == -1){
+                    length = j;
+                    break;
+                }
+            }
+            
+            length_array[i] = length;
+
+        }
+        
+        System.out.println("DIM: " + dim);
+        System.out.println("RUNS: " + runs);
+        System.out.println("===================");
+        System.out.println("Mean: " + new Mean().evaluate(length_array));
+        System.out.println("Median: " + new Median().evaluate(length_array));
+        System.out.println("Min: " + new Min().evaluate(length_array));
+        System.out.println("Max: " + new Max().evaluate(length_array));
+        System.out.println("===================");
+        
+        dim = 100;
+        length_array = new double[runs];
+        for(int i=0; i<runs; i++){
+            
+            vector = ap.discretizeVector(aptf.generateTrial(dim));
+            gfs_code = ap.getGFScode(vector);
+            length = dim;
+            
+            for(int j = 0; j < dim; j++){
+                if(gfs_code[j] == -1){
+                    length = j;
+                    break;
+                }
+            }
+            
+            length_array[i] = length;
+
+        }
+        
+        System.out.println("DIM: " + dim);
+        System.out.println("RUNS: " + runs);
+        System.out.println("===================");
+        System.out.println("Mean: " + new Mean().evaluate(length_array));
+        System.out.println("Median: " + new Median().evaluate(length_array));
+        System.out.println("Min: " + new Min().evaluate(length_array));
+        System.out.println("Max: " + new Max().evaluate(length_array));
+        System.out.println("===================");
+        
+//        Integer[] vector = ap.discretizeVector(new double[]{-99, 20, 99, 60, -1, -1, -1, -1, -1, -1});    //sin x + k
+//        Integer[] vector = ap.discretizeVector(new double[]{30, -30, 60, 20, 60, -1, -1, -1, -1, -1});  //cos(x * sin x)
 //        double x = 1;
 //
 ////        for (int i = 0; i < vector.length; i++) {
@@ -307,11 +424,6 @@ public class AP {
 //        
 //        System.out.println("Equation: \n" + ap.getEquation());
 
-        AP_Ln log = new AP_Ln();
-        List<Double> list = new ArrayList<>();
-        list.add(-1.0);
-        
-        System.out.println(log.compute(list));
 
     }
 

@@ -4,6 +4,7 @@ import model.Individual;
 import model.ap.APconst;
 import model.tf.TestFunction;
 import util.LoziRandomUtil;
+import util.RandomUtil;
 
 /**
  *
@@ -50,18 +51,21 @@ public class APtf implements TestFunction {
         for (int i = 0; i < dim; i++) {
 //            trial[i] = LoziRandomUtil.nextInt((int) (this.max(dim) + 1));
             trial[i] = LoziRandomUtil.nextDouble(this.min(dim), this.max(dim));
+//            trial[i] = RandomUtil.nextDouble(this.min(dim), this.max(dim));
         }
         return trial;
     }
 
     @Override
     public double max(int dim) {
-        return (this.ap.getGFSsize()-1);
+//        return (this.ap.getGFSsize()-1);
+        return 100;
     }
 
     @Override
     public double min(int dim) {
-        return 0;
+//        return 0;
+        return -100;
     }
     
     @Override

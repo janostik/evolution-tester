@@ -56,9 +56,7 @@ public class APlogicTest1 extends APlogictf {
         
         
         for (int i = 0; i < y.length; i++) {
-            
-            
-            
+
             tmp = ap.dsh(vector, i);
             sum += ((tmp + y[i]) % 2);
         }
