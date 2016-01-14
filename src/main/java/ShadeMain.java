@@ -566,19 +566,22 @@ public class ShadeMain {
  
         TestFunction tf;
         util.random.Random generator = new util.random.UniformRandom();
-        int maxFuncNum = 30, fes_index;
+        int maxFuncNum = 2, fes_index;
 
         MCShaDE shade;
 
         double[] bestArray;
-        PrintWriter writer, sol_writer,res_writer;
+        PrintWriter writer, sol_writer,res_writer, cec_result;
         double best,worst,median,mean,std;
 
         res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
         
+        
         res_writer.print("{");
         
         for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+            
+            cec_result = new PrintWriter(home_dir + path + "MC-SHADE_" + funcNumber + "_" + dimension + ".txt", "UTF-8");
         
             tf = new Cec2014(dimension, funcNumber);
             bestArray = new double[runs];
@@ -594,45 +597,73 @@ public class ShadeMain {
 
                 fes_index = (int) (0.01 * MAXFES) - 1;
                 writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(" ");
                 writer.print(",");
                 fes_index = (int) (0.02 * MAXFES) - 1;
                 writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(" ");
                 writer.print(",");
                 fes_index = (int) (0.03 * MAXFES) - 1;
                 writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(" ");
                 writer.print(",");
                 fes_index = (int) (0.05 * MAXFES) - 1;
                 writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(" ");
                 writer.print(",");
                 fes_index = (int) (0.1 * MAXFES) - 1;
                 writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(" ");
                 writer.print(",");
                 fes_index = (int) (0.2 * MAXFES) - 1;
                 writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(" ");
                 writer.print(",");
                 fes_index = (int) (0.3 * MAXFES) - 1;
                 writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(" ");
                 writer.print(",");
                 fes_index = (int) (0.4 * MAXFES) - 1;
                 writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(" ");
                 writer.print(",");
                 fes_index = (int) (0.5 * MAXFES) - 1;
                 writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(" ");
                 writer.print(",");
                 fes_index = (int) (0.6 * MAXFES) - 1;
                 writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(" ");
                 writer.print(",");
                 fes_index = (int) (0.7 * MAXFES) - 1;
                 writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(" ");
                 writer.print(",");
                 fes_index = (int) (0.8 * MAXFES) - 1;
                 writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(" ");
                 writer.print(",");
                 fes_index = (int) (0.9 * MAXFES) - 1;
                 writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(" ");
                 writer.print(",");
                 fes_index = MAXFES - 1;
                 writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(fes_index).fitness));
+                cec_result.println("");
                 
 //                for (int i = 0; i < shade.getBestHistory().size(); i++) {
 //
@@ -648,7 +679,7 @@ public class ShadeMain {
 
                 writer.close();
 
-                bestArray[k] = shade.getBestHistory().get(MAXFES).fitness - tf.optimum();
+                bestArray[k] = shade.getBestHistory().get(MAXFES-1).fitness - tf.optimum();
 
             }
             
@@ -702,6 +733,8 @@ public class ShadeMain {
             if(funcNumber < maxFuncNum){
                res_writer.print(",");
             }
+            
+            cec_result.close();
             
         }
 
@@ -1664,6 +1697,7 @@ public class ShadeMain {
         
         util.random.Random chGenerator;
         String chaosName, path; 
+        int H = NP;
 //        
 //        String path = "CEC2015-DErand1bin/";
 //        classicDErand1binMainCEC2015(path);
@@ -1671,22 +1705,22 @@ public class ShadeMain {
         dimension = 10;
         MAXFES = 10000 * dimension;
         path = "CEC2014-MC-shade-10/";
-        multiChaosDErand1binMainCEC2014(path);
+        multiChaosShadeMainCEC2014(path, H);
         
         dimension = 30;
         MAXFES = 10000 * dimension;
         path = "CEC2014-MC-shade-30/";
-        multiChaosDErand1binMainCEC2014(path);
+        multiChaosShadeMainCEC2014(path, H);
         
         dimension = 50;
         MAXFES = 10000 * dimension;
         path = "CEC2014-MC-shade-50/";
-        multiChaosDErand1binMainCEC2014(path);
+        multiChaosShadeMainCEC2014(path, H);
         
         dimension = 100;
         MAXFES = 10000 * dimension;
         path = "CEC2014-MC-shade-100/";
-        multiChaosDErand1binMainCEC2014(path);
+        multiChaosShadeMainCEC2014(path, H);
 
 //        netPsoMainCEC2015(path);
 //        int H = NP;
