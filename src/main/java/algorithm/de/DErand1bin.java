@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.tf.Cec2015;
+import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -407,14 +407,14 @@ public class DErand1bin implements Algorithm {
         int dimension = 10;
         int NP = 10;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 14;
-        TestFunction tf = new Cec2015(dimension, funcNumber);
+        int funcNumber = 5;
+        TestFunction tf = new Schwefel();
         util.random.Random generator = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8;
 
         Algorithm de;
 
-        int runs = 1;
+        int runs = 10;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
@@ -425,6 +425,7 @@ public class DErand1bin implements Algorithm {
 
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());
+//            System.out.println(de.getBest().fitness - ((DErand1bin) de).getBestHistory().get(MAXFES-1).fitness);
             
         }
 

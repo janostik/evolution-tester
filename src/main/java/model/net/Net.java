@@ -36,4 +36,13 @@ public class Net {
         degreeMap.remove(node);
         edges.removeAll(edges.stream().filter(edge -> edge.source.equals(node)).collect(Collectors.toList()));
     }
+
+    public List<Edge> getEdges() {
+        return edges;
+    }
+
+    public Map<Individual, Integer> getDegreeMap() {
+        return degreeMap;
+    }
+
 }

@@ -14,4 +14,7 @@ public interface Random {
         return nextDouble() * (max - min) + min;
     }
 
+    @Override
+    public String toString();
+
 }

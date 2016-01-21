@@ -18,4 +18,9 @@ public class DelayedLogisticRandom implements Random {
         return rnd.getRndInt(bound);
     }
 
+    @Override
+    public String toString() {
+        return "DeLo";
+    }
+    
 }

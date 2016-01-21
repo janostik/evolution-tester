@@ -22,4 +22,13 @@ public abstract class Edge {
                 ", target=" + target +
                 '}';
     }
+
+    public Individual getSource() {
+        return source;
+    }
+
+    public Individual getTarget() {
+        return target;
+    }
+
 }

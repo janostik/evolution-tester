@@ -17,5 +17,10 @@ public class TinkerbellRandom implements Random {
     public int nextInt(int bound) {
         return rnd.getRndInt(bound);
     }
+    
+    @Override
+    public String toString() {
+        return "Tinkerbell";
+    }
 
 }

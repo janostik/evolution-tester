@@ -17,5 +17,10 @@ public class UniformRandom implements Random {
     public int nextInt(int bound) {
         return rnd.nextInt(bound);
     }
+    
+    @Override
+    public String toString() {
+        return "Uniform";
+    }
 
 }

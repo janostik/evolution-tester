@@ -2,10 +2,12 @@ package algorithm.de;
 
 import algorithm.Algorithm;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.Cec2015;
+import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -616,7 +618,7 @@ public class ShaDE implements Algorithm {
         int NP = 100;
         int MAXFES = 10000 * dimension;
         int funcNumber = 14;
-        TestFunction tf = new Cec2015(dimension, funcNumber);
+        TestFunction tf = new Schwefel();
         int H = 1;
         util.random.Random generator = new util.random.UniformRandom();
 
@@ -658,6 +660,7 @@ public class ShaDE implements Algorithm {
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());
+            System.out.println(Arrays.toString(shade.getBest().vector));
         }
 
         System.out.println("=================================");
