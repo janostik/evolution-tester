@@ -2,10 +2,12 @@ package algorithm.de;
 
 import algorithm.Algorithm;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.Cec2015;
+import model.tf.Network2;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -24,52 +26,51 @@ public class DEbest extends DErand1bin {
      */
     public static void main(String[] args) throws Exception {
 
-        int dimension = 10;
+        int dimension = 40;
         int NP = 100;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 1;
-        TestFunction tf = new Cec2015(dimension, funcNumber);
+        int funcNumber = 5;
+        TestFunction tf = new Network2();
         util.random.Random generator = new util.random.UniformRandom();
-        double f = 0.5, cr = 0.8;
+        double f = 0.5, cr = 0.8, min;
 
         Algorithm de;
 
         int runs = 10;
         double[] bestArray = new double[runs];
+        int i, best;
 
         for (int k = 0; k < runs; k++) {
 
-            //DErand1bin(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR)
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+            
             de = new DEbest(dimension, NP, MAXFES, tf, generator, f, cr);
 
             de.run();
 
-//            PrintWriter writer;
-//
-//            try {
-//                writer = new PrintWriter("CEC2015-" + funcNumber + "-shade" + k + ".txt", "UTF-8");
-//
-//                writer.print("{");
-//
-//                for (int i = 0; i < shade.getBestHistory().size(); i++) {
-//
-//                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
-//
-//                    if (i != shade.getBestHistory().size() - 1) {
-//                        writer.print(",");
-//                    }
-//
-//                }
-//
-//                writer.print("}");
-//
-//                writer.close();
-//
-//            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-//                Logger.getLogger(ShaDE.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-            bestArray[k] = de.getBest().fitness - tf.optimum();
-            System.out.println(de.getBest().fitness - tf.optimum());
+            bestArray[k] = de.getBest().fitness;
+            System.out.println("Individual: " + Arrays.toString(de.getBest().vector));
+            System.out.println("Profit: " + de.getBest().fitness);
+            tf.fitness(de.getBest());
+            System.out.println("Path: " + ((Network2)tf).getNode_path().toString());
+            System.out.println("Built paths: ");
+            ((Network2)tf).getBuilt_path().stream().forEach((pa) -> {
+                System.out.println("[" + pa[0] + ", " + pa[1] + "]");
+            });
+            
+            for(Individual ind : ((DEbest)de).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+
+//            System.out.println(de.getBest().fitness - ((DErand1bin) de).getBestHistory().get(MAXFES-1).fitness);
+            
         }
 
         System.out.println("=================================");
@@ -79,6 +80,8 @@ public class DEbest extends DErand1bin {
         System.out.println("Median: " + new Median().evaluate(bestArray));
         System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
         System.out.println("=================================");
+        
+        
 
     }
 

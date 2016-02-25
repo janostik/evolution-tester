@@ -2,10 +2,12 @@ package algorithm.de;
 
 import algorithm.Algorithm;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.tf.Schwefel;
+import model.tf.Network3;
+import model.tf.Network4;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -402,29 +404,97 @@ public class DErand1bin implements Algorithm {
     }
     //</editor-fold>
 
-    public static void main(String[] args) throws Exception {
+    public static void mainNetwork3(String[] args) throws Exception {
 
-        int dimension = 10;
-        int NP = 10;
+        int dimension = 50;
+        int NP = 100;
         int MAXFES = 10000 * dimension;
         int funcNumber = 5;
-        TestFunction tf = new Schwefel();
+        TestFunction tf = new Network3();
         util.random.Random generator = new util.random.UniformRandom();
-        double f = 0.5, cr = 0.8;
+        double f = 0.5, cr = 0.8, min;
 
         Algorithm de;
 
-        int runs = 10;
+        int runs = 1;
         double[] bestArray = new double[runs];
+        int i, best;
+        Integer[] pa;
 
         for (int k = 0; k < runs; k++) {
 
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+            
             de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
 
             de.run();
 
-            bestArray[k] = de.getBest().fitness - tf.optimum();
-            System.out.println(de.getBest().fitness - tf.optimum());
+            bestArray[k] = de.getBest().fitness;
+            System.out.println("Individual: " + Arrays.toString(de.getBest().vector));
+            System.out.println("Profit: " + de.getBest().fitness);
+            
+            tf.fitness(de.getBest());
+            
+            System.out.println("NodeLoad: " + Arrays.toString(((Network3)tf).getNodeLoad()));
+            
+            System.out.println("PathLoad: ");
+            System.out.print("{");
+            for(int a = 0; a < ((Network3)tf).getNodeCount(); a++){
+                System.out.print("{");
+                for(int b = 0; b < ((Network3)tf).getNodeCount(); b++){
+                    
+                    System.out.print(((Network3)tf).getPathLoad()[a][b]);
+                    
+                    if(b != ((Network3)tf).getNodeCount() - 1){
+                        System.out.print(", ");
+                    }  
+                    
+                }
+                System.out.print("}");
+                
+                if(a != ((Network3)tf).getNodeCount() - 1){
+                    System.out.println(", ");
+                } 
+            }
+            System.out.println("}");
+            
+            System.out.println("Path: ");
+            System.out.print("{");
+            for(int p = 0; p < ((Network3)tf).getNode_path().size(); p++) {
+                pa = ((Network3)tf).getNode_path().get(p);
+                System.out.print("{" + pa[0] + ", " + pa[1] + "}");
+                
+                if(p != ((Network3)tf).getNode_path().size()-1){
+                    System.out.print(", ");
+                }
+                
+            }
+            System.out.println("}");
+            
+            System.out.println("Built paths: ");
+            System.out.print("{");
+            for(int p = 0; p < ((Network3)tf).getBuilt_path().size(); p++) {
+                pa = ((Network3)tf).getBuilt_path().get(p);
+                System.out.print("{" + pa[0] + ", " + pa[1] + "}");
+                
+                if(p != ((Network3)tf).getBuilt_path().size()-1){
+                    System.out.print(", ");
+                }
+                
+            }
+            System.out.println("}");
+            
+            for(Individual ind : ((DErand1bin)de).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+
 //            System.out.println(de.getBest().fitness - ((DErand1bin) de).getBestHistory().get(MAXFES-1).fitness);
             
         }
@@ -439,5 +509,116 @@ public class DErand1bin implements Algorithm {
         
         
 
+    }
+    
+    public static void mainNetwork4(String[] args) throws Exception {
+
+        int dimension = 50;
+        int NP = 100;
+        int MAXFES = 10000 * dimension;
+        int funcNumber = 5;
+        TestFunction tf = new Network4();
+        util.random.Random generator = new util.random.UniformRandom();
+        double f = 0.5, cr = 0.8, min;
+
+        Algorithm de;
+
+        int runs = 1;
+        double[] bestArray = new double[runs];
+        int i, best;
+        Integer[] pa;
+
+        for (int k = 0; k < runs; k++) {
+
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+            
+            de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
+
+            de.run();
+
+            bestArray[k] = de.getBest().fitness;
+            System.out.println("Individual: " + Arrays.toString(de.getBest().vector));
+            System.out.println("Profit: " + de.getBest().fitness);
+            
+            tf.fitness(de.getBest());
+            
+            System.out.println("NodeLoad: " + Arrays.toString(((Network4)tf).getNodeLoad()));
+            
+            System.out.println("PathLoad: ");
+            System.out.print("{");
+            for(int a = 0; a < ((Network4)tf).getNodeCount(); a++){
+                System.out.print("{");
+                for(int b = 0; b < ((Network4)tf).getNodeCount(); b++){
+                    
+                    System.out.print(((Network4)tf).getPathLoad()[a][b]);
+                    
+                    if(b != ((Network4)tf).getNodeCount() - 1){
+                        System.out.print(", ");
+                    }  
+                    
+                }
+                System.out.print("}");
+                
+                if(a != ((Network4)tf).getNodeCount() - 1){
+                    System.out.println(", ");
+                } 
+            }
+            System.out.println("}");
+            
+            System.out.println("Path: ");
+            System.out.print("{");
+            for(int p = 0; p < ((Network4)tf).getNode_path().size(); p++) {
+                pa = ((Network4)tf).getNode_path().get(p);
+                System.out.print("{" + pa[0] + ", " + pa[1] + "}");
+                
+                if(p != ((Network4)tf).getNode_path().size()-1){
+                    System.out.print(", ");
+                }
+                
+            }
+            System.out.println("}");
+            
+            System.out.println("Built paths: ");
+            System.out.print("{");
+            for(int p = 0; p < ((Network4)tf).getBuilt_path().size(); p++) {
+                pa = ((Network4)tf).getBuilt_path().get(p);
+                System.out.print("{" + pa[0] + ", " + pa[1] + "}");
+                
+                if(p != ((Network4)tf).getBuilt_path().size()-1){
+                    System.out.print(", ");
+                }
+                
+            }
+            System.out.println("}");
+            
+            for(Individual ind : ((DErand1bin)de).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+
+//            System.out.println(de.getBest().fitness - ((DErand1bin) de).getBestHistory().get(MAXFES-1).fitness);
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+
+    }
+    
+    public static void main(String[] args) throws Exception {
+    
+        DErand1bin.mainNetwork4(args);
+        
     }
 }

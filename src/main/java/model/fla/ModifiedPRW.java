@@ -81,7 +81,7 @@ public class ModifiedPRW extends PRW {
                 r = this.chaos.nextDouble(0, maxStepLength);
                 
                 /**
-                 * Direction change (ping-pong) modification
+                 * Direction change (switch direction) modification
                  */
                 if(rnd.nextDouble() <= this.changeProbability && dim != changedDimension){
                     this.startZone[dim] = (this.startZone[dim]+1) % 2;

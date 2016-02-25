@@ -1,11 +1,18 @@
 package algorithm.de;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.chaos.RankedChaosGenerator;
-import model.tf.Cec2014;
+import model.tf.Network2;
+import model.tf.Network3;
+import model.tf.Network4;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -318,22 +325,113 @@ public class MCShaDE extends ShaDE {
      * @param args the command line arguments
      * @throws java.lang.Exception
      */
-    public static void main(String[] args) throws Exception {
-        int dimension = 10;
+    public static void mainNetwork2(String[] args) throws Exception {
+        int dimension = 50;
         int NP = 100;
         int MAXFES = 10000 * dimension;
         int funcNumber = 14;
-        TestFunction tf = new Cec2014(dimension, funcNumber);
-        int H = 1;
+        TestFunction tf = new Network2();
+        int H = 10;
         util.random.Random generator = new util.random.UniformRandom();
 
         MCShaDE shade;
 
-        int runs = 2;
+        int runs = 10;
         double[] bestArray = new double[runs];
-
+        int i, best;
+        double min;
+        Integer[] pa;
+        
         for (int k = 0; k < runs; k++) {
 
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+            
+            shade = new MCShaDE(dimension, MAXFES, tf, H, NP, generator);
+
+            shade.run();
+            shade.printOutRankings();
+
+            bestArray[k] = shade.getBest().fitness;
+            
+            System.out.println("Individual: " + Arrays.toString(shade.getBest().vector));
+            System.out.println("Profit: " + shade.getBest().fitness);
+            tf.fitness(shade.getBest());
+            
+            System.out.println("Path: ");
+            System.out.print("{");
+            for(int p = 0; p < ((Network2)tf).getNode_path().size(); p++) {
+                System.out.print(((Network2)tf).getNode_path().get(p));
+                
+                if(p != ((Network2)tf).getNode_path().size()-1){
+                    System.out.print(", ");
+                }
+                
+            }
+            System.out.println("}");
+            
+            System.out.println("Built paths: ");
+            System.out.print("{");
+            for(int p = 0; p < ((Network2)tf).getBuilt_path().size(); p++) {
+                pa = ((Network2)tf).getBuilt_path().get(p);
+                System.out.print("{" + pa[0] + ", " + pa[1] + "}");
+                
+                if(p != ((Network2)tf).getBuilt_path().size()-1){
+                    System.out.print(", ");
+                }
+                
+            }
+            System.out.println("}");
+            
+            
+            for(Individual ind : ((MCShaDE)shade).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+    }
+    
+    /**
+     * @param args the command line arguments
+     * @throws java.lang.Exception
+     */
+    public static void mainNetwork3(String[] args) throws Exception {
+        int dimension = 50;
+        int NP = 100;
+        int MAXFES = 10000 * dimension;
+        int funcNumber = 14;
+        TestFunction tf = new Network3();
+        int H = 10;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        MCShaDE shade;
+
+        int runs = 10;
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+        Integer[] pa;
+        
+        for (int k = 0; k < runs; k++) {
+
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+            
             shade = new MCShaDE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
@@ -363,8 +461,72 @@ public class MCShaDE extends ShaDE {
 //            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
 //                Logger.getLogger(ShaDE.class.getName()).log(Level.SEVERE, null, ex);
 //            }
-            bestArray[k] = shade.getBest().fitness - tf.optimum();
-            System.out.println(shade.getBest().fitness - tf.optimum());
+            bestArray[k] = shade.getBest().fitness;
+            
+            System.out.println("Individual: " + Arrays.toString(shade.getBest().vector));
+            System.out.println("Profit: " + shade.getBest().fitness);
+            tf.fitness(shade.getBest());
+            
+            System.out.println("X: " + Arrays.toString(((Network4)tf).getX()));
+            System.out.println("NodeLoad: " + Arrays.toString(((Network3)tf).getNodeLoad()));
+            
+            System.out.println("PathLoad: ");
+            System.out.print("{");
+            for(int a = 0; a < ((Network3)tf).getNodeCount(); a++){
+                System.out.print("{");
+                for(int b = 0; b < ((Network3)tf).getNodeCount(); b++){
+                    
+                    System.out.print(((Network3)tf).getPathLoad()[a][b]);
+                    
+                    if(b != ((Network3)tf).getNodeCount() - 1){
+                        System.out.print(", ");
+                    }  
+                    
+                }
+                System.out.print("}");
+                
+                if(a != ((Network3)tf).getNodeCount() - 1){
+                    System.out.println(", ");
+                } 
+            }
+            System.out.println("}");
+            
+            System.out.println("Path: ");
+            System.out.print("{");
+            for(int p = 0; p < ((Network3)tf).getNode_path().size(); p++) {
+                pa = ((Network3)tf).getNode_path().get(p);
+                System.out.print("{" + pa[0] + ", " + pa[1] + "}");
+                
+                if(p != ((Network3)tf).getNode_path().size()-1){
+                    System.out.print(", ");
+                }
+                
+            }
+            System.out.println("}");
+            
+            System.out.println("Built paths: ");
+            System.out.print("{");
+            for(int p = 0; p < ((Network3)tf).getBuilt_path().size(); p++) {
+                pa = ((Network3)tf).getBuilt_path().get(p);
+                System.out.print("{" + pa[0] + ", " + pa[1] + "}");
+                
+                if(p != ((Network3)tf).getBuilt_path().size()-1){
+                    System.out.print(", ");
+                }
+                
+            }
+            System.out.println("}");
+            
+            
+            for(Individual ind : ((MCShaDE)shade).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+            
         }
 
         System.out.println("=================================");
@@ -374,6 +536,153 @@ public class MCShaDE extends ShaDE {
         System.out.println("Median: " + new Median().evaluate(bestArray));
         System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
         System.out.println("=================================");
+    }
+    
+    /**
+     * 
+     * @param args
+     * @throws Exception 
+     */
+    public static void mainNetwork4(String[] args) throws Exception {
+        int dimension = 100;
+        int NP = 100;
+        int MAXFES = 10000 * dimension;
+        int funcNumber = 14;
+        TestFunction tf = new Network4();
+        int H = 10;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        MCShaDE shade;
+
+        int runs = 10;
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+        Integer[] pa;
+        
+        for (int k = 0; k < runs; k++) {
+
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+            
+            shade = new MCShaDE(dimension, MAXFES, tf, H, NP, generator);
+
+            shade.run();
+            shade.printOutRankings();
+
+            PrintWriter writer;
+
+            try {
+                writer = new PrintWriter(tf.name() + "-mcshade" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int z = 0; z < shade.getBestHistory().size(); z++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(z).fitness));
+
+                    if (z != shade.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+                
+            }
+            bestArray[k] = shade.getBest().fitness;
+            
+            System.out.println("Individual: " + Arrays.toString(shade.getBest().vector));
+            System.out.println("Profit: " + shade.getBest().fitness);
+            tf.fitness(shade.getBest());
+            
+            System.out.println("X: " + Arrays.toString(((Network4)tf).getX()));
+            System.out.println("NodeLoad: " + Arrays.toString(((Network4)tf).getNodeLoad()));
+            
+            System.out.println("PathLoad: ");
+            System.out.print("{");
+            for(int a = 0; a < ((Network4)tf).getNodeCount(); a++){
+                System.out.print("{");
+                for(int b = 0; b < ((Network4)tf).getNodeCount(); b++){
+                    
+                    System.out.print(((Network4)tf).getPathLoad()[a][b]);
+                    
+                    if(b != ((Network4)tf).getNodeCount() - 1){
+                        System.out.print(", ");
+                    }  
+                    
+                }
+                System.out.print("}");
+                
+                if(a != ((Network4)tf).getNodeCount() - 1){
+                    System.out.println(", ");
+                } 
+            }
+            System.out.println("}");
+            
+            System.out.println("Path: ");
+            System.out.print("{");
+            for(int p = 0; p < ((Network4)tf).getNode_path().size(); p++) {
+                pa = ((Network4)tf).getNode_path().get(p);
+                System.out.print("{" + pa[0] + ", " + pa[1] + "}");
+                
+                if(p != ((Network4)tf).getNode_path().size()-1){
+                    System.out.print(", ");
+                }
+                
+            }
+            System.out.println("}");
+            
+            System.out.println("Built paths: ");
+            System.out.print("{");
+            for(int p = 0; p < ((Network4)tf).getBuilt_path().size(); p++) {
+                pa = ((Network4)tf).getBuilt_path().get(p);
+                System.out.print("{" + pa[0] + ", " + pa[1] + "}");
+                
+                if(p != ((Network4)tf).getBuilt_path().size()-1){
+                    System.out.print(", ");
+                }
+                
+            }
+            System.out.println("}");
+            
+            
+            for(Individual ind : ((MCShaDE)shade).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+    }
+    
+    /**
+     * MAIN
+     * 
+     * @param args
+     * @throws Exception 
+     */
+    public static void main(String[] args) throws Exception {
+    
+//        MCShaDE.mainNetwork2(args);
+//        MCShaDE.mainNetwork3(args);     
+        MCShaDE.mainNetwork4(args);    
     }
 
 }

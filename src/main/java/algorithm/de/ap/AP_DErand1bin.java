@@ -415,7 +415,7 @@ public class AP_DErand1bin implements Algorithm {
 
     public static void main(String[] args) throws Exception {
 
-        int dimension = 150;
+        int dimension = 50;
         int NP = 100;
         int MAXFES = 10_000 * dimension;
 //        int funcNumber = 14;
