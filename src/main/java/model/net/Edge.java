@@ -9,6 +9,7 @@ public abstract class Edge {
 
     protected final Individual source;
     protected final Individual target;
+    public int iter;
 
     public Edge(Individual source, Individual target) {
         this.source = source;

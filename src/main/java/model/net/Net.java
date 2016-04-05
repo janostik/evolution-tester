@@ -30,6 +30,15 @@ public class Net {
     public Individual getNodeWithHighestDegree() {
         return MapUtil.getKeyForMaxValue(degreeMap);
     }
+    
+    public int getLowestDegree() {
+        Integer val = MapUtil.getLowestValue(degreeMap);
+        return val == null ? 0 : val;
+    }
+    
+    public Individual getNodeWithLowestDegree() {
+        return MapUtil.getKeyForMinValue(degreeMap);
+    }
 
     public void removeEdgesForNode(Individual node) {
         if (node == null) return;

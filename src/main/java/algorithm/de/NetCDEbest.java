@@ -9,6 +9,7 @@ import java.util.stream.DoubleStream;
 import model.Individual;
 import model.net.Edge;
 import model.net.Net;
+import model.tf.Ackley;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -102,12 +103,12 @@ public class NetCDEbest extends NetCDErand1bin {
         
         int dimension = 30;
         int NP = 50;
-        int iter = 100;
-        int MAXFES = iter * dimension;
+        int iter = 50;
+        int MAXFES = iter * NP;
         int funcNumber = 5;
         TestFunction tf = new Schwefel();
         util.random.Random generator = new util.random.UniformRandom();
-        util.random.Random chaos = new util.random.BurgersRandom();
+        util.random.Random chaos = new util.random.DissipativeRandom();
         double f = 0.5, cr = 0.8;
         Net net;
 
@@ -135,15 +136,15 @@ public class NetCDEbest extends NetCDErand1bin {
             * NET manipulating
             */
 
-           pw = new PrintWriter("C:\\Users\\wiki\\Dropbox\\PhD\\RomanData/net_best_" + iter + "iter_" + tf.name() + "_" + chaos.toString() + ".csv");
+           pw = new PrintWriter("/Users/adam/Documents/RomanData/DEbest/net_50iter_" + tf.name() + "_" + chaos.toString() + ".csv");
 
-           pw.println("source,target,directed");
+           pw.println("source,target,iter;directed");
            
            net = ((NetCDErand1bin) de).net;
 
            for(Edge edge : net.getEdges()){
                
-               pw.println(edge.getSource().id + "," + edge.getTarget().id + ",TRUE");
+               pw.println(edge.getSource().id + "," + edge.getTarget().id + "," + edge.iter + ",TRUE");
                
            }
 

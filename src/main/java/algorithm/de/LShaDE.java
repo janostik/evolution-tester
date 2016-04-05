@@ -1,56 +1,33 @@
 package algorithm.de;
 
-import algorithm.Algorithm;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.tf.Cec2015;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import util.OtherDistributionsUtil;
+import util.random.Random;
 
 /**
  *
- * ShaDE algorithm
- *
- * @see <a href="http://goo.gl/eYB26Z">Original paper from CEC2013</a>
- *
- * @author adam on 16/11/2015 update 25/11/2015
+ * @author adam on 05/04/2016
  */
-public class ShaDE implements Algorithm {
+public class LShaDE extends ShaDE {
+
+    protected final int minPopSize;
+    protected final int maxPopSize;
     
-    int D;
-    int G;
-    int NP;
-    List<Individual> Aext;
-    List<Individual> P;
-    int FES;
-    int MAXFES;
-    TestFunction f;
-    Individual best;
-    List<Individual> bestHistory;
-    double[] M_F;
-    double[] M_CR;
-    List<Double> S_F;
-    List<Double> S_CR;
-    int H;
-    util.random.Random rndGenerator;
-    int id;
-
-    public ShaDE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
-        this.D = D;
-        this.MAXFES = MAXFES;
-        this.f = f;
-        this.H = H;
-        this.NP = NP;
-        this.rndGenerator = rndGenerator;
+    public LShaDE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
+        super(D, MAXFES, f, H, NP, rndGenerator);
+        this.minPopSize = minPopSize;
+        this.maxPopSize = NP;
     }
-
+ 
     @Override
     public Individual run() {
 
@@ -226,6 +203,8 @@ public class ShaDE implements Algorithm {
              */
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
+            NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
+            P = this.resizePop(P, NP);
             this.Aext = this.resizeAext(this.Aext, this.NP);
 
         }
@@ -234,153 +213,13 @@ public class ShaDE implements Algorithm {
 
     }
     
-    protected double[] mutation(List<double[]> parents, double F){
-        
-        /**
-         * Parents:
-         * x
-         * pbest
-         * pr1
-         * pr2
-         */
-        
-        double[] v = new double[this.D];
-        for (int j = 0; j < this.D; j++) {
-
-            v[j] = parents.get(0)[j] + F * (parents.get(1)[j] - parents.get(0)[j]) + F * (parents.get(2)[j] - parents.get(3)[j]);
-
-        }
-        
-        return v;
-        
-    }
-    
-    /**
-     * 
-     * @param u
-     * @param x
-     * @return 
-     */
-    protected double[] constrainCheck(double[] u, double[] x){
-        /**
-         * Constrain check
-         */
-        for (int d = 0; d < this.D; d++) {
-            if (u[d] < this.f.min(this.D)) {
-                u[d] = (this.f.min(this.D) + x[d]) / 2.0;
-            } else if (u[d] > this.f.max(this.D)) {
-                u[d] = (this.f.max(this.D) + x[d]) / 2.0;
-            }
-        }
-        
-        return u;
-    }
-    
-    /**
-     * 
-     * @param CR
-     * @param v
-     * @param x
-     * @return 
-     */
-    protected double[] crossover(double CR, double[] v, double[] x){
-        
-        /**
-         * Crossover
-         */
-        double[] u = new double[this.D];
-        int jrand = rndGenerator.nextInt(this.D);
-
-        for (int j = 0; j < this.D; j++) {
-            if (getRandomCR() <= CR || j == jrand) {
-                u[j] = v[j];
-            } else {
-                u[j] = x[j];
-            }
-        }
-        
-        return u;
-        
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    protected double getRandomCR(){
-        return rndGenerator.nextDouble();
-    }
-
-    /**
-     * Creation of initial population.
-     */
-    protected void initializePopulation(){
-        
-        /**
-         * Initial population
-         */
-        id = 0;
-        double[] features;
-        this.P = new ArrayList<>();
-        Individual ind;
-
-        for (int i = 0; i < this.NP; i++) {
-            id = i;
-            features = this.f.generateTrial(this.D).clone();
-            ind = new Individual(String.valueOf(id), features, this.f.fitness(features));
-            this.isBest(ind);
-            this.P.add(ind);
-            this.FES++;
-            this.writeHistory();
-        }
-        
-    }
-    
-    @Override
-    public List<? extends Individual> getPopulation() {
-        return this.P;
-    }
-
-    @Override
-    public TestFunction getTestFunction() {
-        return this.f;
-    }
-
-    @Override
-    public String getName() {
-        return "ShaDE";
-    }
-
     /**
      *
      * @param list
      * @param size
      * @return
      */
-    protected List<Individual> resizeAext(List<Individual> list, int size) {
-
-        List<Individual> toRet = new ArrayList<>();
-        toRet.addAll(list);
-        int index;
-
-        while (toRet.size() > size) {
-
-            index = rndGenerator.nextInt(toRet.size());
-            toRet.remove(index);
-
-        }
-
-        return toRet;
-
-    }
-
-    /**
-     *
-     * @param list
-     * @param size
-     * @return
-     */
-    protected List<Individual> resize(List<Individual> list, int size) {
+    protected List<Individual> resizePop(List<Individual> list, int size) {
 
         List<Individual> toRet = new ArrayList<>();
         List<Individual> tmp = new ArrayList<>();
@@ -396,240 +235,29 @@ public class ShaDE implements Algorithm {
         return toRet;
 
     }
-
+    
     /**
-     *
-     * @param list
-     * @return
+     * @param args the command line arguments
      */
-    protected int getIndexOfBestFromList(List<Individual> list) {
-
-        Individual b = null;
-        int i = 0;
-        int index = -1;
-
-        for (Individual ind : list) {
-
-            if (b == null) {
-                b = ind;
-                index = i;
-            } else if (ind.fitness < b.fitness) {
-                b = ind;
-                index = i;
-            }
-            i++;
-        }
-
-        return index;
-
-    }
-
-    /**
-     *
-     * @param list
-     * @return
-     */
-    protected Individual getRandBestFromList(List<Individual> list) {
-
-        int index = rndGenerator.nextInt(list.size());
-
-        return list.get(index);
-
-    }
-
-    /**
-     *
-     * @param index
-     * @param max1
-     * @param max2
-     * @return
-     */
-    protected int[] genRandIndexes(int index, int max1, int max2) {
-
-        int a, b;
-
-        a = rndGenerator.nextInt(max1);
-        b = rndGenerator.nextInt(max2);
-
-        while (a == b || a == index || b == index) {
-            a = rndGenerator.nextInt(max1);
-            b = rndGenerator.nextInt(max2);
-        }
-
-        return new int[]{a, b};
-    }
-
-    /**
-     *
-     */
-    protected void writeHistory() {
-        this.bestHistory.add(this.best);
-    }
-
-    /**
-     *
-     * @param ind
-     * @return
-     */
-    protected boolean isBest(Individual ind) {
-
-        if (this.best == null || ind.fitness < this.best.fitness) {
-            this.best = ind;
-            return true;
-        }
-
-        return false;
-
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="getters and setters">
-    public int getD() {
-        return D;
-    }
-
-    public void setD(int D) {
-        this.D = D;
-    }
-
-    public int getG() {
-        return G;
-    }
-
-    public void setG(int G) {
-        this.G = G;
-    }
-
-    public int getNP() {
-        return NP;
-    }
-
-    public void setNP(int NP) {
-        this.NP = NP;
-    }
-
-    public List<Individual> getAext() {
-        return Aext;
-    }
-
-    public void setAext(List<Individual> Aext) {
-        this.Aext = Aext;
-    }
-
-    public List<Individual> getP() {
-        return P;
-    }
-
-    public void setP(List<Individual> P) {
-        this.P = P;
-    }
-
-    public int getFES() {
-        return FES;
-    }
-
-    public void setFES(int FES) {
-        this.FES = FES;
-    }
-
-    public int getMAXFES() {
-        return MAXFES;
-    }
-
-    public void setMAXFES(int MAXFES) {
-        this.MAXFES = MAXFES;
-    }
-
-    public TestFunction getF() {
-        return f;
-    }
-
-    public void setF(TestFunction f) {
-        this.f = f;
-    }
-
-    public Individual getBest() {
-        return best;
-    }
-
-    public void setBest(Individual best) {
-        this.best = best;
-    }
-
-    public List<Individual> getBestHistory() {
-        return bestHistory;
-    }
-
-    public void setBestHistory(List<Individual> bestHistory) {
-        this.bestHistory = bestHistory;
-    }
-
-    public double[] getM_F() {
-        return M_F;
-    }
-
-    public void setM_F(double[] M_F) {
-        this.M_F = M_F;
-    }
-
-    public double[] getM_CR() {
-        return M_CR;
-    }
-
-    public void setM_CR(double[] M_CR) {
-        this.M_CR = M_CR;
-    }
-
-    public List<Double> getS_F() {
-        return S_F;
-    }
-
-    public void setS_F(List<Double> S_F) {
-        this.S_F = S_F;
-    }
-
-    public List<Double> getS_CR() {
-        return S_CR;
-    }
-
-    public void setS_CR(List<Double> S_CR) {
-        this.S_CR = S_CR;
-    }
-
-    public int getH() {
-        return H;
-    }
-
-    public void setH(int H) {
-        this.H = H;
-    }
-
-    public util.random.Random getRndGenerator() {
-        return rndGenerator;
-    }
-
-    public void setRndGenerator(util.random.Random rndGenerator) {
-        this.rndGenerator = rndGenerator;
-    }
-    //</editor-fold>
-
-    public static void main(String[] args) throws Exception {
-
+    public static void main(String[] args) {
+        
         int dimension = 10;
         int NP = 100;
-        int MAXFES = 100 * NP;
+        int minNP = 4;
+        int MAXFES = 1000 * NP;
         int funcNumber = 14;
         TestFunction tf = new Schwefel();
-        int H = 1;
+        int H = 10;
         util.random.Random generator = new util.random.UniformRandom();
 
-        ShaDE shade;
+        LShaDE shade;
 
         int runs = 10;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new ShaDE(dimension, MAXFES, tf, H, NP, generator);
+            shade = new LShaDE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.run();
 
@@ -672,5 +300,5 @@ public class ShaDE implements Algorithm {
         System.out.println("=================================");
 
     }
-
+    
 }
