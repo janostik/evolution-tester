@@ -102,8 +102,8 @@ public class NetCDEbest extends NetCDErand1bin {
         
         int dimension = 30;
         int NP = 50;
-        int iter = 100;
-        int MAXFES = iter * dimension;
+        int iter = 60;
+        int MAXFES = iter * NP;
         int funcNumber = 5;
         TestFunction tf = new Schwefel();
         util.random.Random generator = new util.random.UniformRandom();
@@ -127,27 +127,28 @@ public class NetCDEbest extends NetCDErand1bin {
             System.out.println("ID: " + ((NetCDEbest) de).net.getNodeWithHighestDegree().id);
             System.out.println("Fitness: " + ((NetCDEbest) de).net.getNodeWithHighestDegree().fitness);
             System.out.println("Degree: " + ((NetCDEbest) de).net.getHighestDegree());
+            System.out.println("Edges: " + ((NetCDEbest) de).net.getEdges().size());
 
-            bestArray[k] = de.getBest().fitness - tf.optimum();
-            System.out.println(de.getBest().fitness - tf.optimum());
+            bestArray[k] = de.getBest().fitness;
+            System.out.println(de.getBest().fitness);
             
            /**
             * NET manipulating
             */
 
-           pw = new PrintWriter("C:\\Users\\wiki\\Dropbox\\PhD\\RomanData/net_best_" + iter + "iter_" + tf.name() + "_" + chaos.toString() + ".csv");
-
-           pw.println("source,target,directed");
-           
-           net = ((NetCDErand1bin) de).net;
-
-           for(Edge edge : net.getEdges()){
-               
-               pw.println(edge.getSource().id + "," + edge.getTarget().id + ",TRUE");
-               
-           }
-
-           pw.close();
+//           pw = new PrintWriter("C:\\Users\\wiki\\Dropbox\\PhD\\RomanData/net_best_" + iter + "iter_" + tf.name() + "_" + chaos.toString() + ".csv");
+//
+//           pw.println("source,target,directed");
+//           
+//           net = ((NetCDErand1bin) de).net;
+//
+//           for(Edge edge : net.getEdges()){
+//               
+//               pw.println(edge.getSource().id + "," + edge.getTarget().id + ",TRUE");
+//               
+//           }
+//
+//           pw.close();
             
         }
         
