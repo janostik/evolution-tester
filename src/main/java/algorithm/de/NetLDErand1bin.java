@@ -6,10 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
+import model.net.BidirectionalEdge;
 import model.net.Edge;
 import model.net.Net;
-import model.net.UnidirectionalEdge;
-import model.tf.Ackley;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -21,12 +20,16 @@ import util.random.Random;
  *
  * @author adam on 18/01/2016
  */
-public class NetCDErand1bin extends CDErand1bin {
+public class NetLDErand1bin extends CDErand1bin {
 
     Net net = new Net();
+    private final int minPopSize;
+    private final int maxPopSize;
 
-    public NetCDErand1bin(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR, Random chaosGenerator) {
+    public NetLDErand1bin(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR, Random chaosGenerator, int minPopSize) {
         super(D, NP, MAXFES, f, rndGenerator, F, CR, chaosGenerator);
+        this.minPopSize = minPopSize;
+        this.maxPopSize = NP;
     }
 
     @Override
@@ -90,7 +93,7 @@ public class NetCDErand1bin extends CDErand1bin {
                     newPop.add(trial);
                     
                     for (int par = 1; par < parrentArray.length; par++ ) {
-                        edge = new UnidirectionalEdge(parrentArray[par], trial);
+                        edge = new BidirectionalEdge(parrentArray[par], trial);
                         edge.iter = G;
                         net.addEdge(edge);
                     }
@@ -102,8 +105,67 @@ public class NetCDErand1bin extends CDErand1bin {
             }
 
             P = newPop;
+            NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
+            P = this.resize(P, NP);
 
         }
+    }
+    
+    /**
+     *
+     * @param list
+     * @param size
+     * @return
+     */
+    private List<Individual> resize(List<Individual> list, int size) {
+
+        List<Individual> toRet = new ArrayList<>();
+        List<Individual> tmp = new ArrayList<>();
+        Net tmpNet = new Net(this.net);
+        Individual tmpInd;
+        tmp.addAll(list);
+
+        for (int i = 0; i < size; i++) {
+            tmpInd = tmpNet.getNodeWithHighestDegree();
+            if(tmpInd == null){
+                //If there are no nodes left with the edges, select the best according to fitness value
+                tmpInd = this.getBestFromList(tmp);
+            }
+            //add node to return array
+            toRet.add(tmpInd);
+            //remove it from temporary list of nodes that are left
+            tmp.remove(tmpInd);
+            //remove edges from temporary network
+            tmpNet.removeEdgesForNode(tmpInd);
+        }
+        
+        //remove edges for the nodes which did not survive to the next gen
+        tmp.stream().forEach(this.net::removeEdgesForNode);
+
+        return toRet;
+
+    }
+    
+    /**
+     *
+     * @param list
+     * @return
+     */
+    private Individual getBestFromList(List<Individual> list) {
+
+        Individual b = null;
+
+        for (Individual ind : list) {
+
+            if (b == null) {
+                b = ind;
+            } else if (ind.fitness < b.fitness) {
+                b = ind;
+            }
+        }
+
+        return b;
+
     }
     
     /**
@@ -133,7 +195,8 @@ public class NetCDErand1bin extends CDErand1bin {
         
         int dimension = 30;
         int NP = 100;
-        int MAXFES = 10 * NP;
+        int minNP = 4;
+        int MAXFES = 100 * NP;
         int funcNumber = 5;
         TestFunction tf = new Schwefel();
         util.random.Random generator = new util.random.UniformRandom();
@@ -143,20 +206,26 @@ public class NetCDErand1bin extends CDErand1bin {
 
         Algorithm de;
 
-        int runs = 10;
+        int runs = 1;
         double[] bestArray = new double[runs];
         PrintWriter pw;
 
         for (int k = 0; k < runs; k++) {
 
-            de = new NetCDErand1bin(dimension, NP, MAXFES, tf, generator, f, cr, chaos);
+            de = new NetLDErand1bin(dimension, NP, MAXFES, tf, generator, f, cr, chaos, minNP);
 
             de.run();
             
+            System.out.println(((NetLDErand1bin)de).G);
             System.out.println("Node");
-            System.out.println("ID: " + ((NetCDErand1bin) de).net.getNodeWithHighestDegree().id);
-            System.out.println("Fitness: " + ((NetCDErand1bin) de).net.getNodeWithHighestDegree().fitness);
-            System.out.println("Degree: " + ((NetCDErand1bin) de).net.getHighestDegree());
+            if(((NetLDErand1bin) de).net.getNodeWithHighestDegree() != null) {
+                System.out.println("ID: " + ((NetLDErand1bin) de).net.getNodeWithHighestDegree().id);
+                System.out.println("Fitness: " + ((NetLDErand1bin) de).net.getNodeWithHighestDegree().fitness);
+                System.out.println("Degree: " + ((NetLDErand1bin) de).net.getHighestDegree());
+            }
+            else {
+                System.out.println("No edges in the net.");
+            }
 
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());
@@ -169,7 +238,7 @@ public class NetCDErand1bin extends CDErand1bin {
 //
 //           pw.println("source,target,iter;directed");
 //           
-//           net = ((NetCDErand1bin) de).net;
+//           net = ((NetLDErand1bin) de).net;
 //
 //           for(Edge edge : net.getEdges()){
 //               

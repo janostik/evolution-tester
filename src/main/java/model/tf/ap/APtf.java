@@ -3,8 +3,6 @@ package model.tf.ap;
 import model.Individual;
 import model.ap.APconst;
 import model.tf.TestFunction;
-import util.LoziRandomUtil;
-import util.RandomUtil;
 
 /**
  *
@@ -13,6 +11,10 @@ import util.RandomUtil;
 public class APtf implements TestFunction {
 
     public APconst ap = new APconst();
+    /**
+     * Change generator.
+     */
+    util.random.Random generator = new util.random.UniformRandom();
 //    public AP ap = new AP();
     
     @Override
@@ -49,9 +51,7 @@ public class APtf implements TestFunction {
     public double[] generateTrial(int dim) {
         double[] trial = new double[dim];
         for (int i = 0; i < dim; i++) {
-//            trial[i] = LoziRandomUtil.nextInt((int) (this.max(dim) + 1));
-            trial[i] = LoziRandomUtil.nextDouble(this.min(dim), this.max(dim));
-//            trial[i] = RandomUtil.nextDouble(this.min(dim), this.max(dim));
+            trial[i] = generator.nextDouble(this.min(dim), this.max(dim));
         }
         return trial;
     }
@@ -59,13 +59,32 @@ public class APtf implements TestFunction {
     @Override
     public double max(int dim) {
 //        return (this.ap.getGFSsize()-1);
-        return 100;
+        return ap.max;
     }
 
     @Override
     public double min(int dim) {
 //        return 0;
-        return -100;
+        return ap.min;
+    }
+    
+    public int countLength(double[] vector){
+        
+        Integer[] v, gfs_code;
+        int length = vector.length;
+        
+        v = ap.discretizeVector(vector);
+        gfs_code = ap.getGFScode(v);
+
+        for(int j = 0; j < vector.length; j++){
+            if(gfs_code[j] == -1){
+                length = j;
+                break;
+            }
+        }
+        
+        return length;
+        
     }
     
     @Override

@@ -8,7 +8,7 @@ import java.util.stream.DoubleStream;
 import model.Individual;
 import model.ap.AP;
 import model.tf.TestFunction;
-import model.tf.ap.AP4sine;
+import model.tf.ap.regression.AP4sine;
 import model.tf.ap.APtf;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;

@@ -19,7 +19,7 @@ public class AP_Sigmoid implements AP_object{
     
     @Override
     public double compute(){
-        return 1.0/(double)(1.0+Math.exp((-10.0*a)));
+        return 1.0/(double)(1.0+Math.exp((-1.0*a)));
     }
 
     @Override
@@ -34,12 +34,12 @@ public class AP_Sigmoid implements AP_object{
 
     @Override
     public double compute(List<Double> array) {
-        return 1.0/(double)(1.0+Math.exp((-10.0*array.get(0))));
+        return 1.0/(double)(1.0+Math.exp((-1.0*array.get(0))));
     }
 
     @Override
     public String createEq(List<String> array) {
-        return "Divide[1, Plus[1, Exp[Times[-10, " + array.get(0) + "]]]]";
+        return "Divide[1, Plus[1, Exp[Times[-1, " + array.get(0) + "]]]]";
     }
     
 }

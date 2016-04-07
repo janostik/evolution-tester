@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.Cec2015;
-import model.tf.Network2;
+import model.tf.nwf.Network2;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;

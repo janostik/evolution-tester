@@ -110,7 +110,7 @@ public class Chaos {
         double x = chaoticData.get(index)[0];
         index++;
         
-        return (int) Math.round((Math.abs(x)/maxVal)*(bound-1));
+        return ((int) Math.round((Math.abs(x)/maxVal)*(bound))) % bound;
         
     }
 

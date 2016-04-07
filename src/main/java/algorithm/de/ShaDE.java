@@ -481,6 +481,28 @@ public class ShaDE implements Algorithm {
         return false;
 
     }
+    
+    /**
+     *
+     * @param list
+     * @return
+     */
+    protected Individual getBestFromList(List<Individual> list) {
+
+        Individual b = null;
+
+        for (Individual ind : list) {
+
+            if (b == null) {
+                b = ind;
+            } else if (ind.fitness < b.fitness) {
+                b = ind;
+            }
+        }
+
+        return b;
+
+    }
 
     // <editor-fold defaultstate="collapsed" desc="getters and setters">
     public int getD() {
@@ -616,10 +638,10 @@ public class ShaDE implements Algorithm {
 
         int dimension = 10;
         int NP = 100;
-        int MAXFES = 10000 * dimension;
+        int MAXFES = 1000 * NP;
         int funcNumber = 14;
         TestFunction tf = new Schwefel();
-        int H = 1;
+        int H = 10;
         util.random.Random generator = new util.random.UniformRandom();
 
         ShaDE shade;

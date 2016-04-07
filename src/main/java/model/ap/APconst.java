@@ -5,14 +5,18 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import model.ap.objects.AP_Const;
 import model.ap.objects.AP_Const_static;
+import model.ap.objects.AP_Cos;
 import model.ap.objects.AP_Div;
-import model.ap.objects.AP_Ln;
+import model.ap.objects.AP_Exp;
+import model.ap.objects.AP_MinusOne;
 import model.ap.objects.AP_Multiply;
+import model.ap.objects.AP_One;
 import model.ap.objects.AP_Plus;
 import model.ap.objects.AP_Sin;
 import model.ap.objects.AP_Sub;
+import model.ap.objects.AP_Zero;
+import model.ap.objects.AP_aTOb;
 import model.ap.objects.AP_object;
 import model.ap.objects.AP_x;
 
@@ -28,10 +32,18 @@ public class APconst {
     List<AP_object> GFS_2;
     int D;
     
+    public double min, max;
+    
     public String equation;
 
     public APconst() {
 
+        /**
+         * MIN and MAX values for individuals.
+         */
+        this.min = -100;
+        this.max = 100;
+        
         /**
          * There should be initialization of all GFS sets
          */
@@ -56,21 +68,22 @@ public class APconst {
 //        this.GFSall.add(new AP_Mod());
 //        this.GFSall.add(new AP_aTOb());
         
-//        this.GFSall.add(new AP_Sin());
-//        this.GFSall.add(new AP_Cos());
+        this.GFSall.add(new AP_Sin());
+        this.GFSall.add(new AP_Cos());
 //        this.GFSall.add(new AP_Tan());
 //        this.GFSall.add(new AP_Abs());
-//        this.GFSall.add(new AP_Exp());
+        this.GFSall.add(new AP_Exp());
 //        this.GFSall.add(new AP_Quad());
 //        this.GFSall.add(new AP_Sqrt());
 //        this.GFSall.add(new AP_Cube());
 //        this.GFSall.add(new AP_Ln());
+//        this.GFSall.add(new AP_Log10());
 
         this.GFSall.add(new AP_x());
 //        this.GFSall.add(new AP_Const_static());
-//        this.GFSall.add(new AP_One());
-//        this.GFSall.add(new AP_Zero());
-//        this.GFSall.add(new AP_MinusOne());
+        this.GFSall.add(new AP_One());
+        this.GFSall.add(new AP_Zero());
+        this.GFSall.add(new AP_MinusOne());
 //        this.GFSall.add(new AP_Const());
 //        this.GFSall.add(new AP_Pi());
 //        this.GFSall.add(new AP_Euler());
@@ -106,8 +119,6 @@ public class APconst {
     public Integer[] discretizeVector(double[] vector) {
         int dim = vector.length;
         Integer[] discrete = new Integer[dim];
-
-        double min = -100, max = 100;
         
         double dindex, diff, delta;
         int  imax = this.GFSall.size() - 1, dis_index;
@@ -185,8 +196,9 @@ public class APconst {
                     case 0:
                         
                         if(cur_object.getClass() == AP_Const_static.class){
-                            array.add(other_half[i % other_half.length]);
+                            array.add(other_half[index_of_const % other_half.length]);
                             strArray.add(String.valueOf(other_half[index_of_const % other_half.length]));
+//                            strArray.add("K" + (index_of_const % other_half.length));
                             index_of_const++;
                         }
                         else{

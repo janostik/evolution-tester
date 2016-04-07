@@ -47,7 +47,7 @@ public class RandomUtil {
     }
 
     public static double nextDouble(double min, double max) {
-        return nextDouble() * (max - min) + min;
+        return (nextDouble() * (max - min) + min);
     }
 
 }

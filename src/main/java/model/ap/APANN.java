@@ -6,15 +6,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import model.ap.objects.AP_Const_static;
-import model.ap.objects.AP_Div;
 import model.ap.objects.AP_Multiply;
 import model.ap.objects.AP_Plus;
 import model.ap.objects.AP_Sigmoid;
 import model.ap.objects.AP_Sub;
 import model.ap.objects.AP_ann_x1;
+import model.ap.objects.AP_ann_x10;
 import model.ap.objects.AP_ann_x2;
 import model.ap.objects.AP_ann_x3;
 import model.ap.objects.AP_ann_x4;
+import model.ap.objects.AP_ann_x5;
+import model.ap.objects.AP_ann_x6;
+import model.ap.objects.AP_ann_x7;
+import model.ap.objects.AP_ann_x8;
+import model.ap.objects.AP_ann_x9;
 import model.ap.objects.AP_object;
 
 /**
@@ -72,6 +77,13 @@ public class APANN {
         this.GFSall.add(new AP_ann_x2());
         this.GFSall.add(new AP_ann_x3());
         this.GFSall.add(new AP_ann_x4());
+        this.GFSall.add(new AP_ann_x5());
+        this.GFSall.add(new AP_ann_x6());
+        this.GFSall.add(new AP_ann_x7());
+        this.GFSall.add(new AP_ann_x8());
+        this.GFSall.add(new AP_ann_x9());
+        this.GFSall.add(new AP_ann_x10());
+
         this.GFSall.add(new AP_Const_static());
 //        this.GFSall.add(new AP_One());
 //        this.GFSall.add(new AP_Zero());
@@ -206,8 +218,26 @@ public class APANN {
                             else if(cur_object.getClass() == AP_ann_x3.class){
                                 xIndex = 2;
                             }
-                            else {
+                            else if(cur_object.getClass() == AP_ann_x4.class){
                                 xIndex = 3;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x5.class){
+                                xIndex = 4;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x6.class){
+                                xIndex = 5;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x7.class){
+                                xIndex = 6;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x8.class){
+                                xIndex = 7;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x9.class){
+                                xIndex = 8;
+                            }
+                            else {
+                                xIndex = 9;
                             }
 
                             array.add(x[xIndex]);

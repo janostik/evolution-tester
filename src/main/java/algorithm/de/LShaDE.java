@@ -1,27 +1,33 @@
 package algorithm.de;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.DoubleStream;
 import model.Individual;
-import model.chaos.RankedChaosGenerator;
+import model.tf.Schwefel;
 import model.tf.TestFunction;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+import org.apache.commons.math3.stat.descriptive.rank.Median;
 import util.OtherDistributionsUtil;
+import util.random.Random;
 
 /**
  *
- * @author adam on 25/11/2015
+ * @author adam on 05/04/2016
  */
-public class MCShaDE extends ShaDE {
+public class LShaDE extends ShaDE {
 
-    List<RankedChaosGenerator> chaosGenerator;
-    int chosenChaos;
-
-
-    public MCShaDE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
+    protected final int minPopSize;
+    protected final int maxPopSize;
+    
+    public LShaDE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
         super(D, MAXFES, f, H, NP, rndGenerator);
-        chaosGenerator = RankedChaosGenerator.getAllChaosGenerators();
+        this.minPopSize = minPopSize;
+        this.maxPopSize = NP;
     }
-
+ 
     @Override
     public Individual run() {
 
@@ -82,6 +88,7 @@ public class MCShaDE extends ShaDE {
                 if (Fg > 1) {
                     Fg = 1;
                 }
+                
 
                 CRg = OtherDistributionsUtil.normal(this.M_CR[r], 0.1);
                 if (CRg > 1) {
@@ -103,8 +110,8 @@ public class MCShaDE extends ShaDE {
                 /**
                  * Parent selection
                  */
-                rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size());
                 pbest = this.getRandBestFromList(pBestArray).vector.clone();
+                rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size());
                 pr1 = this.P.get(rIndexes[0]).vector.clone();
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
@@ -116,10 +123,10 @@ public class MCShaDE extends ShaDE {
                 parents.add(pbest);
                 parents.add(pr1);
                 parents.add(pr2);
-
+                
                 /**
                  * Mutation
-                 */
+                 */               
                 v = mutation(parents, Fg);
 
                 /**
@@ -147,12 +154,6 @@ public class MCShaDE extends ShaDE {
                     this.S_CR.add(CRg);
                     this.Aext.add(x);
                     wS.add(Math.abs(trial.fitness - x.fitness));
-
-                    /**
-                     * Chosen chaos rank update
-                     */
-                    updateRankings();
-
                 } else {
                     newPop.add(x);
                 }
@@ -196,12 +197,14 @@ public class MCShaDE extends ShaDE {
                     k = 0;
                 }
             }
-
+            
             /**
              * Resize of population and archives
              */
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
+            NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
+            P = this.resizePop(P, NP);
             this.Aext = this.resizeAext(this.Aext, this.NP);
 
         }
@@ -213,111 +216,97 @@ public class MCShaDE extends ShaDE {
     /**
      *
      * @param list
+     * @param size
      * @return
      */
-    @Override
-    protected Individual getRandBestFromList(List<Individual> list) {
+    protected List<Individual> resizePop(List<Individual> list, int size) {
 
-        int index = chaosGenerator.get(chosenChaos).chaos.nextInt(list.size());
+        if(size == list.size()){
+            return list;
+        }
+        
+        List<Individual> toRet = new ArrayList<>();
+        List<Individual> tmp = new ArrayList<>();
+        tmp.addAll(list);
+        Individual bestInd;
 
-        return list.get(index);
-
-    }
-    
-    /**
-     * Updates rank values for chaos generators.
-     */
-    protected void updateRankings() {
-
-        if(chaosGenerator.get(chosenChaos).rank < 0.6){
-            double rankSum = 0, difference;
-
-            rankSum = chaosGenerator.stream().map((chaos) -> chaos.rank).reduce(rankSum, (accumulator, _item) -> accumulator + _item);
-
-            difference = rankSum / 100.0;
-            chaosGenerator.get(chosenChaos).rank += difference;
-
-            for (RankedChaosGenerator chaos : chaosGenerator) {
-                chaos.rank = chaos.rank / (rankSum + difference);
-            }
+        for (int i = 0; i < size; i++) {
+            bestInd = this.getBestFromList(tmp);
+            toRet.add(bestInd);
+            tmp.remove(bestInd);
         }
 
+        return toRet;
 
     }
-
-    public void printOutRankings() {
-
-        System.out.println("Ranking");
-        chaosGenerator.stream().forEach((chaos) -> {
-            System.out.print(chaos.rank + " ");
-        });
-        System.out.println("");
-
-    }
-
-    @Override
-    public String getName() {
-        return "MC-ShaDE";
-    }
-
+    
     /**
-     *
-     * @return
+     * @param args the command line arguments
      */
-    @Override
-    protected double getRandomCR() {
-        return rndGenerator.nextDouble();
-    }
+    public static void main(String[] args) {
+        
+        int dimension = 10;
+        int NP = 100;
+        int minNP = 4;
+        int MAXFES = 100 * NP;
+        int funcNumber = 14;
+        TestFunction tf = new Schwefel();
+        int H = 10;
+        util.random.Random generator = new util.random.UniformRandom();
 
-    /**
-     *
-     * @param index
-     * @param max1
-     * @param max2
-     * @return
-     */
-    @Override
-    protected int[] genRandIndexes(int index, int max1, int max2) {
+        LShaDE shade;
 
-        /**
-         * TODO choose chaos base on rank
-         */
-        double prob = rndGenerator.nextDouble();
-        int chIndex = 0;
+        int runs = 10;
+        double[] bestArray = new double[runs];
 
-        do {
-            prob -= chaosGenerator.get(chIndex).rank;
-            chIndex++;
-            if (chIndex == chaosGenerator.size()) {
-                break;
-            }
-        } while (prob > 0);
+        for (int k = 0; k < runs; k++) {
 
-        chIndex -= 1;
-        chosenChaos = chIndex;
+            shade = new LShaDE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-        int a, b;
+            shade.run();
 
-        a = chaosGenerator.get(chIndex).chaos.nextInt(max1);
-        b = chaosGenerator.get(chIndex).chaos.nextInt(max2);
+//            PrintWriter writer;
+//
+//            try {
+//                writer = new PrintWriter("CEC2015-" + funcNumber + "-shade" + k + ".txt", "UTF-8");
+//
+//                writer.print("{");
+//
+//                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+//
+//                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+//
+//                    if (i != shade.getBestHistory().size() - 1) {
+//                        writer.print(",");
+//                    }
+//
+//                }
+//
+//                writer.print("}");
+//
+//                writer.close();
+//
+//            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+//                Logger.getLogger(ShaDE.class.getName()).log(Level.SEVERE, null, ex);
+//            }
 
-        while (a == b || a == index || b == index) {
-            a = chaosGenerator.get(chIndex).chaos.nextInt(max1);
-            b = chaosGenerator.get(chIndex).chaos.nextInt(max2);
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println(shade.getBest().fitness - tf.optimum());
+            System.out.println(Arrays.toString(shade.getBest().vector));
+            
+//            for(Individual ind : shade.P){
+//                System.out.println("ID: " + ind.id + " - fitness: " + ind.fitness);
+//            }
         }
 
-        return new int[]{a, b};
-    }
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
 
-    /**
-     * MAIN
-     * 
-     * @param args
-     * @throws Exception 
-     */
-    public static void main(String[] args) throws Exception {
-    
-    
     }
-
+    
 }

@@ -1,14 +1,20 @@
 package algorithm.de.ap;
 
 import algorithm.Algorithm;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.ap.AP;
+import model.ap.APconst;
 import model.tf.TestFunction;
-import model.tf.ap.APgeMath;
+import model.tf.ap.regression.AP3sine;
+import model.tf.ap.regression.APquintic;
+import model.tf.ap.regression.APsextic;
 import model.tf.ap.APtf;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -42,10 +48,12 @@ public class AP_ShaDE implements Algorithm {
     int H;
     util.random.Random rndGenerator;
     int id;
+    List<Double> avgGenerationLength;
 
     public class AP_Individual extends Individual{
         
         public String equation;
+        public int length;
 
         private AP_Individual(String valueOf, double[] u, double fitness) {
             super(valueOf, u, fitness);
@@ -69,6 +77,7 @@ public class AP_ShaDE implements Algorithm {
          * Initialization
          */
         this.G = 0;
+        this.avgGenerationLength = new ArrayList<>();
         this.Aext = new ArrayList<>();
         this.best = null;
         this.bestHistory = new ArrayList<>();
@@ -101,9 +110,18 @@ public class AP_ShaDE implements Algorithm {
         int k = 0;
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
+        
+//        double[] lengthValues = new double[this.NP];
+//        for (int i = 0; i < this.NP; i++) {
+//            lengthValues[i] = this.P.get(i).length;
+//        }
+//        this.avgGenerationLength.add(new Mean().evaluate(lengthValues));
+        this.avgGenerationLength.add((double)this.best.length);
 
         while (true) {
 
+//            lengthValues = new double[this.NP];
+            
             this.G++;
             this.S_F = new ArrayList<>();
             this.S_CR = new ArrayList<>();
@@ -178,18 +196,21 @@ public class AP_ShaDE implements Algorithm {
                 id++;
                 trial = new AP_Individual(String.valueOf(id), u, f.fitness(u));
                 trial.equation = ((APtf) f).ap.equation;
+                trial.length = ((APtf) f).countLength(u);
 
                 /**
                  * Trial is better
                  */
                 if (trial.fitness < x.fitness) {
                     newPop.add(trial);
+//                    lengthValues[i] = trial.length;
                     this.S_F.add(Fg);
                     this.S_CR.add(CRg);
                     this.Aext.add(x);
                     wS.add(Math.abs(trial.fitness - x.fitness));
                 } else {
                     newPop.add(x);
+//                    lengthValues[i] = x.length;
                 }
 
                 this.FES++;
@@ -200,6 +221,10 @@ public class AP_ShaDE implements Algorithm {
                 }
 
             }
+            
+//            this.avgGenerationLength.add(new Mean().evaluate(lengthValues));
+            this.avgGenerationLength.add((double)this.best.length);
+
 
             if (this.FES >= this.MAXFES) {
                 break;
@@ -363,6 +388,7 @@ public class AP_ShaDE implements Algorithm {
             features = this.f.generateTrial(this.D).clone();
             ind = new AP_Individual(String.valueOf(id), features, this.f.fitness(features));
             ind.equation = ((APtf) f).ap.equation;
+            ind.length = ((APtf) f).countLength(features);
             this.isBest(ind);
             this.P.add(ind);
             this.FES++;
@@ -383,7 +409,7 @@ public class AP_ShaDE implements Algorithm {
 
     @Override
     public String getName() {
-        return "ShaDE";
+        return "AP_ShaDE";
     }
 
     /**
@@ -655,23 +681,38 @@ public class AP_ShaDE implements Algorithm {
     public void setRndGenerator(util.random.Random rndGenerator) {
         this.rndGenerator = rndGenerator;
     }
+    
+    public List<Double> getAvgGenerationLength() {
+        return avgGenerationLength;
+    }
+
+    public void setAvgGenerationLength(List<Double> avgGenerationLength) {
+        this.avgGenerationLength = avgGenerationLength;
+    }
+    
     //</editor-fold>
+
+    
 
     public static void main(String[] args) throws Exception {
 
-        int dimension = 300;
-        int NP = 100;
-        int H = NP;
-        int MAXFES = 20000 * dimension;
+        int dimension = 90;
+        int NP = 50;
+        int H = 50;
+        int generations = 2000;
+        int MAXFES = generations * NP;
 
-        APtf tf = new APgeMath();
+        APtf tf = new APquintic();
+        /**
+         * Random generator for parent selection, F and CR selection
+         */
         util.random.Random generator = new util.random.UniformRandom();
         double min;
-        AP ap = new AP();
+//        APconst ap = new APconst();
 
         Algorithm de;
 
-        int runs = 2;
+        int runs = 5;
         double[] bestArray = new double[runs];
         int i, best;
 
@@ -685,6 +726,32 @@ public class AP_ShaDE implements Algorithm {
 
             de.run();
 
+//            PrintWriter writer;
+//
+//            try {
+//                writer = new PrintWriter(tf.name() + "-shade" + k + ".txt", "UTF-8");
+//
+//                writer.print("{");
+//
+//                for (int z = 0; z < ((AP_ShaDE)de).getBestHistory().size(); z++) {
+//
+//                    writer.print(String.format(Locale.US, "%.10f", ((AP_ShaDE)de).getBestHistory().get(z).fitness));
+//
+//                    if (z != ((AP_ShaDE)de).getBestHistory().size() - 1) {
+//                        writer.print(",");
+//                    }
+//
+//                }
+//
+//                writer.print("}");
+//
+//                writer.close();
+//
+//            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+//                
+//            }
+            
+            
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());
             
@@ -709,6 +776,15 @@ public class AP_ShaDE implements Algorithm {
                 }
             }
             System.out.println("Best solution found in " + best + " CFE");
+            
+//            System.out.println("Length in 000. generation: " + ((AP_ShaDE)de).getAvgGenerationLength().get(0));
+//            System.out.println("Length in 001. generation: " + ((AP_ShaDE)de).getAvgGenerationLength().get(1));
+//            System.out.println("Length in 010. generation: " + ((AP_ShaDE)de).getAvgGenerationLength().get(10));
+//            System.out.println("Length in 020. generation: " + ((AP_ShaDE)de).getAvgGenerationLength().get(20));
+//            System.out.println("Length in 050. generation: " + ((AP_ShaDE)de).getAvgGenerationLength().get(50));
+//            System.out.println("Length in 100. generation: " + ((AP_ShaDE)de).getAvgGenerationLength().get(100));
+//            System.out.println("Length in 200. generation: " + ((AP_ShaDE)de).getAvgGenerationLength().get(200));
+//            System.out.println("Length in 299. generation: " + ((AP_ShaDE)de).getAvgGenerationLength().get(299));
             
         }
 

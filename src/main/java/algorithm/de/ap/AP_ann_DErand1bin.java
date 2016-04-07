@@ -8,8 +8,7 @@ import java.util.stream.DoubleStream;
 import model.Individual;
 import model.ap.AP;
 import model.tf.TestFunction;
-import model.tf.ap.ann.APannIris;
-import model.tf.ap.ann.APannXOR;
+import model.tf.ap.ann.APannBMW;
 import model.tf.ap.ann.APtfann;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -416,20 +415,20 @@ public class AP_ann_DErand1bin implements Algorithm {
 
     public static void main(String[] args) throws Exception {
 
-        int dimension = 30;
+        int dimension = 100;
         int NP = 100;
         int MAXFES = 10000 * dimension;
 //        int funcNumber = 14;
 //        TestFunction tf = new Cec2015(dimension, funcNumber);
-        APtfann tf = new APannIris();
+        APtfann tf = new APannBMW();
 //        APlogictf tf = new APlogicTest1();
         util.random.Random generator = new util.random.UniformRandom();
-        double f = 0.31, cr = 0.8, min;
+        double f = 0.5, cr = 0.8, min;
 //        AP ap = new AP();
 
         Algorithm de;
 
-        int runs = 10;
+        int runs = 2;
         double[] bestArray = new double[runs];
         int i, best;
 
