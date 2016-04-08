@@ -29,6 +29,11 @@ public class LShaDE extends ShaDE {
     }
  
     @Override
+    public String getName() {
+        return "L-SHADE";
+    }
+    
+    @Override
     public Individual run() {
 
         /**

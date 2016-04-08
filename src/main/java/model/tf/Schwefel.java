@@ -28,7 +28,7 @@ public class Schwefel implements TestFunction {
 
     @Override
     public void constrain(Individual individual) {
-        IndividualUtil.clipInBounds(individual, -32, 32);
+        IndividualUtil.clipInBounds(individual, -500, 500);
     }
 
     @Override

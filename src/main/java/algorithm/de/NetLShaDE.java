@@ -31,6 +31,11 @@ public class NetLShaDE extends LShaDE {
     }
     
     @Override
+    public String getName() {
+        return "Net_L-SHADE";
+    }
+    
+    @Override
     public Individual run() {
 
         /**

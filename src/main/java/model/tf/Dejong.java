@@ -3,6 +3,7 @@ package model.tf;
 import model.Individual;
 
 import java.util.stream.DoubleStream;
+import util.IndividualUtil;
 import util.random.Random;
 import util.random.UniformRandom;
 
@@ -22,6 +23,7 @@ public class Dejong implements TestFunction {
 
     @Override
     public void constrain(Individual individual) {
+        IndividualUtil.clipInBounds(individual, -10, 10);
     }
 
     @Override
