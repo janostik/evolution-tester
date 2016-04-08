@@ -638,7 +638,7 @@ public class ShaDE implements Algorithm {
 
         int dimension = 10;
         int NP = 100;
-        int MAXFES = 1000 * NP;
+        int MAXFES = 100 * NP;
         int funcNumber = 14;
         TestFunction tf = new Schwefel();
         int H = 10;

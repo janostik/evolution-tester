@@ -314,7 +314,7 @@ public class NetLShaDE extends LShaDE {
         
         int dimension = 10;
         int NP = 100;
-        int minNP = 4;
+        int minNP = 20;
         int MAXFES = 100 * NP;
         int funcNumber = 14;
         TestFunction tf = new Schwefel();
