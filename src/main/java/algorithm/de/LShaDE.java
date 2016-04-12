@@ -170,6 +170,8 @@ public class LShaDE extends ShaDE {
                     break;
                 }
 
+                this.Aext = this.resizeAext(this.Aext, this.NP);
+                
             }
 
             if (this.FES >= this.MAXFES) {
@@ -210,7 +212,6 @@ public class LShaDE extends ShaDE {
             this.P.addAll(newPop);
             NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
             P = this.resizePop(P, NP);
-            this.Aext = this.resizeAext(this.Aext, this.NP);
 
         }
 

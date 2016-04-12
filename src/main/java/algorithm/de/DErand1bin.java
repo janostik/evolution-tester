@@ -232,7 +232,7 @@ public class DErand1bin implements Algorithm {
             }
             vector = tf.generateTrial(D);
             P.add(makeIndividualFromVector(vector));
-
+            
         }
 
     }

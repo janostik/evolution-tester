@@ -20,53 +20,19 @@ import util.random.Random;
 
 /**
  *
- * DE rand 1 bin with Multi-cahotic parent selection framework
+ * DE current to pbest 1 algorithm with multi chaotic framework
  * 
- * @author wiki on 08/12/2015
+ * @author wiki on 12/04/2016
  */
-public class MCDErand extends DErand1bin {
+public class MCDEcurtopbest extends DEcurtopbest {
 
     List<RankedChaosGenerator> chaosGenerator;
     List<Double[]> chaosProbabilities = new ArrayList<>();
     int chosenChaos;
     
-    public MCDErand(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR) {
+    public MCDEcurtopbest(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR) {
         super(D, NP, MAXFES, f, rndGenerator, F, CR);
         chaosGenerator = RankedChaosGenerator.getAllChaosGenerators();
-    }
-    
-    private void writeChaosProbabilities(){
-        
-        Double[] probs = new Double[this.chaosGenerator.size()];
-        
-        for(int i = 0; i < this.chaosGenerator.size();i++){
-            probs[i] = this.chaosGenerator.get(i).rank;
-        }
-        
-        this.chaosProbabilities.add(probs);
-        
-    }
-    
-    /**
-     * Overrided because of the chaos probabilities history.
-     */
-    @Override
-    protected void initializePopulation() {
-
-        P = new ArrayList<>();
-        double[] vector;
-
-        for (int i = 0; i < NP; i++) {
-
-            if (checkFES()) {
-                return;
-            }
-            vector = tf.generateTrial(D);
-            P.add(makeIndividualFromVector(vector));
-            this.writeChaosProbabilities();
-            
-        }
-
     }
     
     @Override
@@ -80,11 +46,13 @@ public class MCDErand extends DErand1bin {
             return best;
         }
 
-        List<Individual> newPop;
+        List<Individual> newPop, pbestList;
         Individual x, trial;
         double[] u, v;
         Individual[] parrentArray;
-
+        double pmin = 2 / (double) this.NP;
+        int Psize;
+        
         /**
          * generation itteration
          */
@@ -98,10 +66,19 @@ public class MCDErand extends DErand1bin {
              */
             for (int xIter = 0; xIter < NP; xIter++) {
 
+                Psize = (int) (rndGenerator.nextDouble(pmin, 0.2) * this.NP);
+                if (Psize < 2) {
+                    Psize = 2;
+                }
+                
+                pbestList = new ArrayList<>();
+                pbestList.addAll(this.P);
+                pbestList = this.resizePop(pbestList, Psize);
+                
                 /**
                  * Parent selection
                  */
-                parrentArray = getParents(xIter);
+                parrentArray = getParents(pbestList, P, xIter);
                 x = parrentArray[0];
 
                 /**
@@ -131,6 +108,7 @@ public class MCDErand extends DErand1bin {
                 } else {
                     newPop.add(x);
                 }
+                
                 this.writeChaosProbabilities();
 
             }
@@ -142,13 +120,15 @@ public class MCDErand extends DErand1bin {
     
     /**
      *
-     * List of parents for mutation x, a, b, c
+     * List of parents for mutation x, pbest, r1, r2
      *
+     * @param pbestList
+     * @param pList
      * @param xIndex
      * @return
      */
     @Override
-    protected Individual[] getParents(int xIndex) {
+    protected Individual[] getParents(List<Individual> pbestList, List<Individual> pList, int xIndex) {
 
         /**
          * TODO choose chaos base on rank
@@ -167,42 +147,56 @@ public class MCDErand extends DErand1bin {
         chIndex -= 1;
         chosenChaos = chIndex;
         
-        Individual[] parrentArray = new Individual[4];
+        Individual[] parentArray = new Individual[4];
         List<Integer> indexes = new ArrayList<>();
         int index;
+        parentArray[0] = pList.get(xIndex);
+        
+        //Select pbest different from x
+        parentArray[1] = pbestList.get(chaosGenerator.get(chIndex).chaos.nextInt(pbestList.size()));
+        while(parentArray[1] == parentArray[0]){
+            parentArray[1] = pbestList.get(chaosGenerator.get(chIndex).chaos.nextInt(pbestList.size()));
+        }
 
-        for (int i = 0; i < NP; i++) {
-            if (i != xIndex) {
+        //Add indexes of the rest for selection of the r1 and r2
+        for (int i = 0; i < pList.size(); i++) {
+            if (pList.get(i) != parentArray[0] && pList.get(i) != parentArray[1]) {
                 indexes.add(i);
             }
         }
 
-        parrentArray[0] = P.get(xIndex);
-
         /**
-         * a
+         * r1
          */
         index = chaosGenerator.get(chIndex).chaos.nextInt(indexes.size());
-        parrentArray[1] = P.get(indexes.get(index));
-
+        parentArray[2] = pList.get(indexes.get(index));
+        
+        //removes index of r1 from selection
         indexes.remove(index);
 
         /**
-         * b
+         * r2
          */
         index = chaosGenerator.get(chIndex).chaos.nextInt(indexes.size());
-        parrentArray[2] = P.get(indexes.get(index));
+        parentArray[3] = pList.get(indexes.get(index));
 
-        indexes.remove(index);
+        return parentArray;
 
-        /**
-         * c
-         */
-        index = chaosGenerator.get(chIndex).chaos.nextInt(indexes.size());
-        parrentArray[3] = P.get(indexes.get(index));
-
-        return parrentArray;
-
+    }
+    
+    /**
+     * 
+     */
+    private void writeChaosProbabilities(){
+        
+        Double[] probs = new Double[this.chaosGenerator.size()];
+        
+        for(int i = 0; i < this.chaosGenerator.size();i++){
+            probs[i] = this.chaosGenerator.get(i).rank;
+        }
+        
+        this.chaosProbabilities.add(probs);
+        
     }
     
     /**
@@ -224,21 +218,6 @@ public class MCDErand extends DErand1bin {
                 }
             }
         }
-
-    }
-    
-    @Override
-    public String getName() {
-        return "MC-DErand1bin";
-    }
-    
-    public void printOutRankings() {
-
-        System.out.println("Ranking");
-        chaosGenerator.stream().forEach((chaos) -> {
-            System.out.print(chaos.rank + " ");
-        });
-        System.out.println("");
 
     }
     
@@ -280,50 +259,88 @@ public class MCDErand extends DErand1bin {
             pw.close();
             
         } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-            Logger.getLogger(MCDErand.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MCDEcurtopbest.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+    }
+    
+    @Override
+    public String getName() {
+        return "MC-DEcurtopbest";
+    }
+    
+    
+    
+    /**
+     * Overrided because of the chaos probabilities history.
+     */
+    @Override
+    protected void initializePopulation() {
+
+        P = new ArrayList<>();
+        double[] vector;
+
+        for (int i = 0; i < NP; i++) {
+
+            if (checkFES()) {
+                return;
+            }
+            vector = tf.generateTrial(D);
+            P.add(makeIndividualFromVector(vector));
+            this.writeChaosProbabilities();
+            
+        }
+
+    }
+    
+    public void printOutRankings() {
+
+        System.out.println("Ranking");
+        chaosGenerator.stream().forEach((chaos) -> {
+            System.out.print(chaos.rank + " ");
+        });
+        System.out.println("");
 
     }
     
     /**
      * @param args the command line arguments
-     * @throws java.lang.Exception
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         
-        int dimension = 10;
-        int NP = 100;
-        int MAXFES = 10000 * dimension;
-        int funcNumber = 4;
-        TestFunction tf = new Cec2015(dimension, funcNumber);
-        util.random.Random generator = new util.random.UniformRandom();
-        double f = 0.5, cr = 0.8;
-
-        MCDErand de;
-
-        int runs = 10;
-        double[] bestArray = new double[runs];
-
-        for (int k = 0; k < runs; k++) {
-
-            de = new MCDErand(dimension, NP, MAXFES, tf, generator, f, cr);
-            de.run();
-            de.printOutRankings();
-
-            bestArray[k] = de.getBest().fitness - tf.optimum();
-            System.out.println(de.getBest().fitness - tf.optimum());
+        try {
+            int dimension = 10;
+            int NP = 100;
+            int MAXFES = 1000 * dimension;
+            int funcNumber = 4;
+            TestFunction tf = new Cec2015(dimension, funcNumber);
+            util.random.Random generator = new util.random.UniformRandom();
+            double f = 0.5, cr = 0.8;
+            MCDEcurtopbest de;
+            int runs = 10;
+            double[] bestArray = new double[runs];
+            for (int k = 0; k < runs; k++) {
+                
+                de = new MCDEcurtopbest(dimension, NP, MAXFES, tf, generator, f, cr);
+                de.run();
+                de.printOutRankings();
+                
+                bestArray[k] = de.getBest().fitness - tf.optimum();
+                System.out.println(de.getBest().fitness - tf.optimum());
+            }   
+            
+            System.out.println("=================================");
+            System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+            System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+            System.out.println("Mean: " + new Mean().evaluate(bestArray));
+            System.out.println("Median: " + new Median().evaluate(bestArray));
+            System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+            System.out.println("=================================");
+            
+        } catch (Exception ex) {
+            Logger.getLogger(MCDEcurtopbest.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        System.out.println("=================================");
-        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
-        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
-        System.out.println("Mean: " + new Mean().evaluate(bestArray));
-        System.out.println("Median: " + new Median().evaluate(bestArray));
-        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
-        System.out.println("=================================");
-        
-    }
-
-    
+}
     
 }

@@ -1,7 +1,13 @@
 package algorithm.de;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Individual;
 import model.chaos.RankedChaosGenerator;
 import model.tf.TestFunction;
@@ -14,12 +20,53 @@ import util.OtherDistributionsUtil;
 public class MCShaDE extends ShaDE {
 
     List<RankedChaosGenerator> chaosGenerator;
+    List<Double[]> chaosProbabilities = new ArrayList<>();
     int chosenChaos;
 
 
     public MCShaDE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
         super(D, MAXFES, f, H, NP, rndGenerator);
         chaosGenerator = RankedChaosGenerator.getAllChaosGenerators();
+    }
+    
+    private void writeChaosProbabilities(){
+        
+        Double[] probs = new Double[this.chaosGenerator.size()];
+        
+        for(int i = 0; i < this.chaosGenerator.size();i++){
+            probs[i] = this.chaosGenerator.get(i).rank;
+        }
+        
+        this.chaosProbabilities.add(probs);
+        
+    }
+    
+    /**
+     * Creation of initial population.
+     * Overrided becauser of chaos probabilities history.
+     */
+    @Override
+    protected void initializePopulation(){
+        
+        /**
+         * Initial population
+         */
+        id = 0;
+        double[] features;
+        this.P = new ArrayList<>();
+        Individual ind;
+
+        for (int i = 0; i < this.NP; i++) {
+            id = i;
+            features = this.f.generateTrial(this.D).clone();
+            ind = new Individual(String.valueOf(id), features, this.f.fitness(features));
+            this.isBest(ind);
+            this.P.add(ind);
+            this.FES++;
+            this.writeHistory();
+            this.writeChaosProbabilities();
+        }
+        
     }
 
     @Override
@@ -156,6 +203,8 @@ public class MCShaDE extends ShaDE {
                 } else {
                     newPop.add(x);
                 }
+                
+                this.writeChaosProbabilities();
 
                 this.FES++;
                 this.isBest(trial);
@@ -164,6 +213,8 @@ public class MCShaDE extends ShaDE {
                     break;
                 }
 
+                this.Aext = this.resizeAext(this.Aext, this.NP);
+                
             }
 
             if (this.FES >= this.MAXFES) {
@@ -202,7 +253,7 @@ public class MCShaDE extends ShaDE {
              */
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
-            this.Aext = this.resizeAext(this.Aext, this.NP);
+            
 
         }
 
@@ -309,6 +360,49 @@ public class MCShaDE extends ShaDE {
         return new int[]{a, b};
     }
 
+    /**
+     * 
+     * Writes probabilities into the file given by the path in argument.
+     * 
+     * @param path 
+     */
+    public void writeProbsToFile(String path){
+        
+        try {
+            PrintWriter pw = new PrintWriter(path, "UTF-8");
+            
+            pw.write("{");
+            
+            for(int k = 0; k < this.chaosProbabilities.size(); k++){
+                
+                pw.write("{");
+                
+                for(int i = 0; i < this.chaosProbabilities.get(k).length; i++) {
+                   pw.write(String.format(Locale.US, "%.10f", this.chaosProbabilities.get(k)[i]));
+                   
+                   if(i != this.chaosProbabilities.get(k).length-1){
+                       pw.write(",");
+                   }
+                }
+                
+                pw.write("}");
+                
+                if(k != this.chaosProbabilities.size()-1){
+                    pw.write(",");
+                }
+                
+            }
+            
+            pw.write("}");
+            
+            pw.close();
+            
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            Logger.getLogger(MCShaDE.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+    
     /**
      * MAIN
      * 

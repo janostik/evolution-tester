@@ -139,7 +139,7 @@ public class DEbest extends DErand1bin {
      *
      * @return
      */
-    private int getBestIndividualInPopulation() {
+    protected int getBestIndividualInPopulation() {
 
         double fitness = Double.MAX_VALUE;
         int index = -1;

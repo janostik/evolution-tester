@@ -188,6 +188,8 @@ public class ShaDE implements Algorithm {
                     break;
                 }
 
+                this.Aext = this.resizeAext(this.Aext, this.NP);
+                
             }
 
             if (this.FES >= this.MAXFES) {
@@ -226,7 +228,7 @@ public class ShaDE implements Algorithm {
              */
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
-            this.Aext = this.resizeAext(this.Aext, this.NP);
+            
 
         }
 
@@ -359,6 +361,10 @@ public class ShaDE implements Algorithm {
      */
     protected List<Individual> resizeAext(List<Individual> list, int size) {
 
+        if(size >= list.size()){
+            return list;
+        }
+        
         List<Individual> toRet = new ArrayList<>();
         toRet.addAll(list);
         int index;
@@ -638,7 +644,7 @@ public class ShaDE implements Algorithm {
 
         int dimension = 10;
         int NP = 100;
-        int MAXFES = 100 * NP;
+        int MAXFES = 1000 * NP;
         int funcNumber = 14;
         TestFunction tf = new Schwefel();
         int H = 10;

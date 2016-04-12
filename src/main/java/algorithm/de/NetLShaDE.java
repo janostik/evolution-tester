@@ -191,6 +191,8 @@ public class NetLShaDE extends LShaDE {
                     break;
                 }
 
+                this.Aext = this.resizeAext(this.Aext, this.NP);
+                
             }
 
             if (this.FES >= this.MAXFES) {
@@ -250,8 +252,6 @@ public class NetLShaDE extends LShaDE {
 //                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
 //            });
 //            System.out.println("-------------------");
-            
-            this.Aext = this.resizeAext(this.Aext, this.NP);
 
         }
 
