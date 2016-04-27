@@ -7,6 +7,7 @@ import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
+import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -60,12 +61,12 @@ public class LShaDE extends ShaDE {
         /**
          * Generation iteration;
          */
-        int r, Psize;
+        int r, Psize, pbestIndex;
         double Fg, CRg;
         List<Individual> newPop, pBestArray;
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
-        Individual trial;
+        Individual trial, pbestInd;
         Individual x;
         List<Double> wS;
         double wSsum, meanS_F1, meanS_F2, meanS_CR;
@@ -115,8 +116,10 @@ public class LShaDE extends ShaDE {
                 /**
                  * Parent selection
                  */
-                pbest = this.getRandBestFromList(pBestArray).vector.clone();
-                rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size());
+                pbestInd = this.getRandBestFromList(pBestArray);
+                pbestIndex = this.getPbestIndex(pbestInd);
+                pbest = pbestInd.vector.clone();
+                rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
                 pr1 = this.P.get(rIndexes[0]).vector.clone();
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
@@ -248,8 +251,9 @@ public class LShaDE extends ShaDE {
     
     /**
      * @param args the command line arguments
+     * @throws java.lang.Exception
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         
         int dimension = 10;
         int NP = 100;
@@ -258,7 +262,8 @@ public class LShaDE extends ShaDE {
         int funcNumber = 14;
         TestFunction tf = new Schwefel();
         int H = 10;
-        util.random.Random generator = new util.random.UniformRandom();
+        long seed = 10304050L;
+        util.random.Random generator;
 
         LShaDE shade;
 
@@ -267,6 +272,8 @@ public class LShaDE extends ShaDE {
 
         for (int k = 0; k < runs; k++) {
 
+//            generator = new util.random.UniformRandomSeed(seed);
+            generator = new util.random.UniformRandom();
             shade = new LShaDE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.run();

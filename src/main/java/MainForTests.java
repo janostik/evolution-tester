@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import util.LoziRandomUtil;
 import util.RandomUtil;
+import util.random.Random;
 
 /**
  *
@@ -149,35 +150,49 @@ public class MainForTests {
 //        System.out.println(profit);
 //
 //
-    
+//    
+//
+//            PrintWriter writer;
+//            int out=1000000;
+//
+//            try {
+//                writer = new PrintWriter("hist.txt", "UTF-8");
+//
+//                writer.print("{");
+//
+//                util.random.Random generator = new util.random.UniformRandom();
+//
+//                for(int i = 0; i < out; i++){
+//
+//                    writer.print(generator.nextDouble(1, 10));
+//
+//                    if(i != out-1){
+//                        writer.println(",");
+//                    }
+//
+//                }
+//
+//                writer.print("}");
+//
+//                writer.close();
+//
+//            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+//                
+//            }
 
-            PrintWriter writer;
-            int out=1000000;
-
-            try {
-                writer = new PrintWriter("hist.txt", "UTF-8");
-
-                writer.print("{");
-
-                util.random.Random generator = new util.random.UniformRandom();
-
-                for(int i = 0; i < out; i++){
-
-                    writer.print(generator.nextDouble(1, 10));
-
-                    if(i != out-1){
-                        writer.println(",");
-                    }
-
-                }
-
-                writer.print("}");
-
-                writer.close();
-
-            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-                
+        long seed = 10204050L;
+        double x;
+        for(int k = 0; k < 2; k++){
+            
+            System.out.println((k+1) + ". try");
+            
+            util.random.Random rnd = new util.random.UniformRandomSeed(seed);
+            for(int i = 0; i < 1000; i++) {
+                x = rnd.nextDouble(-1,1);
+                if(i % 100 == 0)
+                    System.out.println(x);
             }
+        }
 
         
     

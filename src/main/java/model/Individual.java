@@ -22,7 +22,7 @@ public class Individual {
 
     public Individual(Individual individual) {
         this.id = individual.id;
-        this.vector = individual.vector;
+        this.vector = individual.vector.clone();
         this.fitness = individual.fitness;
     }
 

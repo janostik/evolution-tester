@@ -8,7 +8,7 @@ import util.random.UniformRandom;
 /**
  * Created by jakub on 27/10/15.
  */
-public class Schwefel implements TestFunction {
+public class Rastrigin implements TestFunction {
 
     @Override
     public double fitness(Individual individual) {
@@ -18,24 +18,25 @@ public class Schwefel implements TestFunction {
     @Override
     public double fitness(double[] vector) {
         double D = vector.length;
-        double s1 = 0;
+        double s = 0;
 
         for (int i = 0; i < vector.length; i++) {
-            s1 += vector[i] * Math.sin(Math.sqrt(Math.abs(vector[i])));
+            s += ((vector[i] * vector[i]) - 10 * Math.cos(2*Math.PI*vector[i]));
+
         }
-        return 418.9829*D - s1;
+        return 10*D + s;
     }
 
     @Override
     public void constrain(Individual individual) {
-        IndividualUtil.clipInBounds(individual, -500, 500);
+        IndividualUtil.clipInBounds(individual, -5.12, 5.12);
     }
 
     @Override
     public double[] generateTrial(int dim) {
         double[] vector = new double[dim];
         Random rnd = new UniformRandom();
-        for (int i = 0; i < dim; i++) vector[i] = rnd.nextDouble(-500, 500);
+        for (int i = 0; i < dim; i++) vector[i] = rnd.nextDouble(-5.12, 5.12);
         return vector;
     }
 
@@ -51,16 +52,16 @@ public class Schwefel implements TestFunction {
 
     @Override
     public double max(int dim) {
-        return 500;
+        return 5.12;
     }
 
     @Override
     public double min(int dim) {
-        return -500;
+        return -5.12;
     }
 
     @Override
     public String name() {
-        return "Schwefel";
+        return "Rastrigin";
     }
 }

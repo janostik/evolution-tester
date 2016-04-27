@@ -6,7 +6,7 @@ package util.random;
  */
 public interface Random {
 
-    Double nextDouble();
+    double nextDouble();
 
     int nextInt(int bound);
 

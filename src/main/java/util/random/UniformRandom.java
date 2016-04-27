@@ -9,7 +9,7 @@ public class UniformRandom implements Random {
     final private static java.util.Random rnd = new java.util.Random();
 
     @Override
-    public Double nextDouble() {
+    public double nextDouble() {
         return rnd.nextDouble();
     }
 

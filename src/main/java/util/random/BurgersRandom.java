@@ -9,7 +9,7 @@ public class BurgersRandom implements Random {
     final private static model.chaos.Burgers rnd = new model.chaos.Burgers();
 
     @Override
-    public Double nextDouble() {
+    public double nextDouble() {
         return rnd.getRndReal();
     }
 

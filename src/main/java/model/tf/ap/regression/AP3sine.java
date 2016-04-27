@@ -1,6 +1,7 @@
 package model.tf.ap.regression;
 
 import model.tf.ap.APtf;
+import org.apache.commons.math3.stat.descriptive.rank.Max;
 import org.apache.commons.math3.stat.descriptive.summary.Sum;
 
 /**
@@ -28,8 +29,24 @@ public class AP3sine extends APtf {
     @Override
     protected double getDistance(double[] vector) {
 
+//        double sum = 0, a, b;
+//        double[] distance_array = new double[points.length];
+//        
+//        for (int i = 0; i < points.length; i++) {
+//            a = ap.dsh(vector, points[i][0]);
+//            if(Double.isNaN(a) || Double.isInfinite(a)){
+//                return Double.MAX_VALUE;
+//            }
+//            b = points[i][1];
+//
+//            distance_array[i] = Math.abs(a-b);
+//        }
+//        
+//        return new Sum().evaluate(distance_array);
+
         double sum = 0, a, b;
         double[] distance_array = new double[points.length];
+        
         
         for (int i = 0; i < points.length; i++) {
             a = ap.dsh(vector, points[i][0]);
@@ -41,8 +58,14 @@ public class AP3sine extends APtf {
             distance_array[i] = Math.abs(a-b);
         }
         
-        return new Sum().evaluate(distance_array);
-//        return (new Median().evaluate(distance_array)) + (new Mean().evaluate(distance_array));
+        double max = new Max().evaluate(distance_array);
+        
+        for (int i = 0; i < points.length; i++) {
+            
+            sum += (distance_array[i]/max)*distance_array[i];
+        }
+        
+        return sum;
 
     }
 

@@ -96,13 +96,13 @@ public class MCShaDE extends ShaDE {
         /**
          * Generation iteration;
          */
-        int r, Psize;
+        int r, Psize, pbestIndex;
         double Fg, CRg;
         List<Individual> newPop, pBestArray;
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
         Individual trial;
-        Individual x;
+        Individual x, pbestInd;
         List<Double> wS;
         double wSsum, meanS_F1, meanS_F2, meanS_CR;
         int k = 0;
@@ -150,8 +150,10 @@ public class MCShaDE extends ShaDE {
                 /**
                  * Parent selection
                  */
-                rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size());
-                pbest = this.getRandBestFromList(pBestArray).vector.clone();
+                pbestInd = this.getRandBestFromList(pBestArray);
+                pbestIndex = this.getPbestIndex(pbestInd);
+                pbest = pbestInd.vector.clone();
+                rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
                 pr1 = this.P.get(rIndexes[0]).vector.clone();
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
@@ -328,7 +330,7 @@ public class MCShaDE extends ShaDE {
      * @return
      */
     @Override
-    protected int[] genRandIndexes(int index, int max1, int max2) {
+    protected int[] genRandIndexes(int index, int max1, int max2, int pbest) {
 
         /**
          * TODO choose chaos base on rank
@@ -348,12 +350,16 @@ public class MCShaDE extends ShaDE {
         chosenChaos = chIndex;
 
         int a, b;
-
+        
         a = chaosGenerator.get(chIndex).chaos.nextInt(max1);
+        
+        while(a == pbest || a == index){
+            a = chaosGenerator.get(chIndex).chaos.nextInt(max1);
+        }
+        
         b = chaosGenerator.get(chIndex).chaos.nextInt(max2);
 
-        while (a == b || a == index || b == index) {
-            a = chaosGenerator.get(chIndex).chaos.nextInt(max1);
+        while (b == a || b == index || b == pbest) {
             b = chaosGenerator.get(chIndex).chaos.nextInt(max2);
         }
 
@@ -369,26 +375,30 @@ public class MCShaDE extends ShaDE {
     public void writeProbsToFile(String path){
         
         try {
+            int stop = this.chaosProbabilities.size() - (this.chaosProbabilities.size() % 100) - 1;
+            
             PrintWriter pw = new PrintWriter(path, "UTF-8");
             
             pw.write("{");
             
             for(int k = 0; k < this.chaosProbabilities.size(); k++){
                 
-                pw.write("{");
-                
-                for(int i = 0; i < this.chaosProbabilities.get(k).length; i++) {
-                   pw.write(String.format(Locale.US, "%.10f", this.chaosProbabilities.get(k)[i]));
-                   
-                   if(i != this.chaosProbabilities.get(k).length-1){
-                       pw.write(",");
-                   }
-                }
-                
-                pw.write("}");
-                
-                if(k != this.chaosProbabilities.size()-1){
-                    pw.write(",");
+                if((k+1) % 100 == 0) {
+                    pw.write("{");
+
+                    for(int i = 0; i < this.chaosProbabilities.get(k).length; i++) {
+                       pw.write(String.format(Locale.US, "%.10f", this.chaosProbabilities.get(k)[i]));
+
+                       if(i != this.chaosProbabilities.get(k).length-1){
+                           pw.write(",");
+                       }
+                    }
+
+                    pw.write("}");
+
+                    if(k != stop){
+                        pw.write(",");
+                    }
                 }
                 
             }

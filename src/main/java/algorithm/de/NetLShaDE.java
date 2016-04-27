@@ -62,7 +62,7 @@ public class NetLShaDE extends LShaDE {
         /**
          * Generation iteration;
          */
-        int r, Psize;
+        int r, Psize, pbestIndex;
         double Fg, CRg;
         List<Individual> newPop, pBestArray;
         double[] v, pbest, pr1, pr2, u;
@@ -122,8 +122,9 @@ public class NetLShaDE extends LShaDE {
                 parentArray = new Individual[4];
                 parentArray[0] = x;
                 parentArray[1] = this.getRandBestFromList(pBestArray);
+                pbestIndex = this.getPbestIndex(parentArray[1]);
                 pbest = parentArray[1].vector.clone();
-                rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size());
+                rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
                 parentArray[2] = this.P.get(rIndexes[0]);
                 pr1 = parentArray[2].vector.clone();
                 if (rIndexes[1] > this.NP - 1) {
@@ -314,8 +315,9 @@ public class NetLShaDE extends LShaDE {
     
     /**
      * @param args the command line arguments
+     * @throws java.lang.Exception
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         
         int dimension = 10;
         int NP = 100;

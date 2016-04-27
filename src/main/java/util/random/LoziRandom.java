@@ -9,7 +9,7 @@ public class LoziRandom implements Random {
     final private static model.chaos.Lozi rnd = new model.chaos.Lozi();
 
     @Override
-    public Double nextDouble() {
+    public double nextDouble() {
         return rnd.getRndReal();
     }
 

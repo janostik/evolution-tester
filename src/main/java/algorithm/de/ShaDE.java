@@ -6,9 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.tf.Cec2015;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
+import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -66,7 +66,7 @@ public class ShaDE implements Algorithm {
          * Initial population
          */
         initializePopulation();
-
+        
         this.M_F = new double[this.H];
         this.M_CR = new double[this.H];
 
@@ -78,13 +78,13 @@ public class ShaDE implements Algorithm {
         /**
          * Generation iteration;
          */
-        int r, Psize;
+        int r, Psize, pbestIndex;
         double Fg, CRg;
         List<Individual> newPop, pBestArray;
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
         Individual trial;
-        Individual x;
+        Individual x, pbestInd;
         List<Double> wS;
         double wSsum, meanS_F1, meanS_F2, meanS_CR;
         int k = 0;
@@ -92,7 +92,7 @@ public class ShaDE implements Algorithm {
         List<double[]> parents;
 
         while (true) {
-
+            
             this.G++;
             this.S_F = new ArrayList<>();
             this.S_CR = new ArrayList<>();
@@ -133,8 +133,10 @@ public class ShaDE implements Algorithm {
                 /**
                  * Parent selection
                  */
-                pbest = this.getRandBestFromList(pBestArray).vector.clone();
-                rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size());
+                pbestInd = this.getRandBestFromList(pBestArray);
+                pbestIndex = this.getPbestIndex(pbestInd);
+                pbest = pbestInd.vector.clone();
+                rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
                 pr1 = this.P.get(rIndexes[0]).vector.clone();
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
@@ -231,9 +233,34 @@ public class ShaDE implements Algorithm {
             
 
         }
-
+        
         return this.best;
 
+    }
+    
+    /**
+     * Gets the index of pbest in current population
+     * 
+     * @param pbest
+     * @return 
+     */
+    protected int getPbestIndex(Individual pbest) {
+        
+        int toRet = -1;
+        Individual cur;
+        
+        for(int i = 0; i < this.P.size(); i++){
+            
+            cur = this.P.get(i);
+            
+            if(cur == pbest){
+                toRet = i;
+            }
+            
+        }
+        
+        return toRet;
+        
     }
     
     protected double[] mutation(List<double[]> parents, double F){
@@ -322,13 +349,17 @@ public class ShaDE implements Algorithm {
          * Initial population
          */
         id = 0;
-        double[] features;
+        double[] features = new double[this.D];
         this.P = new ArrayList<>();
         Individual ind;
 
         for (int i = 0; i < this.NP; i++) {
             id = i;
-            features = this.f.generateTrial(this.D).clone();
+//            features = this.f.generateTrial(this.D).clone();
+            features = new double[this.D];
+            for(int j = 0; j < this.D; j++){
+                features[j] = this.rndGenerator.nextDouble(this.f.min(this.D), this.f.max(this.D));
+            }
             ind = new Individual(String.valueOf(id), features, this.f.fitness(features));
             this.isBest(ind);
             this.P.add(ind);
@@ -364,7 +395,7 @@ public class ShaDE implements Algorithm {
         if(size >= list.size()){
             return list;
         }
-        
+
         List<Individual> toRet = new ArrayList<>();
         toRet.addAll(list);
         int index;
@@ -436,7 +467,7 @@ public class ShaDE implements Algorithm {
      * @return
      */
     protected Individual getRandBestFromList(List<Individual> list) {
-
+        
         int index = rndGenerator.nextInt(list.size());
 
         return list.get(index);
@@ -448,17 +479,22 @@ public class ShaDE implements Algorithm {
      * @param index
      * @param max1
      * @param max2
+     * @param pbest
      * @return
      */
-    protected int[] genRandIndexes(int index, int max1, int max2) {
+    protected int[] genRandIndexes(int index, int max1, int max2, int pbest) {
 
         int a, b;
 
         a = rndGenerator.nextInt(max1);
+        
+        while(a == pbest || a == index){
+            a = rndGenerator.nextInt(max1);
+        }
+        
         b = rndGenerator.nextInt(max2);
 
-        while (a == b || a == index || b == index) {
-            a = rndGenerator.nextInt(max1);
+        while (b == a || b == index || b == pbest) {
             b = rndGenerator.nextInt(max2);
         }
 
@@ -575,6 +611,7 @@ public class ShaDE implements Algorithm {
         this.f = f;
     }
 
+    @Override
     public Individual getBest() {
         return best;
     }
@@ -644,19 +681,20 @@ public class ShaDE implements Algorithm {
 
         int dimension = 10;
         int NP = 100;
-        int MAXFES = 1000 * NP;
+        int MAXFES = 10 * NP;
         int funcNumber = 14;
         TestFunction tf = new Schwefel();
         int H = 10;
-        util.random.Random generator = new util.random.UniformRandom();
+        util.random.Random generator;
 
         ShaDE shade;
 
-        int runs = 10;
+        int runs = 2;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
-
+            
+            generator = new util.random.UniformRandom();
             shade = new ShaDE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();

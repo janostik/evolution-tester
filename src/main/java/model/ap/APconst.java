@@ -68,11 +68,11 @@ public class APconst {
 //        this.GFSall.add(new AP_Mod());
 //        this.GFSall.add(new AP_aTOb());
         
-        this.GFSall.add(new AP_Sin());
-        this.GFSall.add(new AP_Cos());
+//        this.GFSall.add(new AP_Sin());
+//        this.GFSall.add(new AP_Cos());
 //        this.GFSall.add(new AP_Tan());
 //        this.GFSall.add(new AP_Abs());
-        this.GFSall.add(new AP_Exp());
+//        this.GFSall.add(new AP_Exp());
 //        this.GFSall.add(new AP_Quad());
 //        this.GFSall.add(new AP_Sqrt());
 //        this.GFSall.add(new AP_Cube());
@@ -80,10 +80,10 @@ public class APconst {
 //        this.GFSall.add(new AP_Log10());
 
         this.GFSall.add(new AP_x());
-//        this.GFSall.add(new AP_Const_static());
-        this.GFSall.add(new AP_One());
-        this.GFSall.add(new AP_Zero());
-        this.GFSall.add(new AP_MinusOne());
+        this.GFSall.add(new AP_Const_static());
+//        this.GFSall.add(new AP_One());
+//        this.GFSall.add(new AP_Zero());
+//        this.GFSall.add(new AP_MinusOne());
 //        this.GFSall.add(new AP_Const());
 //        this.GFSall.add(new AP_Pi());
 //        this.GFSall.add(new AP_Euler());

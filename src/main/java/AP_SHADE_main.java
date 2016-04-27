@@ -160,9 +160,9 @@ public class AP_SHADE_main {
     
     public static void threeSineMain(String[] args) throws Exception {
 
-        int dimension = 30;
+        int dimension = 180;
         int NP = 100;
-        int H = 100;
+        int H = 10;
         int generations = 2000;
         int MAXFES = generations * NP;
 
@@ -176,7 +176,7 @@ public class AP_SHADE_main {
 
         Algorithm de;
 
-        int runs = 2;
+        int runs = 10;
         double[] bestArray = new double[runs];
         int i, best;
 
@@ -508,9 +508,9 @@ public class AP_SHADE_main {
         
 //        quinticMain(args);
 //        sexticMain(args);
-//        threeSineMain(args);
+        threeSineMain(args);
 //        fourSineMain(args);
-        mainPredictionBMWAllParts();
+//        mainPredictionBMWAllParts();
 
         
     }

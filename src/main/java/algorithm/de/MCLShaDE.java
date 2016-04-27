@@ -3,13 +3,9 @@ package algorithm.de;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.net.BidirectionalEdge;
-import model.net.Edge;
-import model.net.Net;
+import model.chaos.RankedChaosGenerator;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -20,93 +16,98 @@ import util.random.Random;
 
 /**
  *
- * NET ShaDE algorithm
- * pbest is selected from NET, not from best individuals in population.
- * 
- * @author wiki on 11/04/2016
+ * @author wiki
  */
-public class NetShaDE extends ShaDE {
+public class MCLShaDE extends LShaDE {
 
-    Net net = new Net();
+    List<RankedChaosGenerator> chaosGenerator;
+    List<Double[]> chaosProbabilities = new ArrayList<>();
+    int chosenChaos;
     
-    public NetShaDE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator) {
-        super(D, MAXFES, f, H, NP, rndGenerator);
+    public MCLShaDE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
+        super(D, MAXFES, f, H, NP, rndGenerator, minPopSize);
+        chaosGenerator = RankedChaosGenerator.getAllChaosGenerators();
     }
     
+    private void writeChaosProbabilities(){
+        
+        Double[] probs = new Double[this.chaosGenerator.size()];
+        
+        for(int i = 0; i < this.chaosGenerator.size();i++){
+            probs[i] = this.chaosGenerator.get(i).rank;
+        }
+        
+        this.chaosProbabilities.add(probs);
+        
+    }
+    
+    /**
+     * Creation of initial population.
+     * Overrided becauser of chaos probabilities history.
+     */
     @Override
-    public String getName() {
-        return "Net_SHADE";
+    protected void initializePopulation(){
+        
+        /**
+         * Initial population
+         */
+        id = 0;
+        double[] features;
+        this.P = new ArrayList<>();
+        Individual ind;
+
+        for (int i = 0; i < this.NP; i++) {
+            id = i;
+            features = this.f.generateTrial(this.D).clone();
+            ind = new Individual(String.valueOf(id), features, this.f.fitness(features));
+            this.isBest(ind);
+            this.P.add(ind);
+            this.FES++;
+            this.writeHistory();
+            this.writeChaosProbabilities();
+        }
+        
     }
     
     /**
      *
      * @param list
-     * @param size
      * @return
      */
-    protected List<Individual> resizePbest(List<Individual> list, int size) {
+    @Override
+    protected Individual getRandBestFromList(List<Individual> list) {
 
-        if(size == list.size()){
-            return list;
-        }
-        
-        List<Individual> toRet = new ArrayList<>();
-        List<Individual> tmp = new ArrayList<>();
-        Net tmpNet = new Net(this.net);
-        Individual tmpInd = null;
-        int highestDegree = -1;
-        tmp.addAll(list);
-        
-        //while the size of the list is smaller than the demanded
-        while(toRet.size() < size){
-            
-            //If the map has not been filled yet
-            if(tmpNet.getDegreeMap().isEmpty()){
-                tmpInd = getBestFromList(tmp);
-                tmp.remove(tmpInd);
-            }
-            else{
-                //cycle through all nodes
-                for(Entry<Individual, Integer> entry : tmpNet.getDegreeMap().entrySet()) {
+        int index = chaosGenerator.get(chosenChaos).chaos.nextInt(list.size());
 
-                    //greater degree of entry
-                    if(entry.getValue() >= highestDegree){
-                        tmpInd = entry.getKey();
-                        highestDegree = entry.getValue();
-                    }
-
-                }
-            }
-            
-            toRet.add(tmpInd);
-            tmpNet.getDegreeMap().remove(tmpInd);
-            
-        }
-        
-        return toRet;
-        
-
-//        for (int i = 0; i < size; i++) {
-//            tmpInd = tmpNet.getNodeWithHighestDegree();
-//            if(tmpInd == null){
-//                //If there are no nodes left with the edges, select the best according to fitness value
-//                tmpInd = this.getBestFromList(tmp);
-//            }
-//            //add node to return array
-//            toRet.add(tmpInd);
-//            //remove it from temporary list of nodes that are left
-//            tmp.remove(tmpInd);
-//            //remove edges from temporary network
-//            tmpNet.removeBidirectionalEdgesForNode(tmpInd);
-//        }
-//        
-//        //remove edges for the nodes which did not survive to the next gen
-//        tmp.stream().forEach(this.net::removeBidirectionalEdgesForNode);
-//
-//        return toRet;
+        return list.get(index);
 
     }
     
+    /**
+     * Updates rank values for chaos generators.
+     */
+    protected void updateRankings() {
+
+        if(chaosGenerator.get(chosenChaos).rank < 0.6){
+            double rankSum = 0, difference;
+
+            rankSum = chaosGenerator.stream().map((chaos) -> chaos.rank).reduce(rankSum, (accumulator, _item) -> accumulator + _item);
+
+            difference = rankSum / 100.0;
+            chaosGenerator.get(chosenChaos).rank += difference;
+
+            for (RankedChaosGenerator chaos : chaosGenerator) {
+                chaos.rank = chaos.rank / (rankSum + difference);
+            }
+        }
+
+
+    }
+
+    /**
+     * 
+     * @return 
+     */
     @Override
     public Individual run() {
 
@@ -139,15 +140,13 @@ public class NetShaDE extends ShaDE {
         List<Individual> newPop, pBestArray;
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
-        Individual trial;
+        Individual trial, pbestInd;
         Individual x;
         List<Double> wS;
         double wSsum, meanS_F1, meanS_F2, meanS_CR;
         int k = 0;
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
-        Individual[] parentArray; //for edge creation
-        Edge edge;
 
         while (true) {
 
@@ -186,25 +185,20 @@ public class NetShaDE extends ShaDE {
 
                 pBestArray = new ArrayList<>();
                 pBestArray.addAll(this.P);
-                pBestArray = this.resizePbest(pBestArray, Psize);
+                pBestArray = this.resize(pBestArray, Psize);
 
                 /**
                  * Parent selection
                  */
-                parentArray = new Individual[4];
-                parentArray[0] = x;
-                parentArray[1] = this.getRandBestFromList(pBestArray);
-                pbestIndex = this.getPbestIndex(parentArray[1]);
-                pbest = parentArray[1].vector.clone();
+                pbestInd = this.getRandBestFromList(pBestArray);
+                pbestIndex = this.getPbestIndex(pbestInd);
+                pbest = pbestInd.vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
-                parentArray[2] = this.P.get(rIndexes[0]);
-                pr1 = parentArray[2].vector.clone();
+                pr1 = this.P.get(rIndexes[0]).vector.clone();
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
-                    parentArray[3] = null;
                 } else {
-                    parentArray[3] = this.P.get(rIndexes[1]);
-                    pr2 = parentArray[3].vector.clone();
+                    pr2 = this.P.get(rIndexes[1]).vector.clone();
                 }
                 parents = new ArrayList<>();
                 parents.add(x.vector);
@@ -230,9 +224,8 @@ public class NetShaDE extends ShaDE {
                 /**
                  * Trial ready
                  */
-//                id++;
-//                trial = new Individual(String.valueOf(id), u, f.fitness(u));
-                trial = new Individual(x.id, u, f.fitness(u));
+                id++;
+                trial = new Individual(String.valueOf(id), u, f.fitness(u));
 
                 /**
                  * Trial is better
@@ -244,18 +237,16 @@ public class NetShaDE extends ShaDE {
                     this.Aext.add(x);
                     wS.add(Math.abs(trial.fitness - x.fitness));
                     
-                    for (int par = 1; par < parentArray.length; par++ ) {
-                        if(parentArray[par] == null){
-                            continue;
-                        }
-                        edge = new BidirectionalEdge(parentArray[par], trial);
-                        edge.iter = G;
-                        net.addEdge(edge);
-                    }
+                    /**
+                     * Chosen chaos rank update
+                     */
+                    updateRankings();
                     
                 } else {
                     newPop.add(x);
                 }
+                
+                this.writeChaosProbabilities();
 
                 this.FES++;
                 this.isBest(trial);
@@ -263,9 +254,9 @@ public class NetShaDE extends ShaDE {
                 if (this.FES >= this.MAXFES) {
                     break;
                 }
-                
-                this.Aext = this.resizeAext(this.Aext, this.NP);
 
+                this.Aext = this.resizeAext(this.Aext, this.NP);
+                
             }
 
             if (this.FES >= this.MAXFES) {
@@ -304,20 +295,28 @@ public class NetShaDE extends ShaDE {
              */
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
-            
-            /**
-             * Print out of the nodes and their centrality
-             */
-//            System.out.println("-------------------");
-//            net.getDegreeMap().entrySet().stream().forEach((entry) -> {
-//                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
-//            });
-//            System.out.println("-------------------");
+            NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
+            P = this.resizePop(P, NP);
 
         }
 
         return this.best;
 
+    }
+    
+    public void printOutRankings() {
+
+        System.out.println("Ranking");
+        chaosGenerator.stream().forEach((chaos) -> {
+            System.out.print(chaos.rank + " ");
+        });
+        System.out.println("");
+
+    }
+
+    @Override
+    public String getName() {
+        return "MC-LSHADE";
     }
     
     /**
@@ -327,20 +326,21 @@ public class NetShaDE extends ShaDE {
         
         int dimension = 10;
         int NP = 100;
-        int MAXFES = 1000 * NP;
+        int minNP = 20;
+        int MAXFES = 100 * NP;
         int funcNumber = 14;
         TestFunction tf = new Schwefel();
         int H = 10;
         util.random.Random generator = new util.random.UniformRandom();
 
-        NetShaDE shade;
+        MCLShaDE shade;
 
         int runs = 10;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new NetShaDE(dimension, MAXFES, tf, H, NP, generator);
+            shade = new MCLShaDE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.run();
 
@@ -372,6 +372,10 @@ public class NetShaDE extends ShaDE {
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());
             System.out.println(Arrays.toString(shade.getBest().vector));
+            
+//            for(Individual ind : shade.P){
+//                System.out.println("ID: " + ind.id + " - fitness: " + ind.fitness);
+//            }
         }
 
         System.out.println("=================================");
@@ -383,5 +387,7 @@ public class NetShaDE extends ShaDE {
         System.out.println("=================================");
         
     }
+
+    
     
 }

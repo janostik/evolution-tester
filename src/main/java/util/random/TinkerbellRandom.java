@@ -9,7 +9,7 @@ public class TinkerbellRandom implements Random {
     final private static model.chaos.Tinkerbell rnd = new model.chaos.Tinkerbell();
 
     @Override
-    public Double nextDouble() {
+    public double nextDouble() {
         return rnd.getRndReal();
     }
 

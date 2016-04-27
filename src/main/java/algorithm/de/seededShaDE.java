@@ -3,15 +3,11 @@ package algorithm.de;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.net.BidirectionalEdge;
-import model.net.Edge;
-import model.net.Net;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
+import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -20,91 +16,14 @@ import util.random.Random;
 
 /**
  *
- * NET ShaDE algorithm
- * pbest is selected from NET, not from best individuals in population.
- * 
- * @author wiki on 11/04/2016
+ * @author wiki
  */
-public class NetShaDE extends ShaDE {
+public class seededShaDE extends ShaDE {
 
-    Net net = new Net();
     
-    public NetShaDE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator) {
+
+    public seededShaDE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator) {
         super(D, MAXFES, f, H, NP, rndGenerator);
-    }
-    
-    @Override
-    public String getName() {
-        return "Net_SHADE";
-    }
-    
-    /**
-     *
-     * @param list
-     * @param size
-     * @return
-     */
-    protected List<Individual> resizePbest(List<Individual> list, int size) {
-
-        if(size == list.size()){
-            return list;
-        }
-        
-        List<Individual> toRet = new ArrayList<>();
-        List<Individual> tmp = new ArrayList<>();
-        Net tmpNet = new Net(this.net);
-        Individual tmpInd = null;
-        int highestDegree = -1;
-        tmp.addAll(list);
-        
-        //while the size of the list is smaller than the demanded
-        while(toRet.size() < size){
-            
-            //If the map has not been filled yet
-            if(tmpNet.getDegreeMap().isEmpty()){
-                tmpInd = getBestFromList(tmp);
-                tmp.remove(tmpInd);
-            }
-            else{
-                //cycle through all nodes
-                for(Entry<Individual, Integer> entry : tmpNet.getDegreeMap().entrySet()) {
-
-                    //greater degree of entry
-                    if(entry.getValue() >= highestDegree){
-                        tmpInd = entry.getKey();
-                        highestDegree = entry.getValue();
-                    }
-
-                }
-            }
-            
-            toRet.add(tmpInd);
-            tmpNet.getDegreeMap().remove(tmpInd);
-            
-        }
-        
-        return toRet;
-        
-
-//        for (int i = 0; i < size; i++) {
-//            tmpInd = tmpNet.getNodeWithHighestDegree();
-//            if(tmpInd == null){
-//                //If there are no nodes left with the edges, select the best according to fitness value
-//                tmpInd = this.getBestFromList(tmp);
-//            }
-//            //add node to return array
-//            toRet.add(tmpInd);
-//            //remove it from temporary list of nodes that are left
-//            tmp.remove(tmpInd);
-//            //remove edges from temporary network
-//            tmpNet.removeBidirectionalEdgesForNode(tmpInd);
-//        }
-//        
-//        //remove edges for the nodes which did not survive to the next gen
-//        tmp.stream().forEach(this.net::removeBidirectionalEdgesForNode);
-//
-//        return toRet;
-
     }
     
     @Override
@@ -122,7 +41,7 @@ public class NetShaDE extends ShaDE {
          * Initial population
          */
         initializePopulation();
-
+        
         this.M_F = new double[this.H];
         this.M_CR = new double[this.H];
 
@@ -140,17 +59,15 @@ public class NetShaDE extends ShaDE {
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
         Individual trial;
-        Individual x;
+        Individual x, pbestInd;
         List<Double> wS;
         double wSsum, meanS_F1, meanS_F2, meanS_CR;
         int k = 0;
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
-        Individual[] parentArray; //for edge creation
-        Edge edge;
 
         while (true) {
-
+            
             this.G++;
             this.S_F = new ArrayList<>();
             this.S_CR = new ArrayList<>();
@@ -162,16 +79,16 @@ public class NetShaDE extends ShaDE {
 
                 x = this.P.get(i);
                 r = rndGenerator.nextInt(this.H);
-                Fg = OtherDistributionsUtil.cauchy(this.M_F[r], 0.1);
+                Fg = OtherDistributionsUtil.cauchy((RandomGenerator) rndGenerator, this.M_F[r], 0.1);
                 while (Fg <= 0) {
-                    Fg = OtherDistributionsUtil.cauchy(this.M_F[r], 0.1);
+                    Fg = OtherDistributionsUtil.cauchy((RandomGenerator) rndGenerator, this.M_F[r], 0.1);
                 }
                 if (Fg > 1) {
                     Fg = 1;
                 }
                 
 
-                CRg = OtherDistributionsUtil.normal(this.M_CR[r], 0.1);
+                CRg = OtherDistributionsUtil.normal((RandomGenerator) rndGenerator, this.M_CR[r], 0.1);
                 if (CRg > 1) {
                     CRg = 1;
                 }
@@ -186,25 +103,20 @@ public class NetShaDE extends ShaDE {
 
                 pBestArray = new ArrayList<>();
                 pBestArray.addAll(this.P);
-                pBestArray = this.resizePbest(pBestArray, Psize);
+                pBestArray = this.resize(pBestArray, Psize);
 
                 /**
                  * Parent selection
                  */
-                parentArray = new Individual[4];
-                parentArray[0] = x;
-                parentArray[1] = this.getRandBestFromList(pBestArray);
-                pbestIndex = this.getPbestIndex(parentArray[1]);
-                pbest = parentArray[1].vector.clone();
+                pbestInd = this.getRandBestFromList(pBestArray);
+                pbestIndex = this.getPbestIndex(pbestInd);
+                pbest = pbestInd.vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
-                parentArray[2] = this.P.get(rIndexes[0]);
-                pr1 = parentArray[2].vector.clone();
+                pr1 = this.P.get(rIndexes[0]).vector.clone();
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
-                    parentArray[3] = null;
                 } else {
-                    parentArray[3] = this.P.get(rIndexes[1]);
-                    pr2 = parentArray[3].vector.clone();
+                    pr2 = this.P.get(rIndexes[1]).vector.clone();
                 }
                 parents = new ArrayList<>();
                 parents.add(x.vector);
@@ -230,9 +142,8 @@ public class NetShaDE extends ShaDE {
                 /**
                  * Trial ready
                  */
-//                id++;
-//                trial = new Individual(String.valueOf(id), u, f.fitness(u));
-                trial = new Individual(x.id, u, f.fitness(u));
+                id++;
+                trial = new Individual(String.valueOf(id), u, f.fitness(u));
 
                 /**
                  * Trial is better
@@ -243,16 +154,6 @@ public class NetShaDE extends ShaDE {
                     this.S_CR.add(CRg);
                     this.Aext.add(x);
                     wS.add(Math.abs(trial.fitness - x.fitness));
-                    
-                    for (int par = 1; par < parentArray.length; par++ ) {
-                        if(parentArray[par] == null){
-                            continue;
-                        }
-                        edge = new BidirectionalEdge(parentArray[par], trial);
-                        edge.iter = G;
-                        net.addEdge(edge);
-                    }
-                    
                 } else {
                     newPop.add(x);
                 }
@@ -263,9 +164,9 @@ public class NetShaDE extends ShaDE {
                 if (this.FES >= this.MAXFES) {
                     break;
                 }
-                
-                this.Aext = this.resizeAext(this.Aext, this.NP);
 
+                this.Aext = this.resizeAext(this.Aext, this.NP);
+                
             }
 
             if (this.FES >= this.MAXFES) {
@@ -305,19 +206,16 @@ public class NetShaDE extends ShaDE {
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
             
-            /**
-             * Print out of the nodes and their centrality
-             */
-//            System.out.println("-------------------");
-//            net.getDegreeMap().entrySet().stream().forEach((entry) -> {
-//                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
-//            });
-//            System.out.println("-------------------");
 
         }
-
+        
         return this.best;
 
+    }
+    
+    @Override
+    public String getName() {
+        return "seeded_SHADE";
     }
     
     /**
@@ -327,20 +225,22 @@ public class NetShaDE extends ShaDE {
         
         int dimension = 10;
         int NP = 100;
-        int MAXFES = 1000 * NP;
+        int MAXFES = 10 * NP;
         int funcNumber = 14;
         TestFunction tf = new Schwefel();
         int H = 10;
-        util.random.Random generator = new util.random.UniformRandom();
+        long seed = 10304050L;
+        util.random.Random generator;
 
-        NetShaDE shade;
+        seededShaDE shade;
 
-        int runs = 10;
+        int runs = 2;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
-
-            shade = new NetShaDE(dimension, MAXFES, tf, H, NP, generator);
+            
+            generator = new util.random.UniformRandomSeed(seed);
+            shade = new seededShaDE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
 

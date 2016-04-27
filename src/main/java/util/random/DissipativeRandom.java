@@ -9,7 +9,7 @@ public class DissipativeRandom implements Random {
     final private static model.chaos.Dissipative rnd = new model.chaos.Dissipative();
 
     @Override
-    public Double nextDouble() {
+    public double nextDouble() {
         return rnd.getRndReal();
     }
 

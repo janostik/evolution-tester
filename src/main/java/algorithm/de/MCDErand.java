@@ -251,26 +251,30 @@ public class MCDErand extends DErand1bin {
     public void writeProbsToFile(String path){
         
         try {
+            int stop = this.chaosProbabilities.size() - (this.chaosProbabilities.size() % 100) - 1;
+            
             PrintWriter pw = new PrintWriter(path, "UTF-8");
             
             pw.write("{");
             
             for(int k = 0; k < this.chaosProbabilities.size(); k++){
                 
-                pw.write("{");
-                
-                for(int i = 0; i < this.chaosProbabilities.get(k).length; i++) {
-                   pw.write(String.format(Locale.US, "%.10f", this.chaosProbabilities.get(k)[i]));
-                   
-                   if(i != this.chaosProbabilities.get(k).length-1){
-                       pw.write(",");
-                   }
-                }
-                
-                pw.write("}");
-                
-                if(k != this.chaosProbabilities.size()-1){
-                    pw.write(",");
+                if((k+1) % 100 == 0) {
+                    pw.write("{");
+
+                    for(int i = 0; i < this.chaosProbabilities.get(k).length; i++) {
+                       pw.write(String.format(Locale.US, "%.10f", this.chaosProbabilities.get(k)[i]));
+
+                       if(i != this.chaosProbabilities.get(k).length-1){
+                           pw.write(",");
+                       }
+                    }
+
+                    pw.write("}");
+
+                    if(k != stop){
+                        pw.write(",");
+                    }
                 }
                 
             }

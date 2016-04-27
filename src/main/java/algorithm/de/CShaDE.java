@@ -60,15 +60,19 @@ public class CShaDE extends ShaDE {
      * @return
      */
     @Override
-    protected int[] genRandIndexes(int index, int max1, int max2) {
+    protected int[] genRandIndexes(int index, int max1, int max2, int pbest) {
 
         int a, b;
 
         a = chaosGenerator.nextInt(max1);
+        
+        while(a == pbest || a == index){
+            a = chaosGenerator.nextInt(max1);
+        }
+        
         b = chaosGenerator.nextInt(max2);
 
-        while (a == b || a == index || b == index) {
-            a = chaosGenerator.nextInt(max1);
+        while (b == a || b == index || b == pbest) {
             b = chaosGenerator.nextInt(max2);
         }
 

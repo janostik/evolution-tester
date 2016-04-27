@@ -9,7 +9,7 @@ public class DelayedLogisticRandom implements Random {
     final private static model.chaos.DelayedLogistic rnd = new model.chaos.DelayedLogistic();
 
     @Override
-    public Double nextDouble() {
+    public double nextDouble() {
         return rnd.getRndReal();
     }
 

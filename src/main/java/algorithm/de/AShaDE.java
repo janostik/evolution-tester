@@ -80,13 +80,13 @@ public class AShaDE extends ShaDE {
         /**
          * Generation iteration;
          */
-        int r, Psize;
+        int r, Psize, pbestIndex;
         double Fg, CRg;
         List<Individual>  pBestArray;
         List<AgingIndividual> newPop;
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
-        AgingIndividual x, trial;
+        AgingIndividual x, trial, pbestInd;
         List<Double> wS;
         double wSsum, meanS_F1, meanS_F2, meanS_CR, deltaAct, deltaBest, ageChange;
         int k = 0, maxAgeChange = 3, agingConstant = 1;
@@ -149,8 +149,10 @@ public class AShaDE extends ShaDE {
                 /**
                  * Parent selection
                  */
-                pbest = this.getRandBestFromList(pBestArray).vector.clone();
-                rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size());
+                pbestInd = (AgingIndividual) this.getRandBestFromList(pBestArray);
+                pbestIndex = this.getPbestIndex(pbestInd);
+                pbest = pbestInd.vector.clone();
+                rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
                 pr1 = this.P.get(rIndexes[0]).vector.clone();
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
@@ -218,6 +220,8 @@ public class AShaDE extends ShaDE {
                 if (this.FES >= this.MAXFES) {
                     break;
                 }
+                
+                this.Aext = this.resizeAext(this.Aext, this.NP);
 
             }
 
@@ -286,7 +290,7 @@ public class AShaDE extends ShaDE {
              */
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
-            this.Aext = this.resizeAext(this.Aext, this.NP);
+            
 
         }
 

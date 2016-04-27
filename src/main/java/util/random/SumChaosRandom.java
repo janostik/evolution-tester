@@ -51,7 +51,7 @@ public class SumChaosRandom implements Random {
     }
 
     @Override
-    public Double nextDouble() {
+    public double nextDouble() {
         
         if(iterator == arraySize){
             this.initializeArray();
