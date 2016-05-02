@@ -1,5 +1,5 @@
 
-import algorithm.de.EigSpsLShaDE;
+import algorithm.de.EigSpsL_SHADE;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -454,7 +454,7 @@ public class EigSPSLShadeMain {
         int dimension = 10;
         TestFunction tf;
 
-        EigSpsLShaDE shade;
+        EigSpsL_SHADE shade;
 
         int runs = 51;
         List<List<Object>> list = setUpForCec2015(dimension);
@@ -475,7 +475,7 @@ public class EigSPSLShadeMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new EigSpsLShaDE(list.get(funcNumber-1));
+                shade = new EigSpsL_SHADE(list.get(funcNumber-1));
                 shade.run();
 
                 writer = new PrintWriter(home_dir + funcNumber + "-" + k + ".txt", "UTF-8");

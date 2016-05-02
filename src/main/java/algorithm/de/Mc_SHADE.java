@@ -17,14 +17,14 @@ import util.OtherDistributionsUtil;
  *
  * @author adam on 25/11/2015
  */
-public class MCShaDE extends ShaDE {
+public class Mc_SHADE extends SHADE {
 
     List<RankedChaosGenerator> chaosGenerator;
     List<Double[]> chaosProbabilities = new ArrayList<>();
     int chosenChaos;
 
 
-    public MCShaDE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
+    public Mc_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
         super(D, MAXFES, f, H, NP, rndGenerator);
         chaosGenerator = RankedChaosGenerator.getAllChaosGenerators();
     }
@@ -310,7 +310,7 @@ public class MCShaDE extends ShaDE {
 
     @Override
     public String getName() {
-        return "MC-ShaDE";
+        return "Mc_SHADE";
     }
 
     /**
@@ -408,7 +408,7 @@ public class MCShaDE extends ShaDE {
             pw.close();
             
         } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-            Logger.getLogger(MCShaDE.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Mc_SHADE.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

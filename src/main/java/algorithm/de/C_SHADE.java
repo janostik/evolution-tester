@@ -15,18 +15,18 @@ import org.apache.commons.math3.stat.descriptive.rank.Median;
  *
  * @author adam on 25/11/2015
  */
-public class CShaDE extends ShaDE {
+public class C_SHADE extends SHADE {
 
     util.random.Random chaosGenerator;
     
-    public CShaDE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator, util.random.Random chGenerator) {
+    public C_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator, util.random.Random chGenerator) {
         super(D, MAXFES, f, H, NP, rndGenerator);
         chaosGenerator = chGenerator;
     }
 
     @Override
     public String getName() {
-        return "CShaDE";
+        return "C_SHADE";
     }
     
     /**
@@ -94,7 +94,7 @@ public class CShaDE extends ShaDE {
         util.random.Random generator = new util.random.UniformRandom();
         util.random.Random chGenerator = new util.random.BurgersRandom();
 
-        CShaDE shade;
+        C_SHADE shade;
 
         int runs = 10;
         double[] bestArray = new double[runs];
@@ -108,7 +108,7 @@ public class CShaDE extends ShaDE {
             i = 0;
             min = Double.MAX_VALUE;
             
-            shade = new CShaDE(dimension, MAXFES, tf, H, NP, generator, chGenerator);
+            shade = new C_SHADE(dimension, MAXFES, tf, H, NP, generator, chGenerator);
 
             shade.run();
 
@@ -167,7 +167,7 @@ public class CShaDE extends ShaDE {
             System.out.println("}");
             
             
-            for(Individual ind : ((CShaDE)shade).getBestHistory()){
+            for(Individual ind : ((C_SHADE)shade).getBestHistory()){
                 i++;
                 if(ind.fitness < min){
                     min = ind.fitness;

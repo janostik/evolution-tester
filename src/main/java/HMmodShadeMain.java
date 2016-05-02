@@ -1,5 +1,5 @@
 
-import algorithm.de.modShaDE;
+import algorithm.de.FCR_SHADE;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Locale;
@@ -19,11 +19,11 @@ public class HMmodShadeMain {
     public static double countMean(TestFunction tf, int D, int NP, int H, int MAXFES, double Finit, double CRinit, int runs){
         
         double[] res = new double[runs];
-        modShaDE shade;
+        FCR_SHADE shade;
         
         for(int i=0; i<runs; i++){
             
-            shade = new modShaDE(D, MAXFES, tf, H, NP, Finit, CRinit);
+            shade = new FCR_SHADE(D, MAXFES, tf, H, NP, Finit, CRinit);
             shade.run();
             
             res[i] = shade.getBest().fitness;

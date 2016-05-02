@@ -1,8 +1,8 @@
 
-import algorithm.de.LShaDE;
-import algorithm.de.NetLShaDE;
-import algorithm.de.NetShaDE;
-import algorithm.de.ShaDE;
+import algorithm.de.Lfv_SHADE;
+import algorithm.de.NLc_SHADE;
+import algorithm.de.Npb_SHADE;
+import algorithm.de.SHADE;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Locale;
@@ -46,7 +46,7 @@ public class Can_vs_Net_LShaDEMain {
         util.random.Random generator = new util.random.UniformRandom();
         int maxFuncNum = 15;
 
-        ShaDE shade;
+        SHADE shade;
 
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
@@ -63,7 +63,7 @@ public class Can_vs_Net_LShaDEMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new ShaDE(dimension, MAXFES, tf, H, NPinit, generator);
+                shade = new SHADE(dimension, MAXFES, tf, H, NPinit, generator);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -158,7 +158,7 @@ public class Can_vs_Net_LShaDEMain {
         util.random.Random generator = new util.random.UniformRandom();
         int maxFuncNum = 15;
 
-        NetShaDE shade;
+        Npb_SHADE shade;
 
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
@@ -175,7 +175,7 @@ public class Can_vs_Net_LShaDEMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new NetShaDE(dimension, MAXFES, tf, H, NPinit, generator);
+                shade = new Npb_SHADE(dimension, MAXFES, tf, H, NPinit, generator);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -271,7 +271,7 @@ public class Can_vs_Net_LShaDEMain {
         util.random.Random generator = new util.random.UniformRandom();
         tf = func;
         
-        LShaDE shade = new LShaDE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
+        Lfv_SHADE shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
 
         double[] bestArray;
         PrintWriter writer, sol_writer;
@@ -281,7 +281,7 @@ public class Can_vs_Net_LShaDEMain {
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new LShaDE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
+            shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
             shade.run();
 
             writer = new PrintWriter(home_dir + path + shade.getName() + "-" + func.name() + "-" + dimension + "_" + k + ".txt", "UTF-8");
@@ -353,7 +353,7 @@ public class Can_vs_Net_LShaDEMain {
         util.random.Random generator = new util.random.UniformRandom();
         tf = func;
         
-        NetLShaDE shade = new NetLShaDE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
+        NLc_SHADE shade = new NLc_SHADE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
 
         double[] bestArray;
         PrintWriter writer, sol_writer;
@@ -363,7 +363,7 @@ public class Can_vs_Net_LShaDEMain {
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new NetLShaDE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
+            shade = new NLc_SHADE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
             shade.run();
 
             writer = new PrintWriter(home_dir + path + shade.getName() + "-" + func.name() + "-" + dimension + "_" + k + ".txt", "UTF-8");
@@ -434,7 +434,7 @@ public class Can_vs_Net_LShaDEMain {
         util.random.Random generator = new util.random.UniformRandom();
         int maxFuncNum = 15;
 
-        LShaDE shade;
+        Lfv_SHADE shade;
 
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
@@ -451,7 +451,7 @@ public class Can_vs_Net_LShaDEMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new LShaDE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
+                shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -547,7 +547,7 @@ public class Can_vs_Net_LShaDEMain {
         util.random.Random generator = new util.random.UniformRandom();
         int maxFuncNum = 15;
 
-        NetLShaDE shade;
+        NLc_SHADE shade;
 
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
@@ -564,7 +564,7 @@ public class Can_vs_Net_LShaDEMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new NetLShaDE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
+                shade = new NLc_SHADE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");

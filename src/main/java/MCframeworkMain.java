@@ -2,8 +2,8 @@
 import algorithm.de.MCDEbest;
 import algorithm.de.MCDEcurtopbest;
 import algorithm.de.MCDErand;
-import algorithm.de.MCShaDE;
-import algorithm.de.ShaDE;
+import algorithm.de.Mc_SHADE;
+import algorithm.de.SHADE;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Locale;
@@ -304,7 +304,7 @@ public class MCframeworkMain {
         TestFunction tf;
         util.random.Random generator = new util.random.UniformRandom();
 
-        MCShaDE de;
+        Mc_SHADE de;
 
         double[] bestArray;
         PrintWriter writer, sol_writer;
@@ -316,7 +316,7 @@ public class MCframeworkMain {
 
         for (int k = 0; k < runs; k++) {
 
-            de = new MCShaDE(dimension, MAXFES, tf, H, NP, generator);
+            de = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
             de.run();
 
             writer = new PrintWriter(home_dir + resultPath + tf.name() + "-" + k + ".txt", "UTF-8");
@@ -393,7 +393,7 @@ public class MCframeworkMain {
         TestFunction tf;
         util.random.Random generator = new util.random.UniformRandom();
 
-        ShaDE de;
+        SHADE de;
 
         double[] bestArray;
         PrintWriter writer, sol_writer;
@@ -405,7 +405,7 @@ public class MCframeworkMain {
 
         for (int k = 0; k < runs; k++) {
 
-            de = new ShaDE(dimension, MAXFES, tf, H, NP, generator);
+            de = new SHADE(dimension, MAXFES, tf, H, NP, generator);
             de.run();
 
             writer = new PrintWriter(home_dir + resultPath + tf.name() + "-" + k + ".txt", "UTF-8");

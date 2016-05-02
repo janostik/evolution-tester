@@ -1,0 +1,10 @@
+-N - network
+-S - seeded
+-Lfv - Linear decrease based on fitness value
+-Lc - Linear decrease based on centrality (only with network)
+-Mc - multi chaotic system
+-C - chaos
+-F - initialization of F
+-CR - initialization of CR
+-A - aging
+-Npb - pbest selection based on centrality (only with network)

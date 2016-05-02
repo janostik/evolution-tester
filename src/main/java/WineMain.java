@@ -1,5 +1,5 @@
 
-import algorithm.de.ShaDE;
+import algorithm.de.SHADE;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.TestFunction;
@@ -23,8 +23,8 @@ public class WineMain {
         int H = 100;
         util.random.Random generator = new util.random.UniformRandom();
 
-        ShaDE shade;
-        shade = new ShaDE(dimension, MAXFES, tf, H, NP, generator);
+        SHADE shade;
+        shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
 
         shade.run();
         
@@ -45,8 +45,8 @@ public class WineMain {
         int H = 100;
         util.random.Random generator = new util.random.UniformRandom();
 
-        ShaDE shade;
-        shade = new ShaDE(dimension, MAXFES, tf, H, NP, generator);
+        SHADE shade;
+        shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
 
         shade.run();
         

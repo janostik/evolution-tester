@@ -1,7 +1,7 @@
 
 import algorithm.de.DErand1bin;
-import algorithm.de.MCShaDE;
-import algorithm.de.ShaDE;
+import algorithm.de.Mc_SHADE;
+import algorithm.de.SHADE;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -39,7 +39,7 @@ public class NWF_networkMains {
         int H = 10;
         util.random.Random generator = new util.random.UniformRandom();
 
-        MCShaDE shade;
+        Mc_SHADE shade;
 
         double[] bestArray = new double[runs];
         int i, best;
@@ -52,7 +52,7 @@ public class NWF_networkMains {
             i = 0;
             min = Double.MAX_VALUE;
             
-            shade = new MCShaDE(dimension, MAXFES, tf, H, NP, generator);
+            shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
 //            shade.printOutRankings();
@@ -89,7 +89,7 @@ public class NWF_networkMains {
             System.out.println("}");
             
             
-            for(Individual ind : ((MCShaDE)shade).getBestHistory()){
+            for(Individual ind : ((Mc_SHADE)shade).getBestHistory()){
                 i++;
                 if(ind.fitness < min){
                     min = ind.fitness;
@@ -118,7 +118,7 @@ public class NWF_networkMains {
         int H = 10;
         util.random.Random generator = new util.random.UniformRandom();
 
-        MCShaDE shade;
+        Mc_SHADE shade;
 
         double[] bestArray = new double[runs];
         int i, best;
@@ -131,7 +131,7 @@ public class NWF_networkMains {
             i = 0;
             min = Double.MAX_VALUE;
             
-            shade = new MCShaDE(dimension, MAXFES, tf, H, NP, generator);
+            shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
 //            shade.printOutRankings();
@@ -193,7 +193,7 @@ public class NWF_networkMains {
             System.out.println("}");
             
             
-            for(Individual ind : ((MCShaDE)shade).getBestHistory()){
+            for(Individual ind : ((Mc_SHADE)shade).getBestHistory()){
                 i++;
                 if(ind.fitness < min){
                     min = ind.fitness;
@@ -227,7 +227,7 @@ public class NWF_networkMains {
         int H = 10;
         util.random.Random generator = new util.random.UniformRandom();
 
-        MCShaDE shade;
+        Mc_SHADE shade;
 
         double[] bestArray = new double[runs];
         int i, best;
@@ -243,7 +243,7 @@ public class NWF_networkMains {
             i = 0;
             min = Double.MAX_VALUE;
             
-            shade = new MCShaDE(dimension, MAXFES, tf, H, NP, generator);
+            shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
 //            shade.printOutRankings();
@@ -353,7 +353,7 @@ public class NWF_networkMains {
         int H = 10;
         util.random.Random generator = new util.random.UniformRandom();
 
-        ShaDE shade;
+        SHADE shade;
 
         double[] bestArray = new double[runs];
         int i, best;
@@ -369,7 +369,7 @@ public class NWF_networkMains {
             i = 0;
             min = Double.MAX_VALUE;
             
-            shade = new ShaDE(dimension, MAXFES, tf, H, NP, generator);
+            shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
 //            shade.printOutRankings();
@@ -609,7 +609,7 @@ public class NWF_networkMains {
         int H = 10;
         util.random.Random generator = new util.random.UniformRandom();
 
-        MCShaDE shade;
+        Mc_SHADE shade;
 
         double[] bestArray = new double[runs];
         int i, best;
@@ -625,7 +625,7 @@ public class NWF_networkMains {
             i = 0;
             min = Double.MAX_VALUE;
             
-            shade = new MCShaDE(dimension, MAXFES, tf, H, NP, generator);
+            shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
 //            shade.printOutRankings();
@@ -700,7 +700,7 @@ public class NWF_networkMains {
             System.out.println("}");
             
             
-            for(Individual ind : ((MCShaDE)shade).getBestHistory()){
+            for(Individual ind : ((Mc_SHADE)shade).getBestHistory()){
                 i++;
                 if(ind.fitness < min){
                     min = ind.fitness;
@@ -749,7 +749,7 @@ public class NWF_networkMains {
         int H = 10;
         util.random.Random generator = new util.random.UniformRandom();
 
-        ShaDE shade;
+        SHADE shade;
 
         double[] bestArray = new double[runs];
         int i, best;
@@ -765,7 +765,7 @@ public class NWF_networkMains {
             i = 0;
             min = Double.MAX_VALUE;
             
-            shade = new ShaDE(dimension, MAXFES, tf, H, NP, generator);
+            shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
 //            shade.printOutRankings();
@@ -840,7 +840,7 @@ public class NWF_networkMains {
             System.out.println("}");
             
             
-            for(Individual ind : ((ShaDE)shade).getBestHistory()){
+            for(Individual ind : ((SHADE)shade).getBestHistory()){
                 i++;
                 if(ind.fitness < min){
                     min = ind.fitness;
@@ -1026,7 +1026,7 @@ public class NWF_networkMains {
         int H = 10;
         util.random.Random generator = new util.random.UniformRandom();
 
-        MCShaDE shade;
+        Mc_SHADE shade;
 
         double[] bestArray = new double[runs];
         int i, best;
@@ -1039,7 +1039,7 @@ public class NWF_networkMains {
             i = 0;
             min = Double.MAX_VALUE;
             
-            shade = new MCShaDE(dimension, MAXFES, tf, H, NP, generator);
+            shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
 //            shade.printOutRankings();
@@ -1125,7 +1125,7 @@ public class NWF_networkMains {
             System.out.println("}");
             
             
-            for(Individual ind : ((MCShaDE)shade).getBestHistory()){
+            for(Individual ind : ((Mc_SHADE)shade).getBestHistory()){
                 i++;
                 if(ind.fitness < min){
                     min = ind.fitness;
@@ -1159,7 +1159,7 @@ public class NWF_networkMains {
         int H = 10;
         util.random.Random generator = new util.random.UniformRandom();
 
-        MCShaDE shade;
+        Mc_SHADE shade;
 
         double[] bestArray = new double[runs];
         int i, best;
@@ -1172,7 +1172,7 @@ public class NWF_networkMains {
             i = 0;
             min = Double.MAX_VALUE;
             
-            shade = new MCShaDE(dimension, MAXFES, tf, H, NP, generator);
+            shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
 //            shade.printOutRankings();
@@ -1258,7 +1258,7 @@ public class NWF_networkMains {
             System.out.println("}");
             
             
-            for(Individual ind : ((MCShaDE)shade).getBestHistory()){
+            for(Individual ind : ((Mc_SHADE)shade).getBestHistory()){
                 i++;
                 if(ind.fitness < min){
                     min = ind.fitness;

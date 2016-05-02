@@ -34,7 +34,7 @@ import util.RandomUtil;
  *
  * @author adam on 13/11/2015
  */
-public class EigSpsLShaDE implements Algorithm {
+public class EigSpsL_SHADE implements Algorithm {
 
     /**
      * Extended Individual for the purposes of LShade algortihm
@@ -94,7 +94,7 @@ public class EigSpsLShaDE implements Algorithm {
     private double w_ext;
     private double p;
 
-    public EigSpsLShaDE(List<Object> settingsList) {
+    public EigSpsL_SHADE(List<Object> settingsList) {
         
         this.D = (int) settingsList.get(0);
         this.NPinit = (int) settingsList.get(1);
@@ -117,7 +117,7 @@ public class EigSpsLShaDE implements Algorithm {
         
     }
 
-    public EigSpsLShaDE(int D, int NPinit, int NPmin, int MAXFES, TestFunction f, double Finit, double ERinit, double CRinit, double w_F, double w_ER, double w_CR, double CR_min, double CR_max, int Q, double alfa, int H, double w_ext, double p) {
+    public EigSpsL_SHADE(int D, int NPinit, int NPmin, int MAXFES, TestFunction f, double Finit, double ERinit, double CRinit, double w_F, double w_ER, double w_CR, double CR_min, double CR_max, int Q, double alfa, int H, double w_ext, double p) {
         this.D = D;
         this.NPinit = NPinit;
         this.NPmin = NPmin;
@@ -432,7 +432,7 @@ public class EigSpsLShaDE implements Algorithm {
 
     @Override
     public String getName() {
-        return "EIG-SPS-LShaDE";
+        return "EIG-SPS-L_SHADE";
     }
 
     /**
@@ -888,7 +888,7 @@ public class EigSpsLShaDE implements Algorithm {
         list.add(1.5365); //w_ext
         list.add(0.1907); //p
         
-        EigSpsLShaDE lshade;
+        EigSpsL_SHADE lshade;
 
         int runs = 10;
         double[] bestArray = new double[runs];
@@ -896,7 +896,7 @@ public class EigSpsLShaDE implements Algorithm {
         for (int k = 0; k < runs; k++) {
 
 //            lshade = new EigSpsLShaDE(dimension, NPinit, NPmin, MAXFES, tf, Finit, ERinit, CRinit, w_F, w_ER, w_CR, CR_min, CR_max, Q, alfa, H, w_ext, p);
-            lshade = new EigSpsLShaDE(list);
+            lshade = new EigSpsL_SHADE(list);
 
             lshade.run();
 

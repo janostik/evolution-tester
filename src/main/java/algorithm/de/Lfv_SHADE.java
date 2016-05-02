@@ -3,13 +3,8 @@ package algorithm.de;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.net.BidirectionalEdge;
-import model.net.Edge;
-import model.net.Net;
-import model.net.UnidirectionalEdge;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -20,19 +15,25 @@ import util.random.Random;
 
 /**
  *
+ * SHADE algorithm with linear decrease of population size.
+ * Inidividuals that are going to be killed are selected based on their fitness value.
+ * 
  * @author adam on 05/04/2016
  */
-public class NetLShaDE extends LShaDE {
+public class Lfv_SHADE extends SHADE {
 
-    Net net = new Net();
+    protected final int minPopSize;
+    protected final int maxPopSize;
     
-    public NetLShaDE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
-        super(D, MAXFES, f, H, NP, rndGenerator, minPopSize);
+    public Lfv_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
+        super(D, MAXFES, f, H, NP, rndGenerator);
+        this.minPopSize = minPopSize;
+        this.maxPopSize = NP;
     }
-    
+ 
     @Override
     public String getName() {
-        return "Net_L-SHADE";
+        return "Lfv_SHADE";
     }
     
     @Override
@@ -67,15 +68,13 @@ public class NetLShaDE extends LShaDE {
         List<Individual> newPop, pBestArray;
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
-        Individual trial;
+        Individual trial, pbestInd;
         Individual x;
         List<Double> wS;
         double wSsum, meanS_F1, meanS_F2, meanS_CR;
         int k = 0;
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
-        Individual[] parentArray; //for edge creation
-        Edge edge;
 
         while (true) {
 
@@ -119,20 +118,15 @@ public class NetLShaDE extends LShaDE {
                 /**
                  * Parent selection
                  */
-                parentArray = new Individual[4];
-                parentArray[0] = x;
-                parentArray[1] = this.getRandBestFromList(pBestArray);
-                pbestIndex = this.getPbestIndex(parentArray[1]);
-                pbest = parentArray[1].vector.clone();
+                pbestInd = this.getRandBestFromList(pBestArray);
+                pbestIndex = this.getPbestIndex(pbestInd);
+                pbest = pbestInd.vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
-                parentArray[2] = this.P.get(rIndexes[0]);
-                pr1 = parentArray[2].vector.clone();
+                pr1 = this.P.get(rIndexes[0]).vector.clone();
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
-                    parentArray[3] = null;
                 } else {
-                    parentArray[3] = this.P.get(rIndexes[1]);
-                    pr2 = parentArray[3].vector.clone();
+                    pr2 = this.P.get(rIndexes[1]).vector.clone();
                 }
                 parents = new ArrayList<>();
                 parents.add(x.vector);
@@ -158,9 +152,8 @@ public class NetLShaDE extends LShaDE {
                 /**
                  * Trial ready
                  */
-//                id++;
-//                trial = new Individual(String.valueOf(id), u, f.fitness(u));
-                trial = new Individual(x.id, u, f.fitness(u));
+                id++;
+                trial = new Individual(String.valueOf(id), u, f.fitness(u));
 
                 /**
                  * Trial is better
@@ -171,16 +164,6 @@ public class NetLShaDE extends LShaDE {
                     this.S_CR.add(CRg);
                     this.Aext.add(x);
                     wS.add(Math.abs(trial.fitness - x.fitness));
-                    
-                    for (int par = 1; par < parentArray.length; par++ ) {
-                        if(parentArray[par] == null){
-                            continue;
-                        }
-                        edge = new BidirectionalEdge(parentArray[par], trial);
-                        edge.iter = G;
-                        net.addEdge(edge);
-                    }
-                    
                 } else {
                     newPop.add(x);
                 }
@@ -233,26 +216,7 @@ public class NetLShaDE extends LShaDE {
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
             NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
-            
-            /**
-             * Print out of the nodes and their centrality
-             */
-//            System.out.println("-------------------");
-//            net.getDegreeMap().entrySet().stream().forEach((entry) -> {
-//                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
-//            });
-//            System.out.println("-------------------");
-            
             P = this.resizePop(P, NP);
-            
-            /**
-             * Print out of the nodes and their centrality
-             */
-//            System.out.println("-------------------");
-//            net.getDegreeMap().entrySet().stream().forEach((entry) -> {
-//                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
-//            });
-//            System.out.println("-------------------");
 
         }
 
@@ -266,7 +230,6 @@ public class NetLShaDE extends LShaDE {
      * @param size
      * @return
      */
-    @Override
     protected List<Individual> resizePop(List<Individual> list, int size) {
 
         if(size == list.size()){
@@ -275,43 +238,18 @@ public class NetLShaDE extends LShaDE {
         
         List<Individual> toRet = new ArrayList<>();
         List<Individual> tmp = new ArrayList<>();
-        Net tmpNet = new Net(this.net);
-        Individual tmpInd;
-        int bestIt = 0;
         tmp.addAll(list);
-        
-        for(int i = 0; i < bestIt; i++) {
-            tmpInd = this.getBestFromList(tmp);
-            //add node to return array
-            toRet.add(tmpInd);
-            //remove it from temporary list of nodes that are left
-            tmp.remove(tmpInd);
-            //remove edges from temporary network
-            tmpNet.removeEdgesForNode(tmpInd);
-        }
+        Individual bestInd;
 
-        for (int i = bestIt; i < size; i++) {
-            tmpInd = tmpNet.getNodeWithHighestDegree();
-            if(tmpInd == null){
-                //If there are no nodes left with the edges, select the best according to fitness value
-                tmpInd = this.getBestFromList(tmp);
-            }
-            //add node to return array
-            toRet.add(tmpInd);
-            //remove it from temporary list of nodes that are left
-            tmp.remove(tmpInd);
-            //remove edges from temporary network
-            tmpNet.removeBidirectionalEdgesForNode(tmpInd);
+        for (int i = 0; i < size; i++) {
+            bestInd = this.getBestFromList(tmp);
+            toRet.add(bestInd);
+            tmp.remove(bestInd);
         }
-        
-        //remove edges for the nodes which did not survive to the next gen
-        tmp.stream().forEach(this.net::removeBidirectionalEdgesForNode);
 
         return toRet;
 
     }
-    
-    
     
     /**
      * @param args the command line arguments
@@ -326,16 +264,19 @@ public class NetLShaDE extends LShaDE {
         int funcNumber = 14;
         TestFunction tf = new Schwefel();
         int H = 10;
-        util.random.Random generator = new util.random.UniformRandom();
+        long seed = 10304050L;
+        util.random.Random generator;
 
-        NetLShaDE shade;
+        Lfv_SHADE shade;
 
         int runs = 10;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new NetLShaDE(dimension, MAXFES, tf, H, NP, generator, minNP);
+//            generator = new util.random.UniformRandomSeed(seed);
+            generator = new util.random.UniformRandom();
+            shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.run();
 
@@ -368,11 +309,9 @@ public class NetLShaDE extends LShaDE {
             System.out.println(shade.getBest().fitness - tf.optimum());
             System.out.println(Arrays.toString(shade.getBest().vector));
             
-            System.out.println("-------------------");
-            ((NetLShaDE)shade).net.getDegreeMap().entrySet().stream().forEach((entry) -> {
-                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
-            });
-            System.out.println("-------------------");
+//            for(Individual ind : shade.P){
+//                System.out.println("ID: " + ind.id + " - fitness: " + ind.fitness);
+//            }
         }
 
         System.out.println("=================================");

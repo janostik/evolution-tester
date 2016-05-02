@@ -21,7 +21,7 @@ import util.RandomUtil;
  *
  * @author adam on 20/11/2015
  */
-public class modShaDE implements Algorithm {
+public class FCR_SHADE implements Algorithm {
 
     private int D;
     private int G;
@@ -41,7 +41,7 @@ public class modShaDE implements Algorithm {
     private double Finit;
     private double CRinit;
 
-    public modShaDE(int D, int MAXFES, TestFunction f, int H, int NP) {
+    public FCR_SHADE(int D, int MAXFES, TestFunction f, int H, int NP) {
         this.D = D;
         this.MAXFES = MAXFES;
         this.f = f;
@@ -51,7 +51,7 @@ public class modShaDE implements Algorithm {
         this.Finit = 0.5;
     }
     
-    public modShaDE(int D, int MAXFES, TestFunction f, int H, int NP, double Finit, double CRinit) {
+    public FCR_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, double Finit, double CRinit) {
         this.D = D;
         this.MAXFES = MAXFES;
         this.f = f;
@@ -335,7 +335,7 @@ public class modShaDE implements Algorithm {
 
     @Override
     public String getName() {
-        return "ShaDE";
+        return "FCR_SHADE";
     }
 
     /**
@@ -577,14 +577,14 @@ public class modShaDE implements Algorithm {
         double CR = 0.5;
         double F = 0.5;
 
-        modShaDE shade;
+        FCR_SHADE shade;
 
         int runs = 10;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new modShaDE(dimension, MAXFES, tf, H, NP, F, CR);
+            shade = new FCR_SHADE(dimension, MAXFES, tf, H, NP, F, CR);
 
             shade.run();
 

@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.chaos.RankedChaosGenerator;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
+import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -16,98 +16,19 @@ import util.random.Random;
 
 /**
  *
+ * SHADE algorithm with linear decrease of population size.
+ * Inidividuals that are going to be killed are selected based on their fitness value.
+ * 
+ * Randomization here is seeded, therefore every run can end up in the same way.
+ * 
  * @author wiki
  */
-public class MCLShaDE extends LShaDE {
+public class SLfv_SHADE extends Lfv_SHADE {
 
-    List<RankedChaosGenerator> chaosGenerator;
-    List<Double[]> chaosProbabilities = new ArrayList<>();
-    int chosenChaos;
-    
-    public MCLShaDE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
+    public SLfv_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
         super(D, MAXFES, f, H, NP, rndGenerator, minPopSize);
-        chaosGenerator = RankedChaosGenerator.getAllChaosGenerators();
     }
     
-    private void writeChaosProbabilities(){
-        
-        Double[] probs = new Double[this.chaosGenerator.size()];
-        
-        for(int i = 0; i < this.chaosGenerator.size();i++){
-            probs[i] = this.chaosGenerator.get(i).rank;
-        }
-        
-        this.chaosProbabilities.add(probs);
-        
-    }
-    
-    /**
-     * Creation of initial population.
-     * Overrided becauser of chaos probabilities history.
-     */
-    @Override
-    protected void initializePopulation(){
-        
-        /**
-         * Initial population
-         */
-        id = 0;
-        double[] features;
-        this.P = new ArrayList<>();
-        Individual ind;
-
-        for (int i = 0; i < this.NP; i++) {
-            id = i;
-            features = this.f.generateTrial(this.D).clone();
-            ind = new Individual(String.valueOf(id), features, this.f.fitness(features));
-            this.isBest(ind);
-            this.P.add(ind);
-            this.FES++;
-            this.writeHistory();
-            this.writeChaosProbabilities();
-        }
-        
-    }
-    
-    /**
-     *
-     * @param list
-     * @return
-     */
-    @Override
-    protected Individual getRandBestFromList(List<Individual> list) {
-
-        int index = chaosGenerator.get(chosenChaos).chaos.nextInt(list.size());
-
-        return list.get(index);
-
-    }
-    
-    /**
-     * Updates rank values for chaos generators.
-     */
-    protected void updateRankings() {
-
-        if(chaosGenerator.get(chosenChaos).rank < 0.6){
-            double rankSum = 0, difference;
-
-            rankSum = chaosGenerator.stream().map((chaos) -> chaos.rank).reduce(rankSum, (accumulator, _item) -> accumulator + _item);
-
-            difference = rankSum / 100.0;
-            chaosGenerator.get(chosenChaos).rank += difference;
-
-            for (RankedChaosGenerator chaos : chaosGenerator) {
-                chaos.rank = chaos.rank / (rankSum + difference);
-            }
-        }
-
-
-    }
-
-    /**
-     * 
-     * @return 
-     */
     @Override
     public Individual run() {
 
@@ -161,16 +82,16 @@ public class MCLShaDE extends LShaDE {
 
                 x = this.P.get(i);
                 r = rndGenerator.nextInt(this.H);
-                Fg = OtherDistributionsUtil.cauchy(this.M_F[r], 0.1);
+                Fg = OtherDistributionsUtil.cauchy((RandomGenerator) rndGenerator, this.M_F[r], 0.1);
                 while (Fg <= 0) {
-                    Fg = OtherDistributionsUtil.cauchy(this.M_F[r], 0.1);
+                    Fg = OtherDistributionsUtil.cauchy((RandomGenerator) rndGenerator, this.M_F[r], 0.1);
                 }
                 if (Fg > 1) {
                     Fg = 1;
                 }
                 
 
-                CRg = OtherDistributionsUtil.normal(this.M_CR[r], 0.1);
+                CRg = OtherDistributionsUtil.normal((RandomGenerator) rndGenerator, this.M_CR[r], 0.1);
                 if (CRg > 1) {
                     CRg = 1;
                 }
@@ -236,17 +157,9 @@ public class MCLShaDE extends LShaDE {
                     this.S_CR.add(CRg);
                     this.Aext.add(x);
                     wS.add(Math.abs(trial.fitness - x.fitness));
-                    
-                    /**
-                     * Chosen chaos rank update
-                     */
-                    updateRankings();
-                    
                 } else {
                     newPop.add(x);
                 }
-                
-                this.writeChaosProbabilities();
 
                 this.FES++;
                 this.isBest(trial);
@@ -304,25 +217,16 @@ public class MCLShaDE extends LShaDE {
 
     }
     
-    public void printOutRankings() {
-
-        System.out.println("Ranking");
-        chaosGenerator.stream().forEach((chaos) -> {
-            System.out.print(chaos.rank + " ");
-        });
-        System.out.println("");
-
-    }
-
     @Override
     public String getName() {
-        return "MC-LSHADE";
+        return "SLfv_SHADE";
     }
     
     /**
      * @param args the command line arguments
+     * @throws java.lang.Exception
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         
         int dimension = 10;
         int NP = 100;
@@ -331,16 +235,18 @@ public class MCLShaDE extends LShaDE {
         int funcNumber = 14;
         TestFunction tf = new Schwefel();
         int H = 10;
-        util.random.Random generator = new util.random.UniformRandom();
+        long seed = 10304020L;
+        util.random.Random generator;
 
-        MCLShaDE shade;
+        SLfv_SHADE shade;
 
         int runs = 10;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new MCLShaDE(dimension, MAXFES, tf, H, NP, generator, minNP);
+            generator = new util.random.UniformRandomSeed(seed);
+            shade = new SLfv_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.run();
 
@@ -387,7 +293,5 @@ public class MCLShaDE extends LShaDE {
         System.out.println("=================================");
         
     }
-
-    
     
 }

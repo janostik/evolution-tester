@@ -5,9 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.net.BidirectionalEdge;
-import model.net.Edge;
-import model.tf.Cec2015;
+import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -20,10 +18,12 @@ import util.random.Random;
  *
  * @author wiki
  */
-public class seededNetLShaDE extends NetLShaDE {
+public class S_SHADE extends SHADE {
 
-    public seededNetLShaDE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
-        super(D, MAXFES, f, H, NP, rndGenerator, minPopSize);
+    
+
+    public S_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator) {
+        super(D, MAXFES, f, H, NP, rndGenerator);
     }
     
     @Override
@@ -41,7 +41,7 @@ public class seededNetLShaDE extends NetLShaDE {
          * Initial population
          */
         initializePopulation();
-
+        
         this.M_F = new double[this.H];
         this.M_CR = new double[this.H];
 
@@ -59,17 +59,15 @@ public class seededNetLShaDE extends NetLShaDE {
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
         Individual trial;
-        Individual x;
+        Individual x, pbestInd;
         List<Double> wS;
         double wSsum, meanS_F1, meanS_F2, meanS_CR;
         int k = 0;
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
-        Individual[] parentArray; //for edge creation
-        Edge edge;
 
         while (true) {
-
+            
             this.G++;
             this.S_F = new ArrayList<>();
             this.S_CR = new ArrayList<>();
@@ -83,7 +81,7 @@ public class seededNetLShaDE extends NetLShaDE {
                 r = rndGenerator.nextInt(this.H);
                 Fg = OtherDistributionsUtil.cauchy((RandomGenerator) rndGenerator, this.M_F[r], 0.1);
                 while (Fg <= 0) {
-                    Fg = OtherDistributionsUtil.cauchy((RandomGenerator) rndGenerator,this.M_F[r], 0.1);
+                    Fg = OtherDistributionsUtil.cauchy((RandomGenerator) rndGenerator, this.M_F[r], 0.1);
                 }
                 if (Fg > 1) {
                     Fg = 1;
@@ -110,20 +108,15 @@ public class seededNetLShaDE extends NetLShaDE {
                 /**
                  * Parent selection
                  */
-                parentArray = new Individual[4];
-                parentArray[0] = x;
-                parentArray[1] = this.getRandBestFromList(pBestArray);
-                pbestIndex = this.getPbestIndex(parentArray[1]);
-                pbest = parentArray[1].vector.clone();
+                pbestInd = this.getRandBestFromList(pBestArray);
+                pbestIndex = this.getPbestIndex(pbestInd);
+                pbest = pbestInd.vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
-                parentArray[2] = this.P.get(rIndexes[0]);
-                pr1 = parentArray[2].vector.clone();
+                pr1 = this.P.get(rIndexes[0]).vector.clone();
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
-                    parentArray[3] = null;
                 } else {
-                    parentArray[3] = this.P.get(rIndexes[1]);
-                    pr2 = parentArray[3].vector.clone();
+                    pr2 = this.P.get(rIndexes[1]).vector.clone();
                 }
                 parents = new ArrayList<>();
                 parents.add(x.vector);
@@ -149,9 +142,8 @@ public class seededNetLShaDE extends NetLShaDE {
                 /**
                  * Trial ready
                  */
-//                id++;
-//                trial = new Individual(String.valueOf(id), u, f.fitness(u));
-                trial = new Individual(x.id, u, f.fitness(u));
+                id++;
+                trial = new Individual(String.valueOf(id), u, f.fitness(u));
 
                 /**
                  * Trial is better
@@ -162,16 +154,6 @@ public class seededNetLShaDE extends NetLShaDE {
                     this.S_CR.add(CRg);
                     this.Aext.add(x);
                     wS.add(Math.abs(trial.fitness - x.fitness));
-                    
-                    for (int par = 1; par < parentArray.length; par++ ) {
-                        if(parentArray[par] == null){
-                            continue;
-                        }
-                        edge = new BidirectionalEdge(parentArray[par], trial);
-                        edge.iter = G;
-                        net.addEdge(edge);
-                    }
-                    
                 } else {
                     newPop.add(x);
                 }
@@ -223,64 +205,42 @@ public class seededNetLShaDE extends NetLShaDE {
              */
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
-            NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
             
-            /**
-             * Print out of the nodes and their centrality
-             */
-//            System.out.println("-------------------");
-//            net.getDegreeMap().entrySet().stream().forEach((entry) -> {
-//                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
-//            });
-//            System.out.println("-------------------");
-            
-            P = this.resizePop(P, NP);
-            
-            /**
-             * Print out of the nodes and their centrality
-             */
-//            System.out.println("-------------------");
-//            net.getDegreeMap().entrySet().stream().forEach((entry) -> {
-//                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
-//            });
-//            System.out.println("-------------------");
 
         }
-
+        
         return this.best;
 
     }
     
     @Override
     public String getName() {
-        return "seeded_Net_L-SHADE";
+        return "S_SHADE";
     }
     
     /**
      * @param args the command line arguments
-     * @throws java.lang.Exception
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         
         int dimension = 10;
         int NP = 100;
-        int minNP = 20;
-        int MAXFES = 100 * NP;
+        int MAXFES = 10 * NP;
         int funcNumber = 14;
-        TestFunction tf = new Cec2015(dimension, funcNumber);
+        TestFunction tf = new Schwefel();
         int H = 10;
+        long seed = 10304050L;
         util.random.Random generator;
 
-        long seed = 10304020L;
-        seededNetLShaDE shade;
+        S_SHADE shade;
 
-        int runs = 10;
+        int runs = 2;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
-
+            
             generator = new util.random.UniformRandomSeed(seed);
-            shade = new seededNetLShaDE(dimension, MAXFES, tf, H, NP, generator, minNP);
+            shade = new S_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
 
@@ -312,12 +272,6 @@ public class seededNetLShaDE extends NetLShaDE {
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());
             System.out.println(Arrays.toString(shade.getBest().vector));
-            
-            System.out.println("-------------------");
-            ((NetLShaDE)shade).net.getDegreeMap().entrySet().stream().forEach((entry) -> {
-                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
-            });
-            System.out.println("-------------------");
         }
 
         System.out.println("=================================");

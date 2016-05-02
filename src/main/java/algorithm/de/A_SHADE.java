@@ -19,7 +19,7 @@ import util.random.Random;
  * 
  * @author adam on 25/11/2015
  */
-public class AShaDE extends ShaDE {
+public class A_SHADE extends SHADE {
 
     List<Double> avgAgeList;
     List<Double> stdAgeList;
@@ -49,8 +49,13 @@ public class AShaDE extends ShaDE {
         
     }
     
-    public AShaDE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator) {
+    public A_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator) {
         super(D, MAXFES, f, H, NP, rndGenerator);
+    }
+    
+    @Override
+    public String getName() {
+        return "A_SHADE";
     }
     
     @Override
@@ -528,14 +533,14 @@ public class AShaDE extends ShaDE {
         int H = 1;
         util.random.Random generator = new util.random.UniformRandom();
 
-        AShaDE shade;
+        A_SHADE shade;
 
         int runs = 1;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new AShaDE(dimension, MAXFES, tf, H, NP, generator);
+            shade = new A_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
 

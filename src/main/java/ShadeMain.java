@@ -1,14 +1,14 @@
 
 import algorithm.Algorithm;
-import algorithm.de.AShaDE;
-import algorithm.de.CShaDE;
+import algorithm.de.A_SHADE;
+import algorithm.de.C_SHADE;
 import algorithm.de.DErand1bin;
 import algorithm.de.MCDErand;
-import algorithm.de.MCLShaDE;
-import algorithm.de.MCShaDE;
-import algorithm.de.NetLShaDE;
-import algorithm.de.ShaDE;
-import algorithm.de.modShaDE;
+import algorithm.de.McLfv_SHADE;
+import algorithm.de.Mc_SHADE;
+import algorithm.de.NLc_SHADE;
+import algorithm.de.SHADE;
+import algorithm.de.FCR_SHADE;
 import algorithm.pso.NetPso;
 import algorithm.pso.Pso;
 import java.io.PrintWriter;
@@ -34,7 +34,7 @@ public class ShadeMain {
         util.random.Random generator = new util.random.UniformRandom();
         int maxFuncNum = 28;
 
-        ShaDE shade;
+        SHADE shade;
 
         
         double[] bestArray;
@@ -52,7 +52,7 @@ public class ShadeMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new ShaDE(dimension, MAXFES, tf, H, NP, generator);
+                shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -142,7 +142,7 @@ public class ShadeMain {
         util.random.Random generator = new util.random.UniformRandom();
         int maxFuncNum = 15;
 
-        ShaDE shade;
+        SHADE shade;
 
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
@@ -159,7 +159,7 @@ public class ShadeMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new ShaDE(dimension, MAXFES, tf, H, NP, generator);
+                shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -249,7 +249,7 @@ public class ShadeMain {
         util.random.Random generator = new util.random.UniformRandom();
         int maxFuncNum = 15;
 
-        AShaDE shade;
+        A_SHADE shade;
 
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
@@ -266,7 +266,7 @@ public class ShadeMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new AShaDE(dimension, MAXFES, tf, H, NP, generator);
+                shade = new A_SHADE(dimension, MAXFES, tf, H, NP, generator);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -356,7 +356,7 @@ public class ShadeMain {
         util.random.Random generator = new util.random.UniformRandom();
         int maxFuncNum = 15;
 
-        CShaDE shade;
+        C_SHADE shade;
 
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
@@ -373,7 +373,7 @@ public class ShadeMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new CShaDE(dimension, MAXFES, tf, H, NP, generator, chGenerator);
+                shade = new C_SHADE(dimension, MAXFES, tf, H, NP, generator, chGenerator);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -463,7 +463,7 @@ public class ShadeMain {
         util.random.Random generator = new util.random.UniformRandom();
         int maxFuncNum = 15;
 
-        MCShaDE shade;
+        Mc_SHADE shade;
 
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
@@ -480,7 +480,7 @@ public class ShadeMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new MCShaDE(dimension, MAXFES, tf, H, NP, generator);
+                shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -570,7 +570,7 @@ public class ShadeMain {
         util.random.Random generator = new util.random.UniformRandom();
         int maxFuncNum = 30, fes_index;
 
-        MCShaDE shade;
+        Mc_SHADE shade;
 
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer, cec_result;
@@ -590,7 +590,7 @@ public class ShadeMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new MCShaDE(dimension, MAXFES, tf, H, NP, generator);
+                shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -750,7 +750,7 @@ public class ShadeMain {
         
         TestFunction tf;
 
-        modShaDE shade;
+        FCR_SHADE shade;
         
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
@@ -768,7 +768,7 @@ public class ShadeMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new modShaDE(dimension, MAXFES, tf, H, NP);
+                shade = new FCR_SHADE(dimension, MAXFES, tf, H, NP);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -856,7 +856,7 @@ public class ShadeMain {
         
         TestFunction tf;
 
-        modShaDE shade;
+        FCR_SHADE shade;
         
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
@@ -874,7 +874,7 @@ public class ShadeMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new modShaDE(dimension, MAXFES, tf, H, NP);
+                shade = new FCR_SHADE(dimension, MAXFES, tf, H, NP);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -964,7 +964,7 @@ public class ShadeMain {
         util.random.Random generator = new util.random.UniformRandom();
         int maxFuncNum = 15;
 
-        AShaDE shade;
+        A_SHADE shade;
 
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
@@ -981,7 +981,7 @@ public class ShadeMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new AShaDE(dimension, MAXFES, tf, H, NP, generator);
+                shade = new A_SHADE(dimension, MAXFES, tf, H, NP, generator);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -1071,7 +1071,7 @@ public class ShadeMain {
         util.random.Random generator = new util.random.UniformRandom();
         int maxFuncNum = 15;
 
-        AShaDE shade;
+        A_SHADE shade;
 
         PrintWriter writer;
         
@@ -1079,7 +1079,7 @@ public class ShadeMain {
         
             tf = new Cec2015(dimension, funcNumber);
 
-            shade = new AShaDE(dimension, MAXFES, tf, H, NP, generator);
+            shade = new A_SHADE(dimension, MAXFES, tf, H, NP, generator);
             shade.run();
 
             System.out.println("Best " + tf.name() + " = " + (shade.getBest().fitness - tf.optimum()));
@@ -1665,7 +1665,7 @@ public class ShadeMain {
         util.random.Random generator = new util.random.UniformRandom();
         int maxFuncNum = 15;
 
-        MCLShaDE shade;
+        McLfv_SHADE shade;
 
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
@@ -1682,7 +1682,7 @@ public class ShadeMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new MCLShaDE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
+                shade = new McLfv_SHADE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -1772,7 +1772,7 @@ public class ShadeMain {
         util.random.Random generator = new util.random.UniformRandom();
         int maxFuncNum = 15;
 
-        NetLShaDE shade;
+        NLc_SHADE shade;
 
         double[] bestArray;
         PrintWriter writer, sol_writer,res_writer;
@@ -1789,7 +1789,7 @@ public class ShadeMain {
             
             for (int k = 0; k < runs; k++) {
 
-                shade = new NetLShaDE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
+                shade = new NLc_SHADE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
