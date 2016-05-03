@@ -2,6 +2,8 @@
 -S - seeded
 -Lfv - Linear decrease based on fitness value
 -Lc - Linear decrease based on centrality (only with network)
+-Ls - Static linear decrease given by individual IDs.
+-Lmh - Metaheuristically selected vector of individual IDs, for linear decrease of population size.
 -Mc - multi chaotic system
 -C - chaos
 -F - initialization of F

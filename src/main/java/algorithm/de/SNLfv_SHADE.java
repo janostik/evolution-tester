@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.NetworkIndividual;
@@ -31,7 +30,7 @@ import util.random.Random;
  */
 public class SNLfv_SHADE extends Lfv_SHADE {
 
-    List<NetworkIndividual> dead_list;
+    public List<NetworkIndividual> dead_list;
     Net net = new Net();
     
     public SNLfv_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
@@ -322,7 +321,7 @@ public class SNLfv_SHADE extends Lfv_SHADE {
             position_centrality = this.getPositionCentrality(ind);
             position_fitness = this.getPositionFitness(ind);
             
-            System.out.println("id: " + ind.id + " - centrality pos: " + position_centrality + " - degree: " + degree + " - fitness pos: " + position_fitness + " - fitness: " + ind.fitness);
+//            System.out.println("id: " + ind.id + " - centrality pos: " + position_centrality + " - degree: " + degree + " - fitness pos: " + position_fitness + " - fitness: " + ind.fitness);
             
             this.dead_list.add(new NetworkIndividual(ind, degree, position_centrality, position_fitness));
         }
@@ -378,7 +377,7 @@ public class SNLfv_SHADE extends Lfv_SHADE {
         long seed = 10304020L;
         SNLfv_SHADE shade;
 
-        int runs = 1;
+        int runs = 10;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {

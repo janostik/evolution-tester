@@ -5,8 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.net.Net;
-import model.tf.Cec2015;
+import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -15,17 +14,19 @@ import util.random.Random;
 
 /**
  *
- * SHADE algorithm with linear decrease of population size.
- * Individuals that are going to be killed are selected based on their centrality.
+ * SHADE algorithm with linear decrease of population based on static vector of individual ids.
  * 
- * Randomization here is seeded, therefore every run can end up in the same way.
- * 
- * @author wiki
+ * @author wiki on 03/05/2016
  */
-public class SNLc_SHADE extends SNLfv_SHADE {
+public class SNLs_SHADE extends SNLfv_SHADE {
 
-    public SNLc_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
+    private String[] decrease_list;
+    private int decrease_iter;
+    
+    public SNLs_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize, String[] decreaseList) {
         super(D, MAXFES, f, H, NP, rndGenerator, minPopSize);
+        this.decrease_list = decreaseList;
+        this.decrease_iter = 0;
     }
     
     /**
@@ -41,40 +42,25 @@ public class SNLc_SHADE extends SNLfv_SHADE {
             return list;
         }
         
+        int diff = list.size() - size;
+        List<String> ids_to_delete = new ArrayList<>();
+
+        for(int i = 0; i < diff; i++){
+            ids_to_delete.add(this.decrease_list[this.decrease_iter]);
+            this.decrease_iter++;
+        }
+        
         List<Individual> toRet = new ArrayList<>();
         List<Individual> tmp = new ArrayList<>();
-        Net tmpNet = new Net(this.net);
-        Individual tmpInd;
-        int bestIt = 0;
-        tmp.addAll(list);
-        
-        for(int i = 0; i < bestIt; i++) {
-            tmpInd = this.getBestFromList(tmp);
-            //add node to return array
-            toRet.add(tmpInd);
-            //remove it from temporary list of nodes that are left
-            tmp.remove(tmpInd);
-            //remove edges from temporary network
-            tmpNet.removeEdgesForNode(tmpInd);
-        }
+        toRet.addAll(list);
 
-        for (int i = bestIt; i < size; i++) {
-            tmpInd = tmpNet.getNodeWithHighestDegree();
-            if(tmpInd == null){
-                //If there are no nodes left with the edges, select the best according to fitness value
-                tmpInd = this.getBestFromList(tmp);
-            }
-            //add node to return array
-            toRet.add(tmpInd);
-            //remove it from temporary list of nodes that are left
-            tmp.remove(tmpInd);
-            //remove edges from temporary network
-            tmpNet.removeBidirectionalEdgesForNode(tmpInd);
-        }
+        list.stream().filter((ind) -> (ids_to_delete.contains(ind.id))).forEach((ind) -> {
+            toRet.remove(ind);
+            tmp.add(ind);
+        });
         
         this.addToDeadlist(tmp);
         
-        //remove edges for the nodes which did not survive to the next gen
         tmp.stream().forEach(this.net::removeBidirectionalEdgesForNode);
 
         return toRet;
@@ -83,34 +69,34 @@ public class SNLc_SHADE extends SNLfv_SHADE {
     
     @Override
     public String getName() {
-        return "SNLc_SHADE";
+        return "SNLs_SHADE";
     }
     
     /**
      * @param args the command line arguments
-     * @throws java.lang.Exception
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         
         int dimension = 10;
         int NP = 100;
         int minNP = 20;
         int MAXFES = 100 * NP;
         int funcNumber = 14;
-        TestFunction tf = new Cec2015(dimension, funcNumber);
+        TestFunction tf = new Schwefel();
         int H = 10;
         util.random.Random generator;
 
+        String[] decrease_list = {"57","5","98","56","48","30","53","80","25","6","52","4","64","28","7","21","47","75","78","77","96","76","55","31","91","40","90","41","59","46","62","69","82","14","93","49","92","34","89","1","73","79","15","10","88","32","8","11","66","36","33","27","65","12","68","58","97","24","0","45","60","72","74","35","39","17","84","13","44","23","94","81","70","99","3","9","19","38","61","51"};
         long seed = 10304020L;
-        SNLc_SHADE shade;
+        SNLs_SHADE shade;
 
-        int runs = 1;
+        int runs = 10;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
             generator = new util.random.UniformRandomSeed(seed);
-            shade = new SNLc_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
+            shade = new SNLs_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP, decrease_list);
 
             shade.run();
 
@@ -144,7 +130,7 @@ public class SNLc_SHADE extends SNLfv_SHADE {
             System.out.println(Arrays.toString(shade.getBest().vector));
             
             System.out.println("-------------------");
-            ((SNLc_SHADE)shade).net.getDegreeMap().entrySet().stream().forEach((entry) -> {
+            ((SNLs_SHADE)shade).net.getDegreeMap().entrySet().stream().forEach((entry) -> {
                 System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
             });
             System.out.println("-------------------");
@@ -159,5 +145,7 @@ public class SNLc_SHADE extends SNLfv_SHADE {
         System.out.println("=================================");
         
     }
+
+    
     
 }
