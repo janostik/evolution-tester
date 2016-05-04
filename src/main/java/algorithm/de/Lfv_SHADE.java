@@ -265,7 +265,7 @@ public class Lfv_SHADE extends SHADE {
         TestFunction tf = new Schwefel();
         int H = 10;
         long seed = 10304050L;
-        util.random.Random generator;
+        util.random.Random generator = new util.random.UniformRandom();
 
         Lfv_SHADE shade;
 
@@ -274,8 +274,6 @@ public class Lfv_SHADE extends SHADE {
 
         for (int k = 0; k < runs; k++) {
 
-//            generator = new util.random.UniformRandomSeed(seed);
-            generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.run();

@@ -9,7 +9,7 @@ package model;
  * 
  * @author wiki on 02/05/2016
  */
-public class NetworkIndividual extends Individual {
+public class NetworkIndividual extends Individual implements Comparable {
     
     public int degree;
     public int position_centrality;
@@ -30,6 +30,18 @@ public class NetworkIndividual extends Individual {
         this.degree = degree;
         this.position_centrality = position_centrality;
         this.position_fitness = position_fitness;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if(this.degree > ((NetworkIndividual)o).degree){
+            return 1;
+        }
+        else if (this.degree == ((NetworkIndividual)o).degree) {
+            return 0;
+        }
+        
+        return -1;
     }
     
     

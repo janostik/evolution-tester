@@ -1,7 +1,8 @@
 -N - network
 -S - seeded
 -Lfv - Linear decrease based on fitness value
--Lc - Linear decrease based on centrality (only with network)
+-Lcg - Linear decrease based on centrality with Gaussian selection mean 0.5 std 0.1 (only with network)
+-Lc - Linear decrease based on centrality - least degree dies (only with network)
 -Ls - Static linear decrease given by individual IDs.
 -Lmh - Metaheuristically selected vector of individual IDs, for linear decrease of population size.
 -Mc - multi chaotic system
