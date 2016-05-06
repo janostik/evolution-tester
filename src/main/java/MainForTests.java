@@ -1,10 +1,9 @@
 
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import util.LoziRandomUtil;
-import util.RandomUtil;
-import util.random.Random;
+import java.util.Arrays;
+import java.util.Date;
+import model.tf.nwf.SpalovnyZlinJM;
 
 /**
  *
@@ -179,19 +178,85 @@ public class MainForTests {
 //            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
 //                
 //            }
+//
+//        long seed = 10204050L;
+//        double x;
+//        for(int k = 0; k < 2; k++){
+//            
+//            System.out.println((k+1) + ". try");
+//            
+//            util.random.Random rnd = new util.random.UniformRandomSeed(seed);
+//            for(int i = 0; i < 1000; i++) {
+//                x = rnd.nextDouble(-1,1);
+//                if(i % 100 == 0)
+//                    System.out.println(x);
+//            }
+//        }
+        
+        double first_city_diff = 1 / 21.0, second_city_diff = 1 / 13.0, first_cap_diff = 1 /3.0, second_cap_diff = 1 / 3.0;
+        double first_city_index = first_city_diff/2.0, second_city_index, first_cap_index, second_cap_index;
+        int[] first_part = new int[17], second_part = new int[17];
+        double[] vector = new double[38], best_vector = new double[38];
+        double best = Double.MAX_VALUE,act;
+        SpalovnyZlinJM sp = new SpalovnyZlinJM();
+        
+        for(int i = 0; i < 21; i++) {
 
-        long seed = 10204050L;
-        double x;
-        for(int k = 0; k < 2; k++){
+            first_city_index += first_city_diff;
+            second_city_index = second_city_diff/2.0;
             
-            System.out.println((k+1) + ". try");
-            
-            util.random.Random rnd = new util.random.UniformRandomSeed(seed);
-            for(int i = 0; i < 1000; i++) {
-                x = rnd.nextDouble(-1,1);
-                if(i % 100 == 0)
-                    System.out.println(x);
+            for(int j = 0; j < 13; j++) {
+
+                second_city_index += second_city_diff;
+                first_cap_index = first_cap_diff/2.0;
+
+                for(int k = 0; k < 3; k++) {
+                    
+                    first_cap_index += first_cap_diff;
+                    second_cap_index = second_cap_diff/2.0;
+                    
+                    for(int l = 0; l < 3; l++) {
+                        
+                        second_cap_index += second_cap_diff;
+                        
+                        vector[0] = i;
+                        vector[1] = j;
+                        vector[2] = k;
+                        vector[3] = l;
+                        
+                        System.out.println(new Date());
+                        
+                        //For pres vsechny boolean moznosti
+                        for(int p1 = 0; p1 < Math.pow(2,17); p1++) {
+                            
+                            for (int f = 16; f >= 0; f--) {
+                                vector[f+4] = (p1 & (1 << f)) > 0 ? 1 : 0;
+                            }
+                            
+                            //For pres vsechny boolean moznosti 2
+                            for(int p2 = 0; p2 < Math.pow(2,17); p2++) {
+
+                                for (int f1 = 16; f1 >= 0; f1--) {
+                                    vector[f1+21] = (p2 & (1 << f1)) > 0 ? 1 : 0;
+                                }
+                                
+                                act = sp.fitness(vector);
+                                if(act < best) {
+                                    best = act;
+                                    best_vector = vector.clone();
+                                    System.out.println("Fitness: " + best);
+                                    System.out.println("Vector: " + Arrays.toString(best_vector));
+                                }
+
+                            }
+                            
+                        }
+                        
+                    }
+                    
+                }
             }
+            
         }
 
         
