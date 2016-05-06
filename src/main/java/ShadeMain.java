@@ -1987,7 +1987,7 @@ public class ShadeMain {
     public static int dimension = 10;
     public static int MAXFES = 10000 * dimension;
     public static final int runs = 51;
-    public static final String home_dir = "/Users/adam/";
+    public static final String home_dir = "C:\\Users\\wiki\\Documents\\";
     
     /**
      * PSO

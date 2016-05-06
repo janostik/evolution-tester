@@ -72,7 +72,7 @@ public class NLcg_SHADE extends NLc_SHADE {
      */
     protected Individual getIndividualToRemove(List<Individual> list) {
         
-        double gaus_value = OtherDistributionsUtil.normal(0.5, 0.1);
+        double gaus_value = OtherDistributionsUtil.normal(0.48, 0.82);
         if(gaus_value > 1){
             gaus_value = 1;
         }
@@ -124,7 +124,7 @@ public class NLcg_SHADE extends NLc_SHADE {
 
         NLcg_SHADE shade;
 
-        int runs = 10;
+        int runs = 30;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {

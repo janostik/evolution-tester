@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.NetworkIndividual;
+import model.tf.Cec2015;
 import model.tf.SNLs_SHADE_tf;
-import model.tf.Schwefel;
 import model.tf.TestFunction;
 import util.RandomUtil;
 
@@ -39,97 +39,101 @@ public class LmhDEbest_SHADE {
     
     
     
-    public void run(){
+    public void run() throws Exception{
         
         this.random_seed_count = 30;
         
-        /**
-         * Slave settings - SHADE
-         */
-        this.tf_slave = new Schwefel();
-        this.dimension_slave = 10;
-        this.NPinit_slave = 100;
-        this.NPfinal_slave = 20;
-        this.max_fes_slave = 100 * this.NPinit_slave;
-        this.H_slave = 10;
+        for(int funcIt = 1; funcIt < 16; funcIt++) {
         
-        /**
-         * Master settings - DE best
-         */
-        this.F_master = 0.5;
-        this.CR_master = 0.8;
-        this.NP_master = 10;
-        this.dimension_master = this.NPinit_slave - this.NPfinal_slave;
-        this.max_fes_master = 100 * this.NP_master;
-        this.rndGenerator_master = new util.random.UniformRandom();
-        
-        /**
-         * Other variables
-         */
-        long seed;
-        DEbest master;
-        List<List<NetworkIndividual>> stats = new ArrayList<>();
-        
-        //Cycle through seeds
-        for(int seedIt = 0; seedIt < this.random_seed_count; seedIt++){
-            
-            seed = this.getRandomSeed();
-            this.tf_master = new SNLs_SHADE_tf(seed, tf_slave, dimension_slave, max_fes_slave, H_slave, NPinit_slave, NPfinal_slave);
+            /**
+             * Slave settings - SHADE
+             */
+            this.dimension_slave = 10;
+            this.tf_slave = new Cec2015(this.dimension_slave, funcIt);
+            this.NPinit_slave = 100;
+            this.NPfinal_slave = 20;
+            this.max_fes_slave = 100 * this.NPinit_slave;
+            this.H_slave = 10;
 
-            master = new DEbest(dimension_master, NP_master, max_fes_master, tf_master, rndGenerator_master, F_master, CR_master);
-            master.run();
-            
-            System.out.println("Seed " + (seedIt+1) + ": " + master.getBest().fitness);
-            
-            stats.add((List<NetworkIndividual>) ((SNLs_SHADE_tf) this.tf_master).getDeadList(master.getBest()));
-            
-        }
-        
-        List<Integer> fitness_order = new ArrayList<>();
-        List<Integer> centrality_order = new ArrayList<>();
-        
-        for(List<NetworkIndividual> list : stats) {
-            
-            list.stream().map((ni) -> {
-                fitness_order.add(ni.position_fitness);
-                return ni;
-            }).forEach((ni) -> {
-                centrality_order.add(ni.position_centrality);
-            });
-            
-        }
-        
-        /**
-         * Statistics printout
-         */
-        
-        try {
-            PrintWriter pw1 = new PrintWriter("C:\\Users\\wiki\\Documents\\CentralityStats\\fitness_order1.txt");
-            PrintWriter pw2 = new PrintWriter("C:\\Users\\wiki\\Documents\\CentralityStats\\centrality_order1.txt");
-            
-            pw1.print("{");
-            pw2.print("{");
-            
-            for(int i = 0; i < fitness_order.size(); i++){
-                
-                pw1.print(fitness_order.get(i).intValue());
-                pw2.print(centrality_order.get(i).intValue());
-                
-                if(i != fitness_order.size()-1){
-                    pw1.print(",");
-                    pw2.print(",");
-                }
-                
+            /**
+             * Master settings - DE best
+             */
+            this.F_master = 0.5;
+            this.CR_master = 0.8;
+            this.NP_master = 10;
+            this.dimension_master = this.NPinit_slave - this.NPfinal_slave;
+            this.max_fes_master = 100 * this.NP_master;
+            this.rndGenerator_master = new util.random.UniformRandom();
+
+            /**
+             * Other variables
+             */
+            long seed;
+            DEbest master;
+            List<List<NetworkIndividual>> stats = new ArrayList<>();
+
+            //Cycle through seeds
+            for(int seedIt = 0; seedIt < this.random_seed_count; seedIt++){
+
+                seed = this.getRandomSeed();
+                this.tf_master = new SNLs_SHADE_tf(seed, tf_slave, dimension_slave, max_fes_slave, H_slave, NPinit_slave, NPfinal_slave);
+
+                master = new DEbest(dimension_master, NP_master, max_fes_master, tf_master, rndGenerator_master, F_master, CR_master);
+                master.run();
+
+                System.out.println("Seed " + (seedIt+1) + ": " + master.getBest().fitness);
+
+                stats.add((List<NetworkIndividual>) ((SNLs_SHADE_tf) this.tf_master).getDeadList(master.getBest()));
+
             }
-            
-            pw1.print("}");
-            pw2.print("}");
-            
-            pw1.close();
-            pw2.close();
-            
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(LmhDEbest_SHADE.class.getName()).log(Level.SEVERE, null, ex);
+
+            List<Integer> fitness_order = new ArrayList<>();
+            List<Integer> centrality_order = new ArrayList<>();
+
+            for(List<NetworkIndividual> list : stats) {
+
+                list.stream().map((ni) -> {
+                    fitness_order.add(ni.position_fitness);
+                    return ni;
+                }).forEach((ni) -> {
+                    centrality_order.add(ni.position_centrality);
+                });
+
+            }
+
+            /**
+             * Statistics printout
+             */
+
+            try {
+                PrintWriter pw1 = new PrintWriter("C:\\Users\\wiki\\Documents\\CentralityStats\\CEC2015\\fitness_order_" + funcIt + ".txt");
+                PrintWriter pw2 = new PrintWriter("C:\\Users\\wiki\\Documents\\CentralityStats\\CEC2015\\centrality_order_" + funcIt + ".txt");
+
+                pw1.print("{");
+                pw2.print("{");
+
+                for(int i = 0; i < fitness_order.size(); i++){
+
+                    pw1.print(fitness_order.get(i).intValue());
+                    pw2.print(centrality_order.get(i).intValue());
+
+                    if(i != fitness_order.size()-1){
+                        pw1.print(",");
+                        pw2.print(",");
+                    }
+
+                }
+
+                pw1.print("}");
+                pw2.print("}");
+
+                pw1.close();
+                pw2.close();
+
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(LmhDEbest_SHADE.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
         }
 
         
@@ -150,7 +154,7 @@ public class LmhDEbest_SHADE {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         
         LmhDEbest_SHADE mh = new LmhDEbest_SHADE();
         mh.run();

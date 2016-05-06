@@ -114,7 +114,7 @@ public class Network2a implements TestFunction {
 
 
 
-        double profit = 0, best_profit = Double.MAX_VALUE;
+        double profit = 0, best_profit = Math.pow(10, 30);
         List<Integer> reachable_nodes = new ArrayList<>();
         int next_node, amount, cur_node = start, min_wanted, possible_amount_add, last_index = 0;
         this.node_path = new ArrayList<>();

@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.tf.Schwefel;
+import model.tf.Ackley;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -262,14 +262,14 @@ public class Lfv_SHADE extends SHADE {
         int minNP = 20;
         int MAXFES = 100 * NP;
         int funcNumber = 14;
-        TestFunction tf = new Schwefel();
+        TestFunction tf = new Ackley();
         int H = 10;
         long seed = 10304050L;
         util.random.Random generator = new util.random.UniformRandom();
 
         Lfv_SHADE shade;
 
-        int runs = 10;
+        int runs = 30;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {

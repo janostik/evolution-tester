@@ -4,10 +4,12 @@ import algorithm.Algorithm;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.tf.Schwefel;
 import model.tf.TestFunction;
+import model.tf.nwf.SpalovnyZlinJM;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -110,7 +112,6 @@ public class SHADE implements Algorithm {
                 if (Fg > 1) {
                     Fg = 1;
                 }
-                
 
                 CRg = OtherDistributionsUtil.normal(this.M_CR[r], 0.1);
                 if (CRg > 1) {
@@ -177,7 +178,7 @@ public class SHADE implements Algorithm {
                     this.S_F.add(Fg);
                     this.S_CR.add(CRg);
                     this.Aext.add(x);
-                    wS.add(Math.abs(trial.fitness - x.fitness));
+                    wS.add(x.fitness - trial.fitness);
                 } else {
                     newPop.add(x);
                 }
@@ -216,6 +217,9 @@ public class SHADE implements Algorithm {
                 }
 
                 this.M_F[k] = (meanS_F1 / meanS_F2);
+                if(Double.isNaN(this.M_F[k])){
+                    System.out.println(G);
+                }
                 this.M_CR[k] = meanS_CR;
 
                 k++;
@@ -678,18 +682,20 @@ public class SHADE implements Algorithm {
 
     public static void main(String[] args) throws Exception {
 
-        int dimension = 10;
+        int dimension = 38;
         int NP = 100;
-        int MAXFES = 10 * NP;
+        int MAXFES = 500 * NP;
         int funcNumber = 14;
-        TestFunction tf = new Schwefel();
+        TestFunction tf = new SpalovnyZlinJM();
         int H = 10;
         util.random.Random generator;
 
         SHADE shade;
 
-        int runs = 2;
+        int runs = 10;
         double[] bestArray = new double[runs];
+        int i, best;
+        double min;
 
         for (int k = 0; k < runs; k++) {
             
@@ -697,6 +703,10 @@ public class SHADE implements Algorithm {
             shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
 
 //            PrintWriter writer;
 //
@@ -726,6 +736,44 @@ public class SHADE implements Algorithm {
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());
             System.out.println(Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((SpalovnyZlinJM)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            for(Entry<String,List> entry : map.entrySet()){
+                line = "";
+                System.out.println(entry.getKey());
+                line += "{";
+//                System.out.print("{");
+                for(int pup = 0; pup < entry.getValue().size(); pup++){
+//                    System.out.print(entry.getValue().get(pup));
+                    line += entry.getValue().get(pup);
+                    if(pup != entry.getValue().size()-1){
+//                       System.out.print(","); 
+                       line += ",";
+                    }
+                }
+//                System.out.println("}");
+                line += "}";
+                line = line.replace("[", "{");
+                line = line.replace("]", "}");
+                System.out.println(line);
+                
+            }
+            
+            System.out.println("=================================");
+            
+            for(Individual ind : ((SHADE)shade).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+            
         }
 
         System.out.println("=================================");

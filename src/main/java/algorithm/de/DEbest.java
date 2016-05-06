@@ -9,6 +9,7 @@ import model.Individual;
 import model.tf.Cec2015;
 import model.tf.nwf.Network2;
 import model.tf.TestFunction;
+import model.tf.nwf.SpalovnyZlinJM;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -26,11 +27,11 @@ public class DEbest extends DErand1bin {
      */
     public static void main(String[] args) throws Exception {
 
-        int dimension = 40;
+        int dimension = 38;
         int NP = 100;
-        int MAXFES = 10000 * dimension;
+        int MAXFES = 100 * NP;
         int funcNumber = 5;
-        TestFunction tf = new Network2();
+        TestFunction tf = new SpalovnyZlinJM();
         util.random.Random generator = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8, min;
 
@@ -54,11 +55,11 @@ public class DEbest extends DErand1bin {
             System.out.println("Individual: " + Arrays.toString(de.getBest().vector));
             System.out.println("Profit: " + de.getBest().fitness);
             tf.fitness(de.getBest());
-            System.out.println("Path: " + ((Network2)tf).getNode_path().toString());
-            System.out.println("Built paths: ");
-            ((Network2)tf).getBuilt_path().stream().forEach((pa) -> {
-                System.out.println("[" + pa[0] + ", " + pa[1] + "]");
-            });
+//            System.out.println("Path: " + ((Network2)tf).getNode_path().toString());
+//            System.out.println("Built paths: ");
+//            ((Network2)tf).getBuilt_path().stream().forEach((pa) -> {
+//                System.out.println("[" + pa[0] + ", " + pa[1] + "]");
+//            });
             
             for(Individual ind : ((DEbest)de).getBestHistory()){
                 i++;
