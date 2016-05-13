@@ -108,15 +108,15 @@ public class NetCDEbest extends NetCDErand1bin {
         int funcNumber = 5;
         TestFunction tf = new Schwefel();
         util.random.Random generator = new util.random.UniformRandom();
-        util.random.Random chaos = new util.random.DissipativeRandom();
+        util.random.Random chaos = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8;
         Net net;
 
         Algorithm de;
 
-        int runs = 1;
+        int runs = 10;
         double[] bestArray = new double[runs];
-        PrintWriter pw;
+        PrintWriter pw_start, pw_middle, pw_end;
 
         for (int k = 0; k < runs; k++) {
 
@@ -137,19 +137,33 @@ public class NetCDEbest extends NetCDErand1bin {
             * NET manipulating
             */
 
-           pw = new PrintWriter("/Users/adam/Documents/RomanData/DEbest/net_50iter_" + tf.name() + "_" + chaos.toString() + ".csv");
-
-           pw.println("source,target,iter;directed");
+            pw_start = new PrintWriter("C:\\Users\\wiki\\Dropbox\\PhD\\NetData\\RomanData\\newData\\DEbest\\start_" + tf.name() + "_" + chaos.toString() + "_" + (k+1) + ".csv");
+            pw_middle = new PrintWriter("C:\\Users\\wiki\\Dropbox\\PhD\\NetData\\RomanData\\newData\\DEbest\\middle_" + tf.name() + "_" + chaos.toString() + "_" + (k+1) + ".csv");
+            pw_end = new PrintWriter("C:\\Users\\wiki\\Dropbox\\PhD\\NetData\\RomanData\\newData\\DEbest\\end_" + tf.name() + "_" + chaos.toString() + "_" + (k+1) + ".csv");
            
-           net = ((NetCDErand1bin) de).net;
+            pw_start.println("source,target,iter,directed");
+            pw_middle.println("source,target,iter,directed");
+            pw_end.println("source,target,iter,directed");
 
-           for(Edge edge : net.getEdges()){
-               
-               pw.println(edge.getSource().id + "," + edge.getTarget().id + "," + edge.iter + ",TRUE");
-               
-           }
+            net = ((NetCDErand1bin) de).net;
 
-           pw.close();
+            for(Edge edge : net.getEdges()){
+
+                if(edge.iter < 11){
+                    pw_start.println(edge.getSource().id + "," + edge.getTarget().id + "," + edge.iter + ",TRUE");
+                }
+                else if(edge.iter > 19 && edge.iter < 30){
+                    pw_middle.println(edge.getSource().id + "," + edge.getTarget().id + "," + edge.iter + ",TRUE");
+                }
+                else if(edge.iter > 39){
+                    pw_end.println(edge.getSource().id + "," + edge.getTarget().id + "," + edge.iter + ",TRUE");
+                }
+
+            }
+
+            pw_start.close();
+            pw_middle.close();
+            pw_end.close();
             
         }
         

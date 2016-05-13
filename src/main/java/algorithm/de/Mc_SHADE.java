@@ -4,13 +4,20 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.DoubleStream;
 import model.Individual;
 import model.chaos.RankedChaosGenerator;
 import model.tf.TestFunction;
+import model.tf.nwf.Spalovny3kraje;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+import org.apache.commons.math3.stat.descriptive.rank.Median;
 import util.OtherDistributionsUtil;
 
 /**
@@ -421,7 +428,108 @@ public class Mc_SHADE extends SHADE {
      */
     public static void main(String[] args) throws Exception {
     
-    
+        int dimension = 51; //38
+        int NP = 100;
+        int MAXFES = 500 * NP;
+        int funcNumber = 14;
+        TestFunction tf = new Spalovny3kraje();
+        int H = 10;
+        util.random.Random generator;
+
+        Mc_SHADE shade;
+
+        int runs = 10;
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+//            PrintWriter writer;
+//
+//            try {
+//                writer = new PrintWriter("CEC2015-" + funcNumber + "-shade" + k + ".txt", "UTF-8");
+//
+//                writer.print("{");
+//
+//                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+//
+//                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+//
+//                    if (i != shade.getBestHistory().size() - 1) {
+//                        writer.print(",");
+//                    }
+//
+//                }
+//
+//                writer.print("}");
+//
+//                writer.close();
+//
+//            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+//                Logger.getLogger(ShaDE.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println(shade.getBest().fitness - tf.optimum());
+            System.out.println(Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny3kraje)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            for(Map.Entry<String,List> entry : map.entrySet()){
+                line = "";
+                System.out.println(entry.getKey());
+                line += "{";
+//                System.out.print("{");
+                for(int pup = 0; pup < entry.getValue().size(); pup++){
+//                    System.out.print(entry.getValue().get(pup));
+                    line += entry.getValue().get(pup);
+                    if(pup != entry.getValue().size()-1){
+//                       System.out.print(","); 
+                       line += ",";
+                    }
+                }
+//                System.out.println("}");
+                line += "}";
+                line = line.replace("[", "{");
+                line = line.replace("]", "}");
+                System.out.println(line);
+                
+            }
+            
+            System.out.println("=================================");
+            
+            for(Individual ind : ((Mc_SHADE)shade).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
     }
 
 }

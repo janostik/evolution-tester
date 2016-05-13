@@ -24,8 +24,8 @@ public class SpalovnyZlinJM implements TestFunction {
     double[] garbage_production = new double[]{14070.6,14343.6,119806.,19561.3,4147.45,18887.9,10201.5,8107.61,6250.03,16045.3,4836.13,6307.23,4056.93,6973.76,5520.2,19984.1,8029.2,9128.13,14495.3,24822.4,10501.,4842.76,7432.78,18157.3,5126.45,10345.5,10415.8,24179.2,15164.4,5119.98,12566.7,4706.77,14186.4,27447.6};
     double production_sum = 505767.09;
     int facility_count = 2;
-    int[] number_of_cities = new int[]{21,13};
-    double[] capacity_options = new double[]{100_000,300_000,500_000};
+    int[] number_of_cities = new int[]{34,34};
+    double[] capacity_options = new double[]{100_000,200_000,300_000,400_000,500_000,600_000,700_000};
     
     public Map<String, List> getOutput(double[] vector) {
         
@@ -42,7 +42,6 @@ public class SpalovnyZlinJM implements TestFunction {
             facility_nodes.add(new ArrayList<>());
             locations[i] = (((int) (vector[i] * number_of_cities[i])) % number_of_cities[i]) + sum;
             facility_list.add(locations[i]);
-            sum += number_of_cities[i];
         }
         
         map.put("Facilities", facility_list);
@@ -132,7 +131,6 @@ public class SpalovnyZlinJM implements TestFunction {
         for(int i = 0; i < facility_count; i++) {
             facility_nodes.add(new ArrayList<>());
             locations[i] = (((int) (vector[i] * number_of_cities[i])) % number_of_cities[i]) + sum;
-            sum += number_of_cities[i];
         }
         
         //Capacities of facilities

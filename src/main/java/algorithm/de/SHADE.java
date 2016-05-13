@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.TestFunction;
+import model.tf.nwf.Spalovny3kraje;
 import model.tf.nwf.SpalovnyZlinJM;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -682,11 +683,11 @@ public class SHADE implements Algorithm {
 
     public static void main(String[] args) throws Exception {
 
-        int dimension = 38;
+        int dimension = 51; //38
         int NP = 100;
         int MAXFES = 500 * NP;
         int funcNumber = 14;
-        TestFunction tf = new SpalovnyZlinJM();
+        TestFunction tf = new Spalovny3kraje();
         int H = 10;
         util.random.Random generator;
 
@@ -737,7 +738,7 @@ public class SHADE implements Algorithm {
             System.out.println(shade.getBest().fitness - tf.optimum());
             System.out.println(Arrays.toString(shade.getBest().vector));
             
-            Map<String, List> map = ((SpalovnyZlinJM)tf).getOutput(shade.getBest().vector);
+            Map<String, List> map = ((Spalovny3kraje)tf).getOutput(shade.getBest().vector);
             
             System.out.println("=================================");
             String line;

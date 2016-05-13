@@ -1,15 +1,20 @@
 package algorithm.de;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.NetworkIndividual;
 import model.net.BidirectionalEdge;
 import model.net.Edge;
 import model.net.Net;
+import model.tf.Ackley;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.random.RandomGenerator;
@@ -41,6 +46,24 @@ public class SNLfv_SHADE extends Lfv_SHADE {
     @Override
     public String getName() {
         return "SNLfv_SHADE";
+    }
+    
+    public void printOutNetwork(int G) throws FileNotFoundException {
+        
+        String path = "C:\\Users\\wiki\\Dropbox\\PhD\\Clanky\\INCOS2016 - notyet\\data\\networks\\" + f.name() + "_NLfv_" + G + ".csv";
+        
+        PrintWriter pw = new PrintWriter(path);
+
+        pw.println("source,target,iter,directed");
+
+        for(Edge edge : net.getEdges()){
+
+            pw.println(edge.getSource().id + "," + edge.getTarget().id + "," + edge.iter + ",FALSE");
+
+        }
+
+        pw.close();
+        
     }
     
     @Override
@@ -88,6 +111,15 @@ public class SNLfv_SHADE extends Lfv_SHADE {
         while (true) {
 
             this.G++;
+            
+//            if(G == 3 || G == 100) {
+//                try {
+//                    this.printOutNetwork(G);
+//                } catch (FileNotFoundException ex) {
+//                    Logger.getLogger(SNLfv_SHADE.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//            }
+            
             this.S_F = new ArrayList<>();
             this.S_CR = new ArrayList<>();
             wS = new ArrayList<>();
@@ -377,7 +409,7 @@ public class SNLfv_SHADE extends Lfv_SHADE {
         long seed = 10304020L;
         SNLfv_SHADE shade;
 
-        int runs = 10;
+        int runs = 1;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
@@ -387,6 +419,12 @@ public class SNLfv_SHADE extends Lfv_SHADE {
 
             shade.run();
 
+//            try {
+//                shade.printOutNetwork(200);
+//            } catch (FileNotFoundException ex) {
+//                Logger.getLogger(NLcg_SHADE.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+            
 //            PrintWriter writer;
 //
 //            try {

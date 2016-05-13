@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.chaos.RankedChaosGenerator;
+import model.net.BidirectionalEdge;
+import model.net.Edge;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -16,15 +18,18 @@ import util.random.Random;
 
 /**
  *
- * @author wiki
+ * SHADE algorithm with linear decrease of population size by the centrality rank N(0.48, 0.082)
+ * and Multi-Chaotic parent selection.
+ * 
+ * @author wiki on 13/05/2016
  */
-public class McLfv_SHADE extends Lfv_SHADE {
+public class McNLcg_SHADE extends NLcg_SHADE {
 
     List<RankedChaosGenerator> chaosGenerator;
     List<Double[]> chaosProbabilities = new ArrayList<>();
     int chosenChaos;
     
-    public McLfv_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
+    public McNLcg_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
         super(D, MAXFES, f, H, NP, rndGenerator, minPopSize);
         chaosGenerator = RankedChaosGenerator.getAllChaosGenerators();
     }
@@ -101,10 +106,23 @@ public class McLfv_SHADE extends Lfv_SHADE {
             }
         }
 
+    }
+    
+    /**
+     * 
+     */
+    public void printOutRankings() {
+
+        System.out.println("Ranking");
+        chaosGenerator.stream().forEach((chaos) -> {
+            System.out.print(chaos.rank + " ");
+        });
+        System.out.println("");
 
     }
-
+    
     /**
+     * MAIN METHOD
      * 
      * @return 
      */
@@ -140,17 +158,28 @@ public class McLfv_SHADE extends Lfv_SHADE {
         List<Individual> newPop, pBestArray;
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
-        Individual trial, pbestInd;
+        Individual trial;
         Individual x;
         List<Double> wS;
         double wSsum, meanS_F1, meanS_F2, meanS_CR;
         int k = 0;
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
+        Individual[] parentArray; //for edge creation
+        Edge edge;
 
         while (true) {
 
             this.G++;
+            
+//            if(G == 3 || G == 100) {
+//                try {
+//                    this.printOutNetwork(G);
+//                } catch (FileNotFoundException ex) {
+//                    Logger.getLogger(NLcg_SHADE.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//            }
+            
             this.S_F = new ArrayList<>();
             this.S_CR = new ArrayList<>();
             wS = new ArrayList<>();
@@ -190,15 +219,20 @@ public class McLfv_SHADE extends Lfv_SHADE {
                 /**
                  * Parent selection
                  */
-                pbestInd = this.getRandBestFromList(pBestArray);
-                pbestIndex = this.getPbestIndex(pbestInd);
-                pbest = pbestInd.vector.clone();
+                parentArray = new Individual[4];
+                parentArray[0] = x;
+                parentArray[1] = this.getRandBestFromList(pBestArray);
+                pbestIndex = this.getPbestIndex(parentArray[1]);
+                pbest = parentArray[1].vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
-                pr1 = this.P.get(rIndexes[0]).vector.clone();
+                parentArray[2] = this.P.get(rIndexes[0]);
+                pr1 = parentArray[2].vector.clone();
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
+                    parentArray[3] = null;
                 } else {
-                    pr2 = this.P.get(rIndexes[1]).vector.clone();
+                    parentArray[3] = this.P.get(rIndexes[1]);
+                    pr2 = parentArray[3].vector.clone();
                 }
                 parents = new ArrayList<>();
                 parents.add(x.vector);
@@ -224,8 +258,9 @@ public class McLfv_SHADE extends Lfv_SHADE {
                 /**
                  * Trial ready
                  */
-                id++;
-                trial = new Individual(String.valueOf(id), u, f.fitness(u));
+//                id++;
+//                trial = new Individual(String.valueOf(id), u, f.fitness(u));
+                trial = new Individual(x.id, u, f.fitness(u));
 
                 /**
                  * Trial is better
@@ -237,6 +272,15 @@ public class McLfv_SHADE extends Lfv_SHADE {
                     this.Aext.add(x);
                     wS.add(Math.abs(trial.fitness - x.fitness));
                     
+                    for (int par = 1; par < parentArray.length; par++ ) {
+                        if(parentArray[par] == null){
+                            continue;
+                        }
+                        edge = new BidirectionalEdge(parentArray[par], trial);
+                        edge.iter = G;
+                        net.addEdge(edge);
+                    }
+                    
                     /**
                      * Chosen chaos rank update
                      */
@@ -245,9 +289,9 @@ public class McLfv_SHADE extends Lfv_SHADE {
                 } else {
                     newPop.add(x);
                 }
-                
-                this.writeChaosProbabilities();
 
+                this.writeChaosProbabilities();
+                
                 this.FES++;
                 this.isBest(trial);
                 this.writeHistory();
@@ -296,7 +340,26 @@ public class McLfv_SHADE extends Lfv_SHADE {
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
             NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
+            
+            /**
+             * Print out of the nodes and their centrality
+             */
+//            System.out.println("-------------------");
+//            net.getDegreeMap().entrySet().stream().forEach((entry) -> {
+//                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
+//            });
+//            System.out.println("-------------------");
+            
             P = this.resizePop(P, NP);
+            
+            /**
+             * Print out of the nodes and their centrality
+             */
+//            System.out.println("-------------------");
+//            net.getDegreeMap().entrySet().stream().forEach((entry) -> {
+//                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
+//            });
+//            System.out.println("-------------------");
 
         }
 
@@ -304,19 +367,9 @@ public class McLfv_SHADE extends Lfv_SHADE {
 
     }
     
-    public void printOutRankings() {
-
-        System.out.println("Ranking");
-        chaosGenerator.stream().forEach((chaos) -> {
-            System.out.print(chaos.rank + " ");
-        });
-        System.out.println("");
-
-    }
-
     @Override
     public String getName() {
-        return "McLfv_SHADE";
+        return "McNLcg_SHADE";
     }
     
     /**
@@ -333,16 +386,22 @@ public class McLfv_SHADE extends Lfv_SHADE {
         int H = 10;
         util.random.Random generator = new util.random.UniformRandom();
 
-        McLfv_SHADE shade;
+        McNLcg_SHADE shade;
 
         int runs = 10;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new McLfv_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
+            shade = new McNLcg_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.run();
+            
+//            try {
+//                shade.printOutNetwork(200);
+//            } catch (FileNotFoundException ex) {
+//                Logger.getLogger(NLcg_SHADE.class.getName()).log(Level.SEVERE, null, ex);
+//            }
 
 //            PrintWriter writer;
 //
@@ -373,9 +432,11 @@ public class McLfv_SHADE extends Lfv_SHADE {
             System.out.println(shade.getBest().fitness - tf.optimum());
             System.out.println(Arrays.toString(shade.getBest().vector));
             
-//            for(Individual ind : shade.P){
-//                System.out.println("ID: " + ind.id + " - fitness: " + ind.fitness);
-//            }
+            System.out.println("-------------------");
+            ((McNLcg_SHADE)shade).net.getDegreeMap().entrySet().stream().forEach((entry) -> {
+                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
+            });
+            System.out.println("-------------------");
         }
 
         System.out.println("=================================");
@@ -387,7 +448,5 @@ public class McLfv_SHADE extends Lfv_SHADE {
         System.out.println("=================================");
         
     }
-
-    
     
 }

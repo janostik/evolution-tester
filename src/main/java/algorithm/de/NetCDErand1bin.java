@@ -132,8 +132,9 @@ public class NetCDErand1bin extends CDErand1bin {
     public static void main(String[] args) throws Exception {
         
         int dimension = 30;
-        int NP = 100;
-        int MAXFES = 10 * NP;
+        int NP = 50;
+        int iter = 50;
+        int MAXFES = iter * NP;
         int funcNumber = 5;
         TestFunction tf = new Schwefel();
         util.random.Random generator = new util.random.UniformRandom();
@@ -145,7 +146,7 @@ public class NetCDErand1bin extends CDErand1bin {
 
         int runs = 10;
         double[] bestArray = new double[runs];
-        PrintWriter pw;
+        PrintWriter pw_start, pw_middle, pw_end;
 
         for (int k = 0; k < runs; k++) {
 
@@ -165,19 +166,33 @@ public class NetCDErand1bin extends CDErand1bin {
             * NET manipulating
             */
 
-//           pw = new PrintWriter("/Users/adam/Documents/RomanData/DErand/net_50iter_" + tf.name() + "_" + chaos.toString() + ".csv");
-//
-//           pw.println("source,target,iter;directed");
-//           
-//           net = ((NetCDErand1bin) de).net;
-//
-//           for(Edge edge : net.getEdges()){
-//               
-//               pw.println(edge.getSource().id + "," + edge.getTarget().id + "," + edge.iter + ",TRUE");
-//               
-//           }
-//
-//           pw.close();
+            pw_start = new PrintWriter("C:\\Users\\wiki\\Dropbox\\PhD\\NetData\\RomanData\\newData\\DErand\\start_" + tf.name() + "_" + chaos.toString() + "_" + (k+1) + ".csv");
+            pw_middle = new PrintWriter("C:\\Users\\wiki\\Dropbox\\PhD\\NetData\\RomanData\\newData\\DErand\\middle_" + tf.name() + "_" + chaos.toString() + "_" + (k+1) + ".csv");
+            pw_end = new PrintWriter("C:\\Users\\wiki\\Dropbox\\PhD\\NetData\\RomanData\\newData\\DErand\\end_" + tf.name() + "_" + chaos.toString() + "_" + (k+1) + ".csv");
+           
+            pw_start.println("source,target,iter,directed");
+            pw_middle.println("source,target,iter,directed");
+            pw_end.println("source,target,iter,directed");
+
+            net = ((NetCDErand1bin) de).net;
+
+            for(Edge edge : net.getEdges()){
+
+                if(edge.iter < 11){
+                    pw_start.println(edge.getSource().id + "," + edge.getTarget().id + "," + edge.iter + ",TRUE");
+                }
+                else if(edge.iter > 19 && edge.iter < 30){
+                    pw_middle.println(edge.getSource().id + "," + edge.getTarget().id + "," + edge.iter + ",TRUE");
+                }
+                else if(edge.iter > 39){
+                    pw_end.println(edge.getSource().id + "," + edge.getTarget().id + "," + edge.iter + ",TRUE");
+                }
+
+            }
+
+            pw_start.close();
+            pw_middle.close();
+            pw_end.close();
             
         }
         
