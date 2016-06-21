@@ -6,6 +6,8 @@
 -Ls - Static linear decrease given by individual IDs.
 -Lmh - Metaheuristically selected vector of individual IDs, for linear decrease of population size.
 -Mc - multi chaotic system
+-P - probabilistic generators used for indices selection
+-Sp - sorted population
 -C - chaos
 -F - initialization of F
 -CR - initialization of CR

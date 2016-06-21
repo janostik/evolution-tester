@@ -60,12 +60,12 @@ public class APlinearTF extends APtf {
 
     @Override
     public double max(int dim) {
-        return 100;
+        return 10;
     }
 
     @Override
     public double min(int dim) {
-        return -100;
+        return 0;
     }
     
     public static void main(String[] args) throws Exception {

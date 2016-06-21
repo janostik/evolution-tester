@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
+import model.net.Net;
+import model.tf.Schwefel;
 import model.tf.nwf.Network3;
 import model.tf.nwf.Network4;
 import model.tf.TestFunction;
@@ -618,7 +620,43 @@ public class DErand1bin implements Algorithm {
     
     public static void main(String[] args) throws Exception {
     
-        DErand1bin.mainNetwork4(args);
+        int dimension = 30;
+        int NP = 50;
+        int iter = 50;
+        int MAXFES = iter * NP;
+        int funcNumber = 5;
+        TestFunction tf = new Schwefel();
+        util.random.Random generator = new util.random.UniformRandom();
+        util.random.Random chaos = new util.random.UniformRandom();
+        double f = 0.2, cr = 0.8;
+        Net net;
+
+        Algorithm de;
+
+        int runs = 10;
+        double[] bestArray = new double[runs];
+
+        for (int k = 0; k < runs; k++) {
+
+            de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
+
+            de.run();
+
+            bestArray[k] = de.getBest().fitness - tf.optimum();
+            System.out.println(de.getBest().fitness - tf.optimum());
+            
+        }
+        
+        
+        
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
         
     }
 }

@@ -6,10 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.tf.Cec2015;
-import model.tf.nwf.Network2;
+import model.tf.Schwefel;
 import model.tf.TestFunction;
-import model.tf.nwf.SpalovnyZlinJM;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -27,11 +25,11 @@ public class DEbest extends DErand1bin {
      */
     public static void main(String[] args) throws Exception {
 
-        int dimension = 38;
-        int NP = 100;
-        int MAXFES = 100 * NP;
+        int dimension = 30;
+        int NP = 50;
+        int MAXFES = 50 * NP;
         int funcNumber = 5;
-        TestFunction tf = new SpalovnyZlinJM();
+        TestFunction tf = new Schwefel();
         util.random.Random generator = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8, min;
 

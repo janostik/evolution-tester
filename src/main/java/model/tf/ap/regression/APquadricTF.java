@@ -48,6 +48,16 @@ public class APquadricTF extends APtf {
     }
 
     @Override
+    public double max(int dim) {
+        return 10;
+    }
+
+    @Override
+    public double min(int dim) {
+        return 0;
+    }
+    
+    @Override
     public String name() {
         return "AP_quadric";
     }

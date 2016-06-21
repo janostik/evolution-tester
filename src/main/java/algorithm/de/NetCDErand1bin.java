@@ -9,7 +9,6 @@ import model.Individual;
 import model.net.Edge;
 import model.net.Net;
 import model.net.UnidirectionalEdge;
-import model.tf.Ackley;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -59,6 +58,10 @@ public class NetCDErand1bin extends CDErand1bin {
              */
             for (int xIter = 0; xIter < NP; xIter++) {
 
+                if(G > 39) {
+                    System.out.print("");
+                }
+                
                 /**
                  * Parent selection
                  */
@@ -176,6 +179,12 @@ public class NetCDErand1bin extends CDErand1bin {
 
             net = ((NetCDErand1bin) de).net;
 
+            for(int i = 0; i < NP; i++) {
+                pw_start.println(i + "," + i + "," + 0 + ",TRUE");
+                pw_middle.println(i + "," + i+ "," + 0 + ",TRUE");
+                pw_end.println(i + "," + i + "," + 0 + ",TRUE");
+            }
+            
             for(Edge edge : net.getEdges()){
 
                 if(edge.iter < 11){

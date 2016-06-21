@@ -3,6 +3,7 @@ import algorithm.de.MCDEbest;
 import algorithm.de.MCDEcurtopbest;
 import algorithm.de.MCDErand;
 import algorithm.de.Mc_SHADE;
+import algorithm.de.PSp_SHADE_5systems;
 import algorithm.de.SHADE;
 import java.io.PrintWriter;
 import java.util.Date;
@@ -388,6 +389,95 @@ public class MCframeworkMain {
      * @param probPath
      * @throws Exception 
      */
+    public static void writeHistoryPSpShade(TestFunction func, String resultPath, String probPath) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        PSp_SHADE_5systems de;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer;
+        double best,worst,median,mean,std;
+        String prPath = "";
+        
+        tf = func;
+        bestArray = new double[runs];
+
+        for (int k = 0; k < runs; k++) {
+
+            de = new PSp_SHADE_5systems(dimension, MAXFES, tf, H, NP, generator);
+            de.run();
+
+            writer = new PrintWriter(home_dir + resultPath + tf.name() + "-" + k + ".txt", "UTF-8");
+
+            writer.print("{");
+
+            for (int i = 0; i < de.getBestHistory().size(); i++) {
+
+                writer.print(String.format(Locale.US, "%.10f", de.getBestHistory().get(i).fitness));
+
+                if (i != de.getBestHistory().size() - 1) {
+                    writer.print(",");
+                }
+
+            }
+
+            writer.print("}");
+
+            writer.close();
+
+            bestArray[k] = de.getBest().fitness - tf.optimum();
+            
+            prPath = home_dir + probPath + "probs_" + tf.name() + "-" + k + ".txt";
+            
+            //writes chaos generator probabilities history into file
+            de.writeProbsToFile(prPath);
+
+        }
+
+        best = DoubleStream.of(bestArray).min().getAsDouble();
+        worst = DoubleStream.of(bestArray).max().getAsDouble();
+        median = new Median().evaluate(bestArray);
+        mean = new Mean().evaluate(bestArray);
+        std = new StandardDeviation().evaluate(bestArray);
+
+        sol_writer = new PrintWriter(home_dir + resultPath + "results_" + tf.name() + ".txt", "UTF-8");
+
+        sol_writer.print("{");
+        sol_writer.print(tf.name());
+        sol_writer.print(",");
+        sol_writer.print(String.format(Locale.US, "%.10f", best));
+        sol_writer.print(",");
+        sol_writer.print(String.format(Locale.US, "%.10f", worst));
+        sol_writer.print(",");
+        sol_writer.print(String.format(Locale.US, "%.10f", median));
+        sol_writer.print(",");
+        sol_writer.print(String.format(Locale.US, "%.10f", mean));
+        sol_writer.print(",");
+        sol_writer.print(String.format(Locale.US, "%.10f", std));
+        sol_writer.print("}");
+
+        sol_writer.close();
+
+        System.out.println(tf.name());
+        System.out.println("=================================");
+        System.out.println("Best: " + best);
+        System.out.println("Worst: " + worst);
+        System.out.println("Median: " + median);
+        System.out.println("Mean: " + mean);
+        System.out.println("Std: " + std);
+        System.out.println("=================================");
+
+    }
+    
+    /**
+     * 
+     * @param func
+     * @param resultPath
+     * @param probPath
+     * @throws Exception 
+     */
     public static void writeHistoryShade(TestFunction func, String resultPath, String probPath) throws Exception{
 
         TestFunction tf;
@@ -509,14 +599,16 @@ public class MCframeworkMain {
             
             tf = new Cec2015(dimension, i);
             
-            path = "PPSN\\CEC2015-MC-DEbest_10/";
-            writeHistoryMCDEbest(tf, path, path);
-            path = "PPSN\\CEC2015-MC-DErand1bin_10/";
-            writeHistoryMCDErand1bin(tf, path, path);
-            path = "PPSN\\CEC2015-MC-DEcurtopbest_10/";
-            writeHistoryMCDEcurtopbest(tf, path, path);
-            path = "PPSN\\CEC2015-MC-Shade_10/";
-            writeHistoryMCShade(tf, path, path);
+//            path = "PPSN\\CEC2015-MC-DEbest_10/";
+//            writeHistoryMCDEbest(tf, path, path);
+//            path = "PPSN\\CEC2015-MC-DErand1bin_10/";
+//            writeHistoryMCDErand1bin(tf, path, path);
+//            path = "PPSN\\CEC2015-MC-DEcurtopbest_10/";
+//            writeHistoryMCDEcurtopbest(tf, path, path);
+//            path = "PPSN\\CEC2015-MC-Shade_10/";
+//            writeHistoryMCShade(tf, path, path);
+            path = "PPSN\\CEC2015-PSp-Shade_10/";
+            writeHistoryPSpShade(tf, path, path);
             
             System.out.println("///////////////////////");
             System.out.println("///////////////////////");

@@ -9,8 +9,8 @@ import java.util.Map.Entry;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.TestFunction;
-import model.tf.nwf.Spalovny3kraje;
-import model.tf.nwf.SpalovnyZlinJM;
+import model.tf.nwf.Spalovny3kraje_2;
+import model.tf.nwf.SpalovnyZlinJM_2;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -218,9 +218,6 @@ public class SHADE implements Algorithm {
                 }
 
                 this.M_F[k] = (meanS_F1 / meanS_F2);
-                if(Double.isNaN(this.M_F[k])){
-                    System.out.println(G);
-                }
                 this.M_CR[k] = meanS_CR;
 
                 k++;
@@ -687,7 +684,7 @@ public class SHADE implements Algorithm {
         int NP = 100;
         int MAXFES = 500 * NP;
         int funcNumber = 14;
-        TestFunction tf = new Spalovny3kraje();
+        TestFunction tf = new Spalovny3kraje_2();
         int H = 10;
         util.random.Random generator;
 
@@ -738,7 +735,7 @@ public class SHADE implements Algorithm {
             System.out.println(shade.getBest().fitness - tf.optimum());
             System.out.println(Arrays.toString(shade.getBest().vector));
             
-            Map<String, List> map = ((Spalovny3kraje)tf).getOutput(shade.getBest().vector);
+            Map<String, List> map = ((Spalovny3kraje_2)tf).getOutput(shade.getBest().vector);
             
             System.out.println("=================================");
             String line;

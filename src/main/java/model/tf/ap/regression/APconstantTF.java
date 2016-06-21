@@ -59,12 +59,12 @@ public class APconstantTF extends APtf {
 
     @Override
     public double max(int dim) {
-        return 100;
+        return 0;
     }
 
     @Override
     public double min(int dim) {
-        return -100;
+        return 10;
     }
     
     public static void main(String[] args) throws Exception {

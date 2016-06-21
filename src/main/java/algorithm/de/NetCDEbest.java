@@ -145,6 +145,12 @@ public class NetCDEbest extends NetCDErand1bin {
             pw_middle.println("source,target,iter,directed");
             pw_end.println("source,target,iter,directed");
 
+            for(int i = 0; i < NP; i++) {
+                pw_start.println(i + "," + i + "," + 0 + ",TRUE");
+                pw_middle.println(i + "," + i+ "," + 0 + ",TRUE");
+                pw_end.println(i + "," + i + "," + 0 + ",TRUE");
+            }
+            
             net = ((NetCDErand1bin) de).net;
 
             for(Edge edge : net.getEdges()){

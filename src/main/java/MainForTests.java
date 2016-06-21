@@ -1,9 +1,11 @@
 
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.Date;
-import model.tf.nwf.SpalovnyZlinJM;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+import org.apache.commons.math3.stat.descriptive.rank.Max;
+import org.apache.commons.math3.stat.descriptive.rank.Min;
+import util.random.NormalRandom;
 
 /**
  *
@@ -192,73 +194,20 @@ public class MainForTests {
 //                    System.out.println(x);
 //            }
 //        }
+
         
-        double first_city_diff = 1 / 21.0, second_city_diff = 1 / 13.0, first_cap_diff = 1 /3.0, second_cap_diff = 1 / 3.0;
-        double first_city_index = first_city_diff/2.0, second_city_index, first_cap_index, second_cap_index;
-        int[] first_part = new int[17], second_part = new int[17];
-        double[] vector = new double[38], best_vector = new double[38];
-        double best = Double.MAX_VALUE,act;
-        SpalovnyZlinJM sp = new SpalovnyZlinJM();
+        util.random.Random rndGen = new NormalRandom(0.1, 0.1);
         
-        for(int i = 0; i < 21; i++) {
-
-            first_city_index += first_city_diff;
-            second_city_index = second_city_diff/2.0;
-            
-            for(int j = 0; j < 13; j++) {
-
-                second_city_index += second_city_diff;
-                first_cap_index = first_cap_diff/2.0;
-
-                for(int k = 0; k < 3; k++) {
-                    
-                    first_cap_index += first_cap_diff;
-                    second_cap_index = second_cap_diff/2.0;
-                    
-                    for(int l = 0; l < 3; l++) {
-                        
-                        second_cap_index += second_cap_diff;
-                        
-                        vector[0] = i;
-                        vector[1] = j;
-                        vector[2] = k;
-                        vector[3] = l;
-                        
-                        System.out.println(new Date());
-                        
-                        //For pres vsechny boolean moznosti
-                        for(int p1 = 0; p1 < Math.pow(2,17); p1++) {
-                            
-                            for (int f = 16; f >= 0; f--) {
-                                vector[f+4] = (p1 & (1 << f)) > 0 ? 1 : 0;
-                            }
-                            
-                            //For pres vsechny boolean moznosti 2
-                            for(int p2 = 0; p2 < Math.pow(2,17); p2++) {
-
-                                for (int f1 = 16; f1 >= 0; f1--) {
-                                    vector[f1+21] = (p2 & (1 << f1)) > 0 ? 1 : 0;
-                                }
-                                
-                                act = sp.fitness(vector);
-                                if(act < best) {
-                                    best = act;
-                                    best_vector = vector.clone();
-                                    System.out.println("Fitness: " + best);
-                                    System.out.println("Vector: " + Arrays.toString(best_vector));
-                                }
-
-                            }
-                            
-                        }
-                        
-                    }
-                    
-                }
-            }
-            
+        double[] arr = new double[1000];
+        
+        for(int i =0; i < 1000; i++) {
+            arr[i] = rndGen.nextDouble();
         }
-
+        
+        System.out.println("Mean value: " + new Mean().evaluate(arr));
+        System.out.println("Min value: " + new Min().evaluate(arr));
+        System.out.println("Max value: " + new Max().evaluate(arr));
+        System.out.println("STD value: " + new StandardDeviation().evaluate(arr));
         
     
     }

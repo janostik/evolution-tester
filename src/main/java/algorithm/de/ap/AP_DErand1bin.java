@@ -10,6 +10,10 @@ import model.ap.AP;
 import model.tf.TestFunction;
 import model.tf.ap.regression.AP4sine;
 import model.tf.ap.APtf;
+import model.tf.ap.regression.APconstantTF;
+import model.tf.ap.regression.APharmonicTF;
+import model.tf.ap.regression.APlinearTF;
+import model.tf.ap.regression.APquadricTF;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -415,20 +419,20 @@ public class AP_DErand1bin implements Algorithm {
 
     public static void main(String[] args) throws Exception {
 
-        int dimension = 50;
-        int NP = 100;
-        int MAXFES = 10_000 * dimension;
+        int dimension = 16+9;
+        int NP = 45;
+        int MAXFES = 300 * NP;
 //        int funcNumber = 14;
 //        TestFunction tf = new Cec2015(dimension, funcNumber);
-        APtf tf = new AP4sine();
+        APtf tf = new APharmonicTF();
 //        APlogictf tf = new APlogicTest1();
         util.random.Random generator = new util.random.UniformRandom();
-        double f = 0.31, cr = 0.8, min;
+        double f = 0.2, cr = 0.9, min;
 //        AP ap = new AP();
 
         Algorithm de;
 
-        int runs = 10;
+        int runs = 100;
         double[] bestArray = new double[runs];
         int i, best;
 
@@ -449,23 +453,23 @@ public class AP_DErand1bin implements Algorithm {
              * Final AP equation.
              */
 
-            System.out.println("=================================");
-            System.out.println("Equation: \n" + ((AP_Individual) de.getBest()).equation);
-            System.out.println("Vector: \n" + Arrays.toString(((AP_Individual) de.getBest()).vector));
-            System.out.println("=================================");
-            
-            for(AP_Individual ind : ((AP_DErand1bin)de).getBestHistory()){
-                i++;
-                if(ind.fitness < min){
-                    min = ind.fitness;
-                    best = i;
-                }
-                if(ind.fitness == 0){
-                    System.out.println("Solution found in " + i + " CFE");
-                    break;
-                }
-            }
-            System.out.println("Best solution found in " + best + " CFE");
+//            System.out.println("=================================");
+//            System.out.println("Equation: \n" + ((AP_Individual) de.getBest()).equation);
+//            System.out.println("Vector: \n" + Arrays.toString(((AP_Individual) de.getBest()).vector));
+//            System.out.println("=================================");
+//            
+//            for(AP_Individual ind : ((AP_DErand1bin)de).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
+//                if(ind.fitness == 0){
+//                    System.out.println("Solution found in " + i + " CFE");
+//                    break;
+//                }
+//            }
+//            System.out.println("Best solution found in " + best + " CFE");
             
         }
 

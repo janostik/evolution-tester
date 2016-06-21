@@ -20,4 +20,5 @@ public class IndividualUtil {
                 individual.vector[d] = RandomUtil.nextDouble(min, max);
         return individual;
     }
+    
 }

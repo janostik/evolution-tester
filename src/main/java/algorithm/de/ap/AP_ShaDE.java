@@ -16,6 +16,8 @@ import model.tf.ap.regression.AP3sine;
 import model.tf.ap.regression.APquintic;
 import model.tf.ap.regression.APsextic;
 import model.tf.ap.APtf;
+import model.tf.ap.regression.APharmonicTF;
+import model.tf.ap.regression.APquadricTF;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -98,13 +100,13 @@ public class AP_ShaDE implements Algorithm {
         /**
          * Generation iteration;
          */
-        int r, Psize;
+        int r, Psize, pbestIndex;
         double Fg, CRg;
         List<AP_Individual> newPop, pBestArray;
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
         AP_Individual trial;
-        AP_Individual x;
+        AP_Individual x, pbestInd;
         List<Double> wS;
         double wSsum, meanS_F1, meanS_F2, meanS_CR;
         int k = 0;
@@ -161,8 +163,13 @@ public class AP_ShaDE implements Algorithm {
                 /**
                  * Parent selection
                  */
-                pbest = this.getBestFromList(pBestArray).vector.clone();
-                rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size());
+                /**
+                 * Parent selection
+                 */
+                pbestInd = this.getRandBestFromList(pBestArray);
+                pbestIndex = this.getPbestIndex(pbestInd);
+                pbest = pbestInd.vector.clone();
+                rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
                 pr1 = this.P.get(rIndexes[0]).vector.clone();
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
@@ -220,11 +227,12 @@ public class AP_ShaDE implements Algorithm {
                     break;
                 }
 
+                this.Aext = this.resizeAext(this.Aext, this.NP);
+                
             }
             
 //            this.avgGenerationLength.add(new Mean().evaluate(lengthValues));
             this.avgGenerationLength.add((double)this.best.length);
-
 
             if (this.FES >= this.MAXFES) {
                 break;
@@ -253,11 +261,6 @@ public class AP_ShaDE implements Algorithm {
                 }
 
                 this.M_F[k] = (meanS_F1 / meanS_F2);
-                
-                if(Double.isNaN(this.M_F[k])){
-                    OtherDistributionsUtil.cauchy(this.M_F[k], 0.1);
-                }
-                
                 this.M_CR[k] = meanS_CR;
 
                 k++;
@@ -271,11 +274,76 @@ public class AP_ShaDE implements Algorithm {
              */
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
-            this.Aext = this.resizeAext(this.Aext, this.NP);
+            
 
         }
 
         return this.best;
+
+    }
+    
+    /**
+     *
+     * @param index
+     * @param max1
+     * @param max2
+     * @param pbest
+     * @return
+     */
+    protected int[] genRandIndexes(int index, int max1, int max2, int pbest) {
+
+        int a, b;
+
+        a = rndGenerator.nextInt(max1);
+        
+        while(a == pbest || a == index){
+            a = rndGenerator.nextInt(max1);
+        }
+        
+        b = rndGenerator.nextInt(max2);
+
+        while (b == a || b == index || b == pbest) {
+            b = rndGenerator.nextInt(max2);
+        }
+
+        return new int[]{a, b};
+    }
+    
+    /**
+     * Gets the index of pbest in current population
+     * 
+     * @param pbest
+     * @return 
+     */
+    protected int getPbestIndex(AP_Individual pbest) {
+        
+        int toRet = -1;
+        Individual cur;
+        
+        for(int i = 0; i < this.P.size(); i++){
+            
+            cur = this.P.get(i);
+            
+            if(cur == pbest){
+                toRet = i;
+            }
+            
+        }
+        
+        return toRet;
+        
+    }
+    
+    /**
+     *
+     * @param list
+     * @return
+     */
+    protected AP_Individual getRandBestFromList(List<AP_Individual> list) {
+        
+        int index = rndGenerator.nextInt(list.size());
+
+        return list.get(index);
 
     }
     
@@ -696,13 +764,13 @@ public class AP_ShaDE implements Algorithm {
 
     public static void main(String[] args) throws Exception {
 
-        int dimension = 90;
-        int NP = 50;
-        int H = 50;
-        int generations = 2000;
+        int dimension = 16+9;
+        int NP = 45;
+        int H = 10;
+        int generations = 300;
         int MAXFES = generations * NP;
 
-        APtf tf = new APquintic();
+        APtf tf = new APharmonicTF();
         /**
          * Random generator for parent selection, F and CR selection
          */
@@ -712,7 +780,7 @@ public class AP_ShaDE implements Algorithm {
 
         Algorithm de;
 
-        int runs = 5;
+        int runs = 100;
         double[] bestArray = new double[runs];
         int i, best;
 
@@ -759,23 +827,23 @@ public class AP_ShaDE implements Algorithm {
              * Final AP equation.
              */
 
-            System.out.println("=================================");
-            System.out.println("Equation: \n" + ((AP_Individual) de.getBest()).equation);
-            System.out.println("Vector: \n" + Arrays.toString(((AP_Individual) de.getBest()).vector));
-            System.out.println("=================================");
-            
-            for(AP_Individual ind : ((AP_ShaDE)de).getBestHistory()){
-                i++;
-                if(ind.fitness < min){
-                    min = ind.fitness;
-                    best = i;
-                }
-                if(ind.fitness == 0){
-                    System.out.println("Solution found in " + i + " CFE");
-                    break;
-                }
-            }
-            System.out.println("Best solution found in " + best + " CFE");
+//            System.out.println("=================================");
+//            System.out.println("Equation: \n" + ((AP_Individual) de.getBest()).equation);
+//            System.out.println("Vector: \n" + Arrays.toString(((AP_Individual) de.getBest()).vector));
+//            System.out.println("=================================");
+//            
+//            for(AP_Individual ind : ((AP_ShaDE)de).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
+//                if(ind.fitness == 0){
+//                    System.out.println("Solution found in " + i + " CFE");
+//                    break;
+//                }
+//            }
+//            System.out.println("Best solution found in " + best + " CFE");
             
 //            System.out.println("Length in 000. generation: " + ((AP_ShaDE)de).getAvgGenerationLength().get(0));
 //            System.out.println("Length in 001. generation: " + ((AP_ShaDE)de).getAvgGenerationLength().get(1));

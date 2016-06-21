@@ -5,17 +5,19 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import model.ap.objects.AP_Abs;
+import model.ap.objects.AP_Ceiling;
 import model.ap.objects.AP_Const_static;
 import model.ap.objects.AP_Cos;
 import model.ap.objects.AP_Div;
 import model.ap.objects.AP_Exp;
-import model.ap.objects.AP_MinusOne;
+import model.ap.objects.AP_Floor;
+import model.ap.objects.AP_Log10;
 import model.ap.objects.AP_Multiply;
-import model.ap.objects.AP_One;
 import model.ap.objects.AP_Plus;
 import model.ap.objects.AP_Sin;
+import model.ap.objects.AP_Sqrt;
 import model.ap.objects.AP_Sub;
-import model.ap.objects.AP_Zero;
 import model.ap.objects.AP_aTOb;
 import model.ap.objects.AP_object;
 import model.ap.objects.AP_x;
@@ -41,8 +43,8 @@ public class APconst {
         /**
          * MIN and MAX values for individuals.
          */
-        this.min = -100;
-        this.max = 100;
+        this.min = 0;
+        this.max = 10;
         
         /**
          * There should be initialization of all GFS sets
@@ -66,18 +68,20 @@ public class APconst {
         this.GFSall.add(new AP_Multiply());
         this.GFSall.add(new AP_Div());
 //        this.GFSall.add(new AP_Mod());
-//        this.GFSall.add(new AP_aTOb());
+        this.GFSall.add(new AP_aTOb());
         
-//        this.GFSall.add(new AP_Sin());
-//        this.GFSall.add(new AP_Cos());
+        this.GFSall.add(new AP_Sin());
+        this.GFSall.add(new AP_Cos());
+        this.GFSall.add(new AP_Floor());
+        this.GFSall.add(new AP_Ceiling());
 //        this.GFSall.add(new AP_Tan());
-//        this.GFSall.add(new AP_Abs());
-//        this.GFSall.add(new AP_Exp());
+        this.GFSall.add(new AP_Abs());
+        this.GFSall.add(new AP_Exp());
 //        this.GFSall.add(new AP_Quad());
-//        this.GFSall.add(new AP_Sqrt());
+        this.GFSall.add(new AP_Sqrt());
 //        this.GFSall.add(new AP_Cube());
 //        this.GFSall.add(new AP_Ln());
-//        this.GFSall.add(new AP_Log10());
+        this.GFSall.add(new AP_Log10());
 
         this.GFSall.add(new AP_x());
         this.GFSall.add(new AP_Const_static());
