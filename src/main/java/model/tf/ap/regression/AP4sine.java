@@ -1,5 +1,6 @@
 package model.tf.ap.regression;
 
+import model.tf.ap.regression.AP4sine;
 import model.tf.ap.APtf;
 import org.apache.commons.math3.stat.descriptive.summary.Sum;
 

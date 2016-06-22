@@ -2,18 +2,13 @@ package algorithm.de.ap;
 
 import algorithm.Algorithm;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.ap.AP;
 import model.tf.TestFunction;
-import model.tf.ap.regression.AP4sine;
 import model.tf.ap.APtf;
-import model.tf.ap.regression.APconstantTF;
 import model.tf.ap.regression.APharmonicTF;
-import model.tf.ap.regression.APlinearTF;
-import model.tf.ap.regression.APquadricTF;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -41,7 +36,7 @@ public class AP_DErand1bin implements Algorithm {
     TestFunction tf;
     AP_Individual best;
     List<AP_Individual> bestHistory;
-    util.random.Random rndGenerator;
+    Random rndGenerator;
     int id;
     double F;
     double CR;
@@ -426,7 +421,7 @@ public class AP_DErand1bin implements Algorithm {
 //        TestFunction tf = new Cec2015(dimension, funcNumber);
         APtf tf = new APharmonicTF();
 //        APlogictf tf = new APlogicTest1();
-        util.random.Random generator = new util.random.UniformRandom();
+        util.random.Random generator = (util.random.Random) new util.random.UniformRandom();
         double f = 0.2, cr = 0.9, min;
 //        AP ap = new AP();
 
@@ -442,7 +437,7 @@ public class AP_DErand1bin implements Algorithm {
             i = 0;
             min = Double.MAX_VALUE;
             
-            de = new AP_DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
+            de = new AP_DErand1bin(dimension, NP, MAXFES, tf, (Random) generator, f, cr);
 
             de.run();
 

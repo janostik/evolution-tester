@@ -1,5 +1,7 @@
 package model;
 
+import model.Individual;
+
 /**
  *
  * Individual extended by:

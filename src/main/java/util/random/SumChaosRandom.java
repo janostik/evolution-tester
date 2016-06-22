@@ -1,5 +1,7 @@
 package util.random;
 
+import util.random.Random;
+
 /**
  *
  * @author wiki

@@ -1,5 +1,6 @@
 package model;
 
+import model.Individual;
 import java.util.Arrays;
 
 /**

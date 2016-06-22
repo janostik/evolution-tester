@@ -1,5 +1,6 @@
 package model.tf;
 
+import model.tf.TestFunction;
 import model.Individual;
 import util.IndividualUtil;
 import util.random.Random;

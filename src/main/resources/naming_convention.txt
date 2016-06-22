@@ -13,3 +13,5 @@
 -CR - initialization of CR
 -A - aging
 -Npb - pbest selection based on centrality (only with network)
+
+-SOF - synthetic objective function

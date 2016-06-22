@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.DoubleStream;
 import model.Individual;
+import model.tf.Dejong;
 import model.tf.TestFunction;
 import model.tf.nwf.Spalovny3kraje_2;
-import model.tf.nwf.SpalovnyZlinJM_2;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -680,17 +680,17 @@ public class SHADE implements Algorithm {
 
     public static void main(String[] args) throws Exception {
 
-        int dimension = 51; //38
-        int NP = 100;
-        int MAXFES = 500 * NP;
+        int dimension = 10; //38
+        int NP = 20;
+        int MAXFES = 10 * NP;
         int funcNumber = 14;
-        TestFunction tf = new Spalovny3kraje_2();
+        TestFunction tf = new Dejong();
         int H = 10;
         util.random.Random generator;
 
         SHADE shade;
 
-        int runs = 10;
+        int runs = 30;
         double[] bestArray = new double[runs];
         int i, best;
         double min;
@@ -735,31 +735,31 @@ public class SHADE implements Algorithm {
             System.out.println(shade.getBest().fitness - tf.optimum());
             System.out.println(Arrays.toString(shade.getBest().vector));
             
-            Map<String, List> map = ((Spalovny3kraje_2)tf).getOutput(shade.getBest().vector);
-            
-            System.out.println("=================================");
-            String line;
-          
-            for(Entry<String,List> entry : map.entrySet()){
-                line = "";
-                System.out.println(entry.getKey());
-                line += "{";
-//                System.out.print("{");
-                for(int pup = 0; pup < entry.getValue().size(); pup++){
-//                    System.out.print(entry.getValue().get(pup));
-                    line += entry.getValue().get(pup);
-                    if(pup != entry.getValue().size()-1){
-//                       System.out.print(","); 
-                       line += ",";
-                    }
-                }
-//                System.out.println("}");
-                line += "}";
-                line = line.replace("[", "{");
-                line = line.replace("]", "}");
-                System.out.println(line);
-                
-            }
+//            Map<String, List> map = ((Spalovny3kraje_2)tf).getOutput(shade.getBest().vector);
+//            
+//            System.out.println("=================================");
+//            String line;
+//          
+//            for(Entry<String,List> entry : map.entrySet()){
+//                line = "";
+//                System.out.println(entry.getKey());
+//                line += "{";
+////                System.out.print("{");
+//                for(int pup = 0; pup < entry.getValue().size(); pup++){
+////                    System.out.print(entry.getValue().get(pup));
+//                    line += entry.getValue().get(pup);
+//                    if(pup != entry.getValue().size()-1){
+////                       System.out.print(","); 
+//                       line += ",";
+//                    }
+//                }
+////                System.out.println("}");
+//                line += "}";
+//                line = line.replace("[", "{");
+//                line = line.replace("]", "}");
+//                System.out.println(line);
+//                
+//            }
             
             System.out.println("=================================");
             

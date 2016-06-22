@@ -1,5 +1,6 @@
 package model.tf;
 
+import model.tf.TestFunction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import model.Individual;

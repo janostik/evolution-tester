@@ -1,5 +1,7 @@
 package util.random;
 
+import util.random.Random;
+
 /**
  *
  * @author adam on 25/11/2015

@@ -1,5 +1,6 @@
 package util;
 
+import util.RandomUtil;
 import model.Individual;
 
 /**

@@ -1,5 +1,6 @@
 package util.random;
 
+import util.random.Random;
 import org.apache.commons.math3.random.AbstractRandomGenerator;
 
 /**

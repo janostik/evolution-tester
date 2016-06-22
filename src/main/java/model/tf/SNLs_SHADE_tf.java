@@ -1,5 +1,6 @@
 package model.tf;
 
+import model.tf.TestFunction;
 import algorithm.de.SNLs_SHADE;
 import java.util.ArrayList;
 import java.util.List;

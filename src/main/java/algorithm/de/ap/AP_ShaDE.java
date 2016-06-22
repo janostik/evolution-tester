@@ -1,27 +1,18 @@
 package algorithm.de.ap;
 
 import algorithm.Algorithm;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.ap.APconst;
 import model.tf.TestFunction;
-import model.tf.ap.regression.AP3sine;
-import model.tf.ap.regression.APquintic;
-import model.tf.ap.regression.APsextic;
 import model.tf.ap.APtf;
 import model.tf.ap.regression.APharmonicTF;
-import model.tf.ap.regression.APquadricTF;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import util.OtherDistributionsUtil;
+import util.random.Random;
 
 /**
  *
@@ -48,7 +39,7 @@ public class AP_ShaDE implements Algorithm {
     List<Double> S_F;
     List<Double> S_CR;
     int H;
-    util.random.Random rndGenerator;
+    Random rndGenerator;
     int id;
     List<Double> avgGenerationLength;
 
@@ -63,7 +54,7 @@ public class AP_ShaDE implements Algorithm {
  
     }
     
-    public AP_ShaDE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
+    public AP_ShaDE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator) {
         this.D = D;
         this.MAXFES = MAXFES;
         this.f = f;
@@ -742,11 +733,11 @@ public class AP_ShaDE implements Algorithm {
         this.H = H;
     }
 
-    public util.random.Random getRndGenerator() {
+    public Random getRndGenerator() {
         return rndGenerator;
     }
 
-    public void setRndGenerator(util.random.Random rndGenerator) {
+    public void setRndGenerator(Random rndGenerator) {
         this.rndGenerator = rndGenerator;
     }
     
@@ -774,7 +765,7 @@ public class AP_ShaDE implements Algorithm {
         /**
          * Random generator for parent selection, F and CR selection
          */
-        util.random.Random generator = new util.random.UniformRandom();
+        Random generator = (Random) new util.random.UniformRandom();
         double min;
 //        APconst ap = new APconst();
 

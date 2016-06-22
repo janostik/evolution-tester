@@ -14,7 +14,7 @@ public class APtf implements TestFunction {
     /**
      * Change generator.
      */
-    util.random.Random generator = new util.random.UniformRandom();
+    util.random.Random generator = (util.random.Random) new util.random.UniformRandom();
 //    public AP ap = new AP();
     
     @Override
@@ -96,8 +96,6 @@ public class APtf implements TestFunction {
     public double optimum() {
         return 0;
     }
-
-    
 
     @Override
     public String name() {

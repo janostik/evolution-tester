@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.net.Net;
+import model.tf.Dejong;
 import model.tf.Schwefel;
 import model.tf.nwf.Network3;
 import model.tf.nwf.Network4;
@@ -22,19 +23,19 @@ import util.random.Random;
  */
 public class DErand1bin implements Algorithm {
 
-    int D;
-    int G;
-    int NP;
-    List<Individual> P;
-    int FES;
-    int MAXFES;
-    TestFunction tf;
-    Individual best;
-    List<Individual> bestHistory;
-    util.random.Random rndGenerator;
-    int id;
-    double F;
-    double CR;
+    protected int D;
+    protected int G;
+    protected int NP;
+    protected List<Individual> P;
+    protected int FES;
+    protected int MAXFES;
+    protected TestFunction tf;
+    protected Individual best;
+    protected List<Individual> bestHistory;
+    protected util.random.Random rndGenerator;
+    protected int id;
+    protected double F;
+    protected double CR;
 
     public DErand1bin(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR) {
         this.D = D;
@@ -620,20 +621,20 @@ public class DErand1bin implements Algorithm {
     
     public static void main(String[] args) throws Exception {
     
-        int dimension = 30;
-        int NP = 50;
-        int iter = 50;
+        int dimension = 10;
+        int NP = 20;
+        int iter = 10;
         int MAXFES = iter * NP;
         int funcNumber = 5;
-        TestFunction tf = new Schwefel();
+        TestFunction tf = new Dejong();
         util.random.Random generator = new util.random.UniformRandom();
         util.random.Random chaos = new util.random.UniformRandom();
-        double f = 0.2, cr = 0.8;
+        double f = 0.5, cr = 0.8;
         Net net;
 
         Algorithm de;
 
-        int runs = 10;
+        int runs = 30;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
