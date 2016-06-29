@@ -26,7 +26,7 @@ import AP.model.ap.objects.AP_x1;
 import model.tf.TestFunction;
 import AP.model.tf.ap.regression.APdataset;
 import AP.util.APIndividualComparator;
-import model.tf.Schwefel;
+import model.tf.Ackley;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -49,6 +49,7 @@ public class SOF_DErand1bin_AP extends DErand1bin {
     protected List<List<double[]>> SOF_dataset;
     protected APdataset[] AP_datasets;
     protected double[][] AP_vector_solutions;
+    protected double[] AP_fitness_solutions;
     protected List<AP_Individual>[] AP_populations;
     
     protected double[] F_values = new double[]{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
@@ -72,9 +73,11 @@ public class SOF_DErand1bin_AP extends DErand1bin {
         
         SOF_dataset = new ArrayList<>();
         AP_populations = new ArrayList[this.D];
+        AP_fitness_solutions = new double[this.D];
         for(int i = 0; i < this.D; i++){
             SOF_dataset.add(new ArrayList<>());
             AP_populations[i] = new ArrayList<>();
+            AP_fitness_solutions[i] = Double.MAX_VALUE;
         }
         
         AP_datasets = new APdataset[this.D];
@@ -191,7 +194,12 @@ public class SOF_DErand1bin_AP extends DErand1bin {
 //            AP_de = new AP_DErand1bin(AP_D, AP_NP, AP_MAXFES, this.AP_datasets[i], generator, AP_F, AP_CR);
 //            AP_de = new AP_ShaDE(AP_D, AP_NP, AP_MAXFES, this.AP_datasets[i], generator, 10);
             AP_de.run();
-            AP_vector_solutions[i] = AP_de.getBest().vector.clone();
+            if(AP_de.getBest().fitness <= AP_fitness_solutions[i]) {
+                AP_vector_solutions[i] = AP_de.getBest().vector.clone();
+                AP_fitness_solutions[i] = AP_de.getBest().fitness;
+            }
+            
+//            AP_vector_solutions[i] = AP_de.getBest().vector.clone();
 //            AP_populations[i] = (List<AP_Individual>) AP_de.getPopulation();
 //            AP_populations[i] = this.getOnlyHalfOfThePopulation((List<AP_Individual>) AP_de.getPopulation());
             
@@ -224,7 +232,7 @@ public class SOF_DErand1bin_AP extends DErand1bin {
      * @param ind 
      */
     protected void addIndividualToSOFdataset(Individual ind){
-        
+
         if(this.SOF_dataset.get(0).size() >= 100) {
             return;
         }
@@ -236,9 +244,9 @@ public class SOF_DErand1bin_AP extends DErand1bin {
             point = new double[2];
             point[0] = ind.vector[i];
             point[1] = ind.fitness / this.D;
-            
-            this.SOF_dataset.get(i).add(point);
-            
+
+            this.SOF_dataset.get(i).add(point); 
+
         }
         
     }
@@ -299,7 +307,7 @@ public class SOF_DErand1bin_AP extends DErand1bin {
         Individual x, trial;
         double[] u, v;
         Individual[] parentArray;
-
+        
         /**
          * generation itteration
          */
@@ -376,7 +384,7 @@ public class SOF_DErand1bin_AP extends DErand1bin {
         int NP = 20;
         int iter = 10;
         int MAXFES = iter * NP;
-        TestFunction tf = new Schwefel();
+        TestFunction tf = new Ackley();
         util.random.Random generator = new util.random.UniformRandom();
 
         SOF_DErand1bin_AP de;

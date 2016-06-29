@@ -15,6 +15,7 @@ import model.Individual;
 import model.chaos.RankedChaosGenerator;
 import model.tf.TestFunction;
 import model.tf.nwf.Spalovny3kraje_2;
+import model.tf.nwf.SpalovnyCR_10;
 import model.tf.nwf.SpalovnyCR_14;
 import model.tf.nwf.SpalovnyCR_2;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -703,6 +704,93 @@ public class Mc_SHADE extends SHADE {
     }
     
     /**
+     * 
+     * Main to solve spalovny in CR - 10 facilities
+     * 
+     * @throws Exception 
+     */
+    public static void spalovnyCR10main() throws Exception {
+        
+        int dimension = 206+2*10; //38
+        int NP = 100;
+        int MAXFES = 40000 * NP; //40000 * NP;
+        int funcNumber = 14;
+        TestFunction tf = new SpalovnyCR_10();
+        int H = 10;
+        util.random.Random generator;
+
+        Mc_SHADE shade;
+
+        int runs = 10;
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println(shade.getBest().fitness - tf.optimum());
+            System.out.println(Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((SpalovnyCR_10)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            for(Map.Entry<String,List> entry : map.entrySet()){
+                line = "";
+                System.out.print(entry.getKey() + " = ");
+                line += "{";
+//                System.out.print("{");
+                for(int pup = 0; pup < entry.getValue().size(); pup++){
+//                    System.out.print(entry.getValue().get(pup));
+                    line += entry.getValue().get(pup);
+                    if(pup != entry.getValue().size()-1){
+//                       System.out.print(","); 
+                       line += ",";
+                    }
+                }
+//                System.out.println("}");
+                line += "};";
+                line = line.replace("[", "{");
+                line = line.replace("]", "}");
+                System.out.println(line);
+                
+            }
+            
+            System.out.println("=================================");
+            
+            for(Individual ind : ((Mc_SHADE)shade).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
+    /**
      * MAIN
      * 
      * @param args
@@ -710,7 +798,7 @@ public class Mc_SHADE extends SHADE {
      */
     public static void main(String[] args) throws Exception {
     
-        spalovnyCRAllmain();
+        spalovnyCR10main();
         
     }
 
