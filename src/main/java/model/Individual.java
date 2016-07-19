@@ -1,6 +1,5 @@
 package model;
 
-import model.Individual;
 import java.util.Arrays;
 
 /**
@@ -11,20 +10,58 @@ public class Individual {
     public double[] vector;
     public double fitness;
     public String id;
+    
+    /**
+     * Extended individual for History Based Random Selection - hbrs
+     * - added int score - no. of successful mutations
+     * 
+     * 12/07/2016
+     */
+    public int score;
+    
+    /**
+     * Extended individual for History Based Position Selection - hbps
+     * - added int score for each position in mutation rand/1/bin
+     * 
+     * 12/07/2016
+     */
+    public int[] score_pos;
 
     public Individual() {
+        this.score = 1;
+        this.score_pos = new int[]{1,1,1};
     }
 
     public Individual(String id, double[] vector, double fitness) {
         this.id = id;
         this.vector = vector;
         this.fitness = fitness;
+        this.score = 1;
+        this.score_pos = new int[]{1,1,1};
+    }
+    
+    public Individual(String id, double[] vector, double fitness, int score) {
+        this.id = id;
+        this.vector = vector;
+        this.fitness = fitness;
+        this.score = score;
+        this.score_pos = new int[]{1,1,1};
+    }
+    
+    public Individual(String id, double[] vector, double fitness, int score, int[] score_pos) {
+        this.id = id;
+        this.vector = vector;
+        this.fitness = fitness;
+        this.score = score;
+        this.score_pos = score_pos;
     }
 
     public Individual(Individual individual) {
         this.id = individual.id;
         this.vector = individual.vector.clone();
         this.fitness = individual.fitness;
+        this.score = individual.score;
+        this.score_pos = individual.score_pos;
     }
 
     @Override
@@ -49,6 +86,7 @@ public class Individual {
                 "id=" + id +
                 ", vector=" + Arrays.toString(vector) +
                 ", fitness=" + fitness +
+                ", score=" + score +
                 '}';
     }
 }

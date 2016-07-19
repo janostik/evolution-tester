@@ -15,3 +15,6 @@
 -Npb - pbest selection based on centrality (only with network)
 
 -SOF - synthetic objective function
+-hbrs - history based random selection for indices selection
+-hbps - history based positioned selection for indices selection
+-FCRa - F and CR values adaptive as in SHADE

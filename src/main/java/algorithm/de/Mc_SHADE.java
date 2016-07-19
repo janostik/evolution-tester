@@ -713,7 +713,7 @@ public class Mc_SHADE extends SHADE {
         
         int dimension = 206+2*10; //38
         int NP = 100;
-        int MAXFES = 40000 * NP; //40000 * NP;
+        int MAXFES = 100000 * NP; //40000 * NP;
         int funcNumber = 14;
         TestFunction tf = new SpalovnyCR_10();
         int H = 10;
@@ -721,7 +721,7 @@ public class Mc_SHADE extends SHADE {
 
         Mc_SHADE shade;
 
-        int runs = 10;
+        int runs = 1;
         double[] bestArray = new double[runs];
         int i, best;
         double min;

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.net.Net;
-import model.tf.Ackley;
+import model.tf.Schwefel;
 import model.tf.nwf.Network3;
 import model.tf.nwf.Network4;
 import model.tf.TestFunction;
@@ -622,10 +622,10 @@ public class DErand1bin implements Algorithm {
     
         int dimension = 10;
         int NP = 20;
-        int iter = 10;
+        int iter = 100;
         int MAXFES = iter * NP;
         int funcNumber = 5;
-        TestFunction tf = new Ackley();
+        TestFunction tf = new Schwefel();
         util.random.Random generator = new util.random.UniformRandom();
         util.random.Random chaos = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8;
