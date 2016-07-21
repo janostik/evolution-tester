@@ -26,8 +26,8 @@ public class FCRa_DE_hbps extends DE_hbps {
     List<Double> S_CR;
     int H;
     
-    public FCRa_DE_hbps(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, int H) {
-        super(D, NP, MAXFES, f, rndGenerator, 0.5, 0.5);
+    public FCRa_DE_hbps(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, int H, int favor, int punish) {
+        super(D, NP, MAXFES, f, rndGenerator, 0.5, 0.5, favor, punish);
         this.H = H;
     }
     
@@ -119,7 +119,7 @@ public class FCRa_DE_hbps extends DE_hbps {
                 /**
                  * Trial
                  */
-                trial = makeIndividualFromVector(v);
+                trial = makeIndividualFromVector(v, x);
                 if (checkFES()) {
                     return best;
                 }
@@ -132,9 +132,9 @@ public class FCRa_DE_hbps extends DE_hbps {
                     /**
                      * Added for history based random selection
                      */
-                    parrentArray[1].score_pos[0] += 1;
-                    parrentArray[2].score_pos[1] += 1;
-                    parrentArray[3].score_pos[2] += 1;
+                    parrentArray[1].score_pos[0] += this.favor;
+                    parrentArray[2].score_pos[1] += this.favor;
+                    parrentArray[3].score_pos[2] += this.favor;
                     /**
                      * Added for update of F and CR memories
                      */
@@ -147,14 +147,14 @@ public class FCRa_DE_hbps extends DE_hbps {
                     /**
                      * Added for history based random selection
                      */
-                    if(parrentArray[1].score_pos[0] > 1) {
-                        parrentArray[1].score_pos[0] -= 1;
+                    if(parrentArray[1].score_pos[0] > this.punish) {
+                        parrentArray[1].score_pos[0] -= this.punish;
                     }
-                    if(parrentArray[2].score_pos[1] > 1) {
-                        parrentArray[2].score_pos[1] -= 1;
+                    if(parrentArray[2].score_pos[1] > this.punish) {
+                        parrentArray[2].score_pos[1] -= this.punish;
                     }
-                    if(parrentArray[2].score_pos[2] > 1) {
-                        parrentArray[2].score_pos[2] -= 1;
+                    if(parrentArray[2].score_pos[2] > this.punish) {
+                        parrentArray[2].score_pos[2] -= this.punish;
                     }
                 }
                 this.score_total = this.countScoreTotal();
@@ -207,7 +207,7 @@ public class FCRa_DE_hbps extends DE_hbps {
         util.random.Random generator = new util.random.UniformRandom();
         util.random.Random chaos = new util.random.UniformRandom();
         int H = 5;
-        Net net;
+        int favor = 1, punish = 2;
 
         Algorithm de;
 
@@ -216,7 +216,7 @@ public class FCRa_DE_hbps extends DE_hbps {
 
         for (int k = 0; k < runs; k++) {
 
-            de = new FCRa_DE_hbps(dimension, NP, MAXFES, tf, generator, H);
+            de = new FCRa_DE_hbps(dimension, NP, MAXFES, tf, generator, H, favor, punish);
 
             de.run();
 

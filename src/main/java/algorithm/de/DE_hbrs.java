@@ -1,11 +1,19 @@
 package algorithm.de;
 
-import algorithm.Algorithm;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.net.Net;
+import model.tf.Ackley;
+import model.tf.Dejong;
+import model.tf.Rastrigin;
+import model.tf.Rosenbrock;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -20,9 +28,37 @@ import util.random.Random;
 public class DE_hbrs extends DErand1bin {
     
     public int score_total;
+    public List[] rank_history; 
+    protected final int favor;
+    protected final int punish;
     
-    public DE_hbrs(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR) {
+    public DE_hbrs(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR, int favor, int punish) {
         super(D, NP, MAXFES, f, rndGenerator, F, CR);
+        this.favor = favor;
+        this.punish = punish;
+    }
+    
+    /**
+     * Creates rank history object
+     */
+    protected void initializeRankHistory() {
+        
+        this.rank_history = new ArrayList[this.NP];
+        for(int i = 0; i < this.NP; i++) {
+            this.rank_history[i] = new ArrayList<>();
+        }
+
+    }
+    
+    /**
+     * Writes the rank of a population to rank history object
+     */
+    protected void writeToRankHistory() {
+        
+        for(Individual ind : this.P) {
+            this.rank_history[Integer.parseInt(ind.id)].add(ind.score);
+        }
+        
     }
     
     @Override
@@ -35,6 +71,12 @@ public class DE_hbrs extends DErand1bin {
         if (checkFES()) {
             return best;
         }
+        
+        /**
+         * Ranking initialization
+         */
+        this.initializeRankHistory();
+        this.writeToRankHistory();
 
         List<Individual> newPop;
         Individual x, trial;
@@ -75,7 +117,7 @@ public class DE_hbrs extends DErand1bin {
                 /**
                  * Trial
                  */
-                trial = makeIndividualFromVector(v);
+                trial = makeIndividualFromVector(v, x);
                 if (checkFES()) {
                     return best;
                 }
@@ -88,22 +130,22 @@ public class DE_hbrs extends DErand1bin {
                     /**
                      * Added for history based random selection
                      */
-                    parrentArray[1].score += 1;
-                    parrentArray[2].score += 1;
-                    parrentArray[3].score += 1;
+                    parrentArray[1].score += this.favor;
+                    parrentArray[2].score += this.favor;
+                    parrentArray[3].score += this.favor;
                 } else {
                     newPop.add(x);
                     /**
                      * Added for history based random selection
                      */
-                    if(parrentArray[1].score > 1) {
-                        parrentArray[1].score -= 1;
+                    if(parrentArray[1].score > this.punish) {
+                        parrentArray[1].score -= this.punish;
                     }
-                    if(parrentArray[2].score > 1) {
-                        parrentArray[2].score -= 1;
+                    if(parrentArray[2].score > this.punish) {
+                        parrentArray[2].score -= this.punish;
                     }
-                    if(parrentArray[2].score > 1) {
-                        parrentArray[2].score -= 1;
+                    if(parrentArray[2].score > this.punish) {
+                        parrentArray[2].score -= this.punish;
                     }
                 }
                 this.score_total = this.countScoreTotal();
@@ -111,8 +153,31 @@ public class DE_hbrs extends DErand1bin {
             }
 
             P = newPop;
+            this.writeToRankHistory();
 
         }
+    }
+    
+    /**
+     *
+     * @param vector
+     * @param x
+     * @return
+     */
+    protected Individual makeIndividualFromVector(double[] vector, Individual x) {
+
+        Individual ind = new Individual();
+        ind.id = x.id;
+        ind.vector = vector;
+        ind.score = x.score;
+        ind.score_pos = x.score_pos.clone();
+        constrain(ind);
+        ind.fitness = tf.fitness(vector);
+        FES++;
+        isBest(ind);
+        writeHistory();
+
+        return (ind);
     }
     
     /**
@@ -204,34 +269,113 @@ public class DE_hbrs extends DErand1bin {
     }
     
     /**
+     * Writes the rank history into specified file in Wolfram Mathematica format.
+     * @param path 
+     */
+    public void writeRankHistoryToFile(String path) {
+        
+        try {
+            PrintWriter res_writer = new PrintWriter(path, "UTF-8");
+            
+            res_writer.print("{");
+            
+            for(int i = 0; i < this.rank_history.length; i++) {
+                
+                res_writer.print("{");
+                for(int j = 0; j < this.rank_history[i].size(); j++) {
+                    
+                    res_writer.print(this.rank_history[i].get(j));
+                    
+                    if(j != this.rank_history[i].size()-1) {
+                        res_writer.print(", ");
+                    }
+                    
+                }
+                res_writer.print("}");
+                if(i != this.rank_history.length-1) {
+                        res_writer.print(", ");
+                    }
+            }
+            
+            res_writer.print("}");
+            
+            res_writer.close();
+            
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            Logger.getLogger(DE_hbrs.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
+    /**
+     * Writes best fitness value history into file.
+     * @param path 
+     */
+    public void writeFitnessValueHistoryToFile(String path) {
+        
+        try {
+            PrintWriter res_writer = new PrintWriter(path, "UTF-8");
+            
+            res_writer.print("{");
+            
+            for(int i = 0; i < this.bestHistory.size(); i++) {
+                
+                res_writer.print(String.format(Locale.US, "%.10f",this.bestHistory.get(i).fitness));
+                
+                
+                if(i != this.bestHistory.size()-1) {
+                        res_writer.print(", ");
+                    }
+            }
+            
+            res_writer.print("}");
+            
+            res_writer.close();
+            
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            Logger.getLogger(DE_hbrs.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
+    /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         
         int dimension = 10;
         int NP = 20;
-        int iter = 100;
+        int iter = 1000;
         int MAXFES = iter * NP;
         int funcNumber = 5;
-        TestFunction tf = new Schwefel();
+//        TestFunction tf = new Schwefel();
+//        TestFunction tf = new Ackley();
+//        TestFunction tf = new Dejong();
+//        TestFunction tf = new Rosenbrock();
+        TestFunction tf = new Rastrigin();
         util.random.Random generator = new util.random.UniformRandom();
         util.random.Random chaos = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8;
-        Net net;
+        int favor = 1, punish = 2;
+        String path = "C:\\Users\\wiki\\Documents\\RankHistory\\" + tf.name() + "_history_" + favor + "f" + punish + "p.txt";
+        String path2 = "C:\\Users\\wiki\\Documents\\RankHistory\\" + tf.name() + "_value_" + favor + "f" + punish + "p.txt";
 
-        Algorithm de;
+        DE_hbrs de;
 
-        int runs = 30;
+        int runs = 1;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
-            de = new DE_hbrs(dimension, NP, MAXFES, tf, generator, f, cr);
+            de = new DE_hbrs(dimension, NP, MAXFES, tf, generator, f, cr, favor, punish);
 
             de.run();
 
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());
+            
+            de.writeRankHistoryToFile(path);
+            de.writeFitnessValueHistoryToFile(path2);
             
         }
 

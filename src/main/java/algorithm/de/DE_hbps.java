@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.net.Net;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -20,10 +19,13 @@ import util.random.Random;
 public class DE_hbps extends DErand1bin {
     
     public int[] score_total;
-
+    protected final int favor;
+    protected final int punish;
     
-    public DE_hbps(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR) {
+    public DE_hbps(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR, int favor, int punish) {
         super(D, NP, MAXFES, f, rndGenerator, F, CR);
+        this.favor = favor;
+        this.punish = punish;
     }
     
     @Override
@@ -76,7 +78,7 @@ public class DE_hbps extends DErand1bin {
                 /**
                  * Trial
                  */
-                trial = makeIndividualFromVector(v);
+                trial = makeIndividualFromVector(v, x);
                 if (checkFES()) {
                     return best;
                 }
@@ -89,22 +91,22 @@ public class DE_hbps extends DErand1bin {
                     /**
                      * Added for history based random selection
                      */
-                    parrentArray[1].score_pos[0] += 1;
-                    parrentArray[2].score_pos[1] += 1;
-                    parrentArray[3].score_pos[2] += 1;
+                    parrentArray[1].score_pos[0] += this.favor;
+                    parrentArray[2].score_pos[1] += this.favor;
+                    parrentArray[3].score_pos[2] += this.favor;
                 } else {
                     newPop.add(x);
                     /**
                      * Added for history based random selection
                      */
-                    if(parrentArray[1].score_pos[0] > 1) {
-                        parrentArray[1].score_pos[0] -= 1;
+                    if(parrentArray[1].score_pos[0] > this.punish) {
+                        parrentArray[1].score_pos[0] -= this.punish;
                     }
-                    if(parrentArray[2].score_pos[1] > 1) {
-                        parrentArray[2].score_pos[1] -= 1;
+                    if(parrentArray[2].score_pos[1] > this.punish) {
+                        parrentArray[2].score_pos[1] -= this.punish;
                     }
-                    if(parrentArray[2].score_pos[2] > 1) {
-                        parrentArray[2].score_pos[2] -= 1;
+                    if(parrentArray[2].score_pos[2] > this.punish) {
+                        parrentArray[2].score_pos[2] -= this.punish;
                     }
                 }
                 this.score_total = this.countScoreTotal();
@@ -114,6 +116,28 @@ public class DE_hbps extends DErand1bin {
             P = newPop;
 
         }
+    }
+    
+    /**
+     *
+     * @param vector
+     * @param x
+     * @return
+     */
+    protected Individual makeIndividualFromVector(double[] vector, Individual x) {
+
+        Individual ind = new Individual();
+        ind.id = x.id;
+        ind.vector = vector;
+        ind.score = x.score;
+        ind.score_pos = x.score_pos.clone();
+        constrain(ind);
+        ind.fitness = tf.fitness(vector);
+        FES++;
+        isBest(ind);
+        writeHistory();
+
+        return (ind);
     }
     
     /**
@@ -230,7 +254,7 @@ public class DE_hbps extends DErand1bin {
         util.random.Random generator = new util.random.UniformRandom();
         util.random.Random chaos = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8;
-        Net net;
+        int favor = 1, punish = 1;
 
         Algorithm de;
 
@@ -239,7 +263,7 @@ public class DE_hbps extends DErand1bin {
 
         for (int k = 0; k < runs; k++) {
 
-            de = new DE_hbps(dimension, NP, MAXFES, tf, generator, f, cr);
+            de = new DE_hbps(dimension, NP, MAXFES, tf, generator, f, cr, favor, punish);
 
             de.run();
 
