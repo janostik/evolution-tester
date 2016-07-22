@@ -344,7 +344,7 @@ public class DE_hbrs extends DErand1bin {
     public static void main(String[] args) {
         
         int dimension = 10;
-        int NP = 20;
+        int NP = 40;
         int iter = 1000;
         int MAXFES = iter * NP;
         int funcNumber = 5;
@@ -356,17 +356,20 @@ public class DE_hbrs extends DErand1bin {
         util.random.Random generator = new util.random.UniformRandom();
         util.random.Random chaos = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8;
-        int favor = 1, punish = 2;
-        String path = "C:\\Users\\wiki\\Documents\\RankHistory\\" + tf.name() + "_history_" + favor + "f" + punish + "p.txt";
-        String path2 = "C:\\Users\\wiki\\Documents\\RankHistory\\" + tf.name() + "_value_" + favor + "f" + punish + "p.txt";
+        int favor = 1, punish = 0;
+        String path;
+        String path2;
 
         DE_hbrs de;
 
-        int runs = 1;
+        int runs = 30;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
+            path = "C:\\Users\\wiki\\Documents\\RankHistory\\HBRS_1f0p_" + NP + "\\" + tf.name() + "_history_" + favor + "f" + punish + "p_" + k + ".txt";
+            path2 = "C:\\Users\\wiki\\Documents\\RankHistory\\HBRS_1f0p_" + NP + "\\" + tf.name() + "_value_" + favor + "f" + punish + "p_" + k + ".txt";
+            
             de = new DE_hbrs(dimension, NP, MAXFES, tf, generator, f, cr, favor, punish);
 
             de.run();
