@@ -1,9 +1,9 @@
 package algorithm.hybrid;
 
-import AP.algorithm.Algorithm;
+import algorithm.Algorithm;
 import AP.algorithm.de.ap.AP_DEbest;
 import algorithm.de.DErand1bin;
-import AP.model.AP_Individual;
+import algorithm.de.ap.AP_ShaDE.AP_Individual;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.DoubleStream;

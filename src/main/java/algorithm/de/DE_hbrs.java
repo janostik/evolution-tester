@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.Ackley;
+import model.tf.Cec2015;
 import model.tf.Dejong;
 import model.tf.Rastrigin;
 import model.tf.Rosenbrock;
@@ -189,71 +190,72 @@ public class DE_hbrs extends DErand1bin {
      * @param xIndex
      * @return
      */
-    @Override
-    protected Individual[] getParents(int xIndex) {
-
-        Individual[] parrentArray = new Individual[4];
-        List<Integer> indexes = new ArrayList<>();
-        int index, score_index, score_max;
-
-        for (int i = 0; i < NP; i++) {
-            if (i != xIndex) {
-                indexes.add(i);
-            }
-        }
-
-        parrentArray[0] = P.get(xIndex);
-        score_max = this.score_total - parrentArray[0].score;
-
-        /**
-         * a
-         */
-        score_index = rndGenerator.nextInt(score_max) + 1;
-        for(index = 0; index < indexes.size(); index++) {
-            
-            score_index -= (P.get(indexes.get(index))).score;
-            if(score_index <= 0) {
-                break;
-            }
-            
-        }
-        parrentArray[1] = P.get(indexes.get(index));
-        indexes.remove(index);
-        score_max -= parrentArray[1].score;
-
-        /**
-         * b
-         */
-        score_index = rndGenerator.nextInt(score_max) + 1;
-        for(index = 0; index < indexes.size(); index++) {
-            
-            score_index -= (P.get(indexes.get(index))).score;
-            if(score_index <= 0) {
-                break;
-            }
-            
-        }
-        parrentArray[2] = P.get(indexes.get(index));
-        indexes.remove(index);
-        score_max -= parrentArray[2].score;
-
-        /**
-         * c
-         */
-        score_index = rndGenerator.nextInt(score_max) + 1;
-        for(index = 0; index < indexes.size(); index++) {
-            
-            score_index -= (P.get(indexes.get(index))).score;
-            if(score_index <= 0) {
-                break;
-            }
-            
-        }
-        parrentArray[3] = P.get(indexes.get(index));
-
-        return parrentArray;
-
-    }
+//    @Override
+//    protected Individual[] getParents(int xIndex) {
+//
+//        Individual[] parrentArray = new Individual[4];
+//        List<Integer> indexes = new ArrayList<>();
+//        int index, score_index, score_max;
+//
+//        for (int i = 0; i < NP; i++) {
+//            if (i != xIndex) {
+//                indexes.add(i);
+//            }
+//        }
+//
+//        parrentArray[0] = P.get(xIndex);
+//        score_max = this.score_total - parrentArray[0].score;
+//
+//        /**
+//         * a
+//         */
+//        score_index = rndGenerator.nextInt(score_max) + 1;
+//        for(index = 0; index < indexes.size(); index++) {
+//            
+//            score_index -= (P.get(indexes.get(index))).score;
+//            if(score_index <= 0) {
+//                break;
+//            }
+//            
+//        }
+//        parrentArray[1] = P.get(indexes.get(index));
+//        indexes.remove(index);
+//        score_max -= parrentArray[1].score;
+//
+//        /**
+//         * b
+//         */
+//        score_index = rndGenerator.nextInt(score_max) + 1;
+//        for(index = 0; index < indexes.size(); index++) {
+//            
+//            score_index -= (P.get(indexes.get(index))).score;
+//            if(score_index <= 0) {
+//                break;
+//            }
+//            
+//        }
+//        parrentArray[2] = P.get(indexes.get(index));
+//        indexes.remove(index);
+//        score_max -= parrentArray[2].score;
+//
+//        /**
+//         * c
+//         */
+//        score_index = rndGenerator.nextInt(score_max) + 1;
+//        for(index = 0; index < indexes.size(); index++) {
+//            
+//            score_index -= (P.get(indexes.get(index))).score;
+//            if(score_index <= 0) {
+//                break;
+//            }
+//            
+//        }
+//        parrentArray[3] = P.get(indexes.get(index));
+//
+//        return parrentArray;
+//
+//    }
+    
    /**
     * Sum score of the whole population.
     * 
@@ -338,57 +340,105 @@ public class DE_hbrs extends DErand1bin {
         
     }
     
+    public static void writeStatisticsOfScore(TestFunction[] tfs, int dimension, int NP, int iter) {
+        
+        
+        
+        for(int i = 0; i < tfs.length; i++) {
+
+            int MAXFES = iter * NP;
+            util.random.Random generator = new util.random.UniformRandom();
+            util.random.Random chaos = new util.random.UniformRandom();
+            double f = 0.5, cr = 0.8;
+            int favor = 1, punish = 0;
+            String path;
+            String path2;
+
+            DE_hbrs de;
+
+            int runs = 30;
+            double[] bestArray = new double[runs];
+
+            for (int k = 0; k < runs; k++) {
+
+                path = "C:\\Users\\wiki\\Documents\\RankHistory\\HBRS_" + favor + "f" + punish + "p\\" + tfs[i].name() + "_h_" + dimension + "d_" + NP + "ind_" + k + ".txt";
+                path2 = "C:\\Users\\wiki\\Documents\\RankHistory\\HBRS_" + favor + "f" + punish + "p\\" + tfs[i].name() + "_v_" + dimension + "d_" + NP + "ind_" + k + ".txt";
+
+                de = new DE_hbrs(dimension, NP, MAXFES, tfs[i], generator, f, cr, favor, punish);
+
+                de.run();
+
+                bestArray[k] = de.getBest().fitness - tfs[i].optimum();
+                System.out.println(de.getBest().fitness - tfs[i].optimum());
+
+                de.writeRankHistoryToFile(path);
+                de.writeFitnessValueHistoryToFile(path2);
+
+            }
+
+            System.out.println("=================================");
+            System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+            System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+            System.out.println("Mean: " + new Mean().evaluate(bestArray));
+            System.out.println("Median: " + new Median().evaluate(bestArray));
+            System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+            System.out.println("=================================");  
+        
+        }
+        
+    }
+    
+    public static void writeCECstatistics(int[] dims, int[] NPs, int iter) throws Exception {
+        
+        int dimension;
+        int NP;
+        TestFunction[] tfs;
+        
+        for(int dimiter = 0; dimiter < dims.length; dimiter++) {
+            
+            dimension = dims[dimiter];
+            
+            for(int npiter = 0; npiter < NPs.length; npiter++) {
+                
+                NP = NPs[npiter];
+                
+                tfs = new TestFunction[15];
+                for(int i = 1; i < 16; i++) {
+                    tfs[i-1] = new Cec2015(dimension, i);
+                }
+                
+                writeStatisticsOfScore(tfs, dimension, NP, iter);
+                
+            }
+            
+        }
+        
+    }
+    
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         
-        int dimension = 10;
-        int NP = 40;
-        int iter = 1000;
-        int MAXFES = iter * NP;
-        int funcNumber = 5;
-//        TestFunction tf = new Schwefel();
-//        TestFunction tf = new Ackley();
-//        TestFunction tf = new Dejong();
-//        TestFunction tf = new Rosenbrock();
-        TestFunction tf = new Rastrigin();
-        util.random.Random generator = new util.random.UniformRandom();
-        util.random.Random chaos = new util.random.UniformRandom();
-        double f = 0.5, cr = 0.8;
-        int favor = 1, punish = 0;
-        String path;
-        String path2;
+//        int dimension;
+//        int NP;
+        int iter;
+//        TestFunction[] tfs;
+        iter = 1000;
 
-        DE_hbrs de;
+        int[] NPs = {20,30,40,50,60,70,80,90,100};
+        int[] dims = {10,30,50};
+        
+        writeCECstatistics(dims, NPs, iter);
+        
+//        dimension = 5;
+//        NP = 50;
+//        tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Rastrigin()};
+//        writeStatisticsOfScore(tfs, dimension, NP, iter);
 
-        int runs = 30;
-        double[] bestArray = new double[runs];
-
-        for (int k = 0; k < runs; k++) {
-
-            path = "C:\\Users\\wiki\\Documents\\RankHistory\\HBRS_1f0p_" + NP + "\\" + tf.name() + "_history_" + favor + "f" + punish + "p_" + k + ".txt";
-            path2 = "C:\\Users\\wiki\\Documents\\RankHistory\\HBRS_1f0p_" + NP + "\\" + tf.name() + "_value_" + favor + "f" + punish + "p_" + k + ".txt";
-            
-            de = new DE_hbrs(dimension, NP, MAXFES, tf, generator, f, cr, favor, punish);
-
-            de.run();
-
-            bestArray[k] = de.getBest().fitness - tf.optimum();
-            System.out.println(de.getBest().fitness - tf.optimum());
-            
-            de.writeRankHistoryToFile(path);
-            de.writeFitnessValueHistoryToFile(path2);
-            
-        }
-
-        System.out.println("=================================");
-        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
-        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
-        System.out.println("Mean: " + new Mean().evaluate(bestArray));
-        System.out.println("Median: " + new Median().evaluate(bestArray));
-        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
-        System.out.println("=================================");
+        
+        
+        
         
     }
 

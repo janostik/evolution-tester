@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.chaos.RankedChaosGenerator;
+import model.chaos.RankedGenerator;
 import model.tf.Cec2015;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -26,13 +26,13 @@ import util.random.Random;
  */
 public class MCDErand extends DErand1bin {
 
-    List<RankedChaosGenerator> chaosGenerator;
+    List<RankedGenerator> chaosGenerator;
     List<Double[]> chaosProbabilities = new ArrayList<>();
     int chosenChaos;
     
     public MCDErand(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR) {
         super(D, NP, MAXFES, f, rndGenerator, F, CR);
-        chaosGenerator = RankedChaosGenerator.getAllChaosGenerators();
+        chaosGenerator = RankedGenerator.getAllChaosGenerators();
     }
     
     private void writeChaosProbabilities(){
@@ -218,7 +218,7 @@ public class MCDErand extends DErand1bin {
             difference = rankSum / 100.0;
             chaosGenerator.get(chosenChaos).rank += difference;
 
-            for (RankedChaosGenerator chaos : chaosGenerator) {
+            for (RankedGenerator chaos : chaosGenerator) {
                 if(chaos.rank / (rankSum + difference) >= 0.1) {
                     chaos.rank = chaos.rank / (rankSum + difference);
                 }

@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.chaos.RankedChaosGenerator;
+import model.chaos.RankedGenerator;
 import model.tf.TestFunction;
 import model.tf.nwf.Spalovny3kraje_2;
 import model.tf.nwf.SpalovnyCR_10;
@@ -29,14 +29,14 @@ import util.OtherDistributionsUtil;
  */
 public class Mc_SHADE extends SHADE {
 
-    List<RankedChaosGenerator> chaosGenerator;
+    List<RankedGenerator> chaosGenerator;
     List<Double[]> chaosProbabilities = new ArrayList<>();
     int chosenChaos;
 
 
     public Mc_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
         super(D, MAXFES, f, H, NP, rndGenerator);
-        chaosGenerator = RankedChaosGenerator.getAllChaosGenerators();
+        chaosGenerator = RankedGenerator.getAllChaosGenerators();
     }
     
     private void writeChaosProbabilities(){
@@ -300,7 +300,7 @@ public class Mc_SHADE extends SHADE {
             difference = rankSum / 100.0;
             chaosGenerator.get(chosenChaos).rank += difference;
 
-            for (RankedChaosGenerator chaos : chaosGenerator) {
+            for (RankedGenerator chaos : chaosGenerator) {
                 chaos.rank = chaos.rank / (rankSum + difference);
             }
         }
@@ -343,7 +343,7 @@ public class Mc_SHADE extends SHADE {
     protected int[] genRandIndexes(int index, int max1, int max2, int pbest) {
 
         /**
-         * TODO choose chaos base on rank
+         * Choose chaos base on rank
          */
         double prob = rndGenerator.nextDouble();
         int chIndex = 0;

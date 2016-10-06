@@ -18,3 +18,6 @@
 -hbrs - history based random selection for indices selection
 -hbps - history based positioned selection for indices selection
 -FCRa - F and CR values adaptive as in SHADE
+
+-Pst - Population Size Tuning
+-Fad - F adaptive per dimension

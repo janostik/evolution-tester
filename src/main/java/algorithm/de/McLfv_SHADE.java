@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.chaos.RankedChaosGenerator;
+import model.chaos.RankedGenerator;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -20,13 +20,13 @@ import util.random.Random;
  */
 public class McLfv_SHADE extends Lfv_SHADE {
 
-    List<RankedChaosGenerator> chaosGenerator;
+    List<RankedGenerator> chaosGenerator;
     List<Double[]> chaosProbabilities = new ArrayList<>();
     int chosenChaos;
     
     public McLfv_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
         super(D, MAXFES, f, H, NP, rndGenerator, minPopSize);
-        chaosGenerator = RankedChaosGenerator.getAllChaosGenerators();
+        chaosGenerator = RankedGenerator.getAllChaosGenerators();
     }
     
     private void writeChaosProbabilities(){
@@ -96,7 +96,7 @@ public class McLfv_SHADE extends Lfv_SHADE {
             difference = rankSum / 100.0;
             chaosGenerator.get(chosenChaos).rank += difference;
 
-            for (RankedChaosGenerator chaos : chaosGenerator) {
+            for (RankedGenerator chaos : chaosGenerator) {
                 chaos.rank = chaos.rank / (rankSum + difference);
             }
         }
