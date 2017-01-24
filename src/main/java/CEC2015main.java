@@ -2,6 +2,7 @@ import algorithm.de.DE_hbps;
 import algorithm.de.DE_hbrs;
 import algorithm.de.DErand1bin;
 import algorithm.de.FCRa_DE_hbps;
+import algorithm.de.uDE;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Locale;
@@ -75,6 +76,113 @@ public class CEC2015main {
             for (int k = 0; k < runs; k++) {
 
                 de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
+                de.run();
+
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < de.getBestHistory().size(); i++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", de.getBestHistory().get(i).fitness));
+
+                    if (i != de.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+                bestArray[k] = de.getBest().fitness - tf.optimum();
+
+            }
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+            System.out.println(tf.name());
+            System.out.println("=================================");
+            System.out.println("Best: " + best);
+            System.out.println("Worst: " + worst);
+            System.out.println("Median: " + median);
+            System.out.println("Mean: " + mean);
+            System.out.println("Std: " + std);
+            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        
+    }
+    
+    public static void uDE_main(String path) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        uDE de;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        
+        res_writer.print("{");
+        
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            for (int k = 0; k < runs; k++) {
+
+                de = new uDE(dimension, NP, MAXFES, tf, generator);
                 de.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -494,137 +602,143 @@ public class CEC2015main {
 //        path = "CEC2015-DErand1bin-10/";
 //        DErand1bin_main(path);
 
-        int favor = 1, punish = 0;
-
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        System.out.println(new Date());
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        
         /**
-         * DE hbrs
+         * uDE
          */
-        path = "CEC2015-DE_hbrs_1f0p-10/";
-        DE_hbrs_main(path, favor, punish);
+        path = "CEC2015-uDE-10/";
+        uDE_main(path);
         
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        System.out.println(new Date());
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        
-        /**
-         * DE hbps
-         */
-        path = "CEC2015-DE_hbps_1f0p-10/";
-        DE_hbps_main(path, favor, punish);
-        
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        System.out.println(new Date());
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        
-        /**
-         * FCRa DE hbps
-         */
-        path = "CEC2015-FCRa_DE_hbps_1f0p-10/";
-        FCRa_DE_hbps_main(path, favor, punish);
-        
-        favor = 1; 
-        punish = 1;
-
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        System.out.println(new Date());
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        
-        /**
-         * DE hbrs
-         */
-        path = "CEC2015-DE_hbrs_1f1p-10/";
-        DE_hbrs_main(path, favor, punish);
-        
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        System.out.println(new Date());
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        
-        /**
-         * DE hbps
-         */
-        path = "CEC2015-DE_hbps_1f1p-10/";
-        DE_hbps_main(path, favor, punish);
-        
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        System.out.println(new Date());
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        
-        /**
-         * FCRa DE hbps
-         */
-        path = "CEC2015-FCRa_DE_hbps_1f1p-10/";
-        FCRa_DE_hbps_main(path, favor, punish);
-        
-        favor = 2;
-        punish = 1;
-
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        System.out.println(new Date());
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        
-        /**
-         * DE hbrs
-         */
-        path = "CEC2015-DE_hbrs_2f1p-10/";
-        DE_hbrs_main(path, favor, punish);
-        
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        System.out.println(new Date());
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        
-        /**
-         * DE hbps
-         */
-        path = "CEC2015-DE_hbps_2f1p-10/";
-        DE_hbps_main(path, favor, punish);
-        
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        System.out.println(new Date());
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        
-        /**
-         * FCRa DE hbps
-         */
-        path = "CEC2015-FCRa_DE_hbps_2f1p-10/";
-        FCRa_DE_hbps_main(path, favor, punish);
-        
-        favor = 1;
-        punish = 2;
-
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        System.out.println(new Date());
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        
-        /**
-         * DE hbrs
-         */
-        path = "CEC2015-DE_hbrs_1f2p-10/";
-        DE_hbrs_main(path, favor, punish);
-        
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        System.out.println(new Date());
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        
-        /**
-         * DE hbps
-         */
-        path = "CEC2015-DE_hbps_1f2p-10/";
-        DE_hbps_main(path, favor, punish);
-        
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        System.out.println(new Date());
-        System.out.println("88888888888888888888888888888888888888888888888888");
-        
-        /**
-         * FCRa DE hbps
-         */
-        path = "CEC2015-FCRa_DE_hbps_1f2p-10/";
-        FCRa_DE_hbps_main(path, favor, punish);
-        
+//        int favor = 1, punish = 0;
+//
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        System.out.println(new Date());
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        
+//        /**
+//         * DE hbrs
+//         */
+//        path = "CEC2015-DE_hbrs_1f0p-10/";
+//        DE_hbrs_main(path, favor, punish);
+//        
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        System.out.println(new Date());
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        
+//        /**
+//         * DE hbps
+//         */
+//        path = "CEC2015-DE_hbps_1f0p-10/";
+//        DE_hbps_main(path, favor, punish);
+//        
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        System.out.println(new Date());
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        
+//        /**
+//         * FCRa DE hbps
+//         */
+//        path = "CEC2015-FCRa_DE_hbps_1f0p-10/";
+//        FCRa_DE_hbps_main(path, favor, punish);
+//        
+//        favor = 1; 
+//        punish = 1;
+//
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        System.out.println(new Date());
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        
+//        /**
+//         * DE hbrs
+//         */
+//        path = "CEC2015-DE_hbrs_1f1p-10/";
+//        DE_hbrs_main(path, favor, punish);
+//        
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        System.out.println(new Date());
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        
+//        /**
+//         * DE hbps
+//         */
+//        path = "CEC2015-DE_hbps_1f1p-10/";
+//        DE_hbps_main(path, favor, punish);
+//        
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        System.out.println(new Date());
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        
+//        /**
+//         * FCRa DE hbps
+//         */
+//        path = "CEC2015-FCRa_DE_hbps_1f1p-10/";
+//        FCRa_DE_hbps_main(path, favor, punish);
+//        
+//        favor = 2;
+//        punish = 1;
+//
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        System.out.println(new Date());
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        
+//        /**
+//         * DE hbrs
+//         */
+//        path = "CEC2015-DE_hbrs_2f1p-10/";
+//        DE_hbrs_main(path, favor, punish);
+//        
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        System.out.println(new Date());
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        
+//        /**
+//         * DE hbps
+//         */
+//        path = "CEC2015-DE_hbps_2f1p-10/";
+//        DE_hbps_main(path, favor, punish);
+//        
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        System.out.println(new Date());
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        
+//        /**
+//         * FCRa DE hbps
+//         */
+//        path = "CEC2015-FCRa_DE_hbps_2f1p-10/";
+//        FCRa_DE_hbps_main(path, favor, punish);
+//        
+//        favor = 1;
+//        punish = 2;
+//
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        System.out.println(new Date());
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        
+//        /**
+//         * DE hbrs
+//         */
+//        path = "CEC2015-DE_hbrs_1f2p-10/";
+//        DE_hbrs_main(path, favor, punish);
+//        
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        System.out.println(new Date());
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        
+//        /**
+//         * DE hbps
+//         */
+//        path = "CEC2015-DE_hbps_1f2p-10/";
+//        DE_hbps_main(path, favor, punish);
+//        
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        System.out.println(new Date());
+//        System.out.println("88888888888888888888888888888888888888888888888888");
+//        
+//        /**
+//         * FCRa DE hbps
+//         */
+//        path = "CEC2015-FCRa_DE_hbps_1f2p-10/";
+//        FCRa_DE_hbps_main(path, favor, punish);
+//        
     }
     
 }

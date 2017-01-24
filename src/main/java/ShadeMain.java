@@ -3,12 +3,19 @@ import algorithm.Algorithm;
 import algorithm.de.A_SHADE;
 import algorithm.de.C_SHADE;
 import algorithm.de.DErand1bin;
+import algorithm.de.EAL_SHADE;
+import algorithm.de.EA_SHADE;
 import algorithm.de.MCDErand;
 import algorithm.de.McLfv_SHADE;
 import algorithm.de.Mc_SHADE;
 import algorithm.de.NLc_SHADE;
 import algorithm.de.SHADE;
 import algorithm.de.FCR_SHADE;
+import algorithm.de.IR_SHADE;
+import algorithm.de.Lfv_SHADE;
+import algorithm.de.Mc2IR_SHADE;
+import algorithm.de.Mc2RS_SHADE;
+import algorithm.de.Mc2_SHADE;
 import algorithm.de.McNLcg_SHADE;
 import algorithm.de.NLcg_SHADE;
 import algorithm.de.PSp_SHADE_3systems;
@@ -16,8 +23,10 @@ import algorithm.hybrid.SOF_DErand1bin_AP;
 import algorithm.pso.NetPso;
 import algorithm.pso.Pso;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Locale;
 import java.util.stream.DoubleStream;
+import model.chaos.RankedGenerator;
 import model.tf.Cec2013;
 import model.tf.Cec2014;
 import model.tf.Cec2015;
@@ -247,6 +256,246 @@ public class ShadeMain {
         
     }
     
+    public static void EAShadeMainCEC2015(String path, int H) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        EA_SHADE shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        
+        res_writer.print("{");
+        
+        System.out.println("{");
+        
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            System.out.println("{");
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new EA_SHADE(dimension, MAXFES, tf, H, NP, generator);
+                shade.run();
+
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+
+                    if (i != shade.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+                bestArray[k] = shade.getBest().fitness - tf.optimum();
+                
+                if(k != runs-1) {
+                    System.out.println(",");
+                }
+
+            }
+            
+            System.out.println("}");
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+//            System.out.println(tf.name());
+//            System.out.println("=================================");
+//            System.out.println("Best: " + best);
+//            System.out.println("Worst: " + worst);
+//            System.out.println("Median: " + median);
+//            System.out.println("Mean: " + mean);
+//            System.out.println("Std: " + std);
+//            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+               System.out.println(",");
+            }
+            
+        }
+        
+        System.out.println("}");
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        
+    }
+    
+    public static void EALShadeMainCEC2015(String path, int H) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        EAL_SHADE shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        
+        res_writer.print("{");
+        
+        System.out.println("{");
+        
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            System.out.println("{");
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new EAL_SHADE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
+                shade.run();
+
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+
+                    if (i != shade.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+                bestArray[k] = shade.getBest().fitness - tf.optimum();
+                
+                if(k != runs-1) {
+                    System.out.println(",");
+                }
+
+            }
+            
+            System.out.println("}");
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+//            System.out.println(tf.name());
+//            System.out.println("=================================");
+//            System.out.println("Best: " + best);
+//            System.out.println("Worst: " + worst);
+//            System.out.println("Median: " + median);
+//            System.out.println("Mean: " + mean);
+//            System.out.println("Std: " + std);
+//            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+               System.out.println(",");
+            }
+            
+        }
+        
+        System.out.println("}");
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        
+    }
+    
     public static void classicShadeMainCEC2015(String path, int H) throws Exception{
 
         TestFunction tf;
@@ -271,6 +520,113 @@ public class ShadeMain {
             for (int k = 0; k < runs; k++) {
 
                 shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
+                shade.run();
+
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+
+                    if (i != shade.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+                bestArray[k] = shade.getBest().fitness - tf.optimum();
+
+            }
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+            System.out.println(tf.name());
+            System.out.println("=================================");
+            System.out.println("Best: " + best);
+            System.out.println("Worst: " + worst);
+            System.out.println("Median: " + median);
+            System.out.println("Mean: " + mean);
+            System.out.println("Std: " + std);
+            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        
+    }
+    
+    public static void IRShadeMainCEC2015(String path, int H) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        IR_SHADE shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        
+        res_writer.print("{");
+        
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new IR_SHADE(dimension, MAXFES, tf, H, NP, generator);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -699,6 +1055,434 @@ public class ShadeMain {
             for (int k = 0; k < runs; k++) {
 
                 shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
+                shade.run();
+
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+
+                    if (i != shade.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+                bestArray[k] = shade.getBest().fitness - tf.optimum();
+
+            }
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+            System.out.println(tf.name());
+            System.out.println("=================================");
+            System.out.println("Best: " + best);
+            System.out.println("Worst: " + worst);
+            System.out.println("Median: " + median);
+            System.out.println("Mean: " + mean);
+            System.out.println("Std: " + std);
+            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        
+    }
+    
+    public static void MCShadeMainCEC2015withGenerators(String path, int H, List<RankedGenerator> generators) throws Exception{
+ 
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        Mc_SHADE shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        
+        res_writer.print("{");
+        
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator, generators);
+                shade.run();
+
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+
+                    if (i != shade.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+                bestArray[k] = shade.getBest().fitness - tf.optimum();
+
+            }
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+            System.out.println(tf.name());
+            System.out.println("=================================");
+            System.out.println("Best: " + best);
+            System.out.println("Worst: " + worst);
+            System.out.println("Median: " + median);
+            System.out.println("Mean: " + mean);
+            System.out.println("Std: " + std);
+            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        
+    }
+    
+    public static void MC2ShadeMainCEC2015withGenerators(String path, int H, List<RankedGenerator> generators) throws Exception{
+ 
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        Mc2_SHADE shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        
+        res_writer.print("{");
+        
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new Mc2_SHADE(dimension, MAXFES, tf, H, NP, generator, generators);
+                shade.run();
+
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+
+                    if (i != shade.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+                bestArray[k] = shade.getBest().fitness - tf.optimum();
+
+            }
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+            System.out.println(tf.name());
+            System.out.println("=================================");
+            System.out.println("Best: " + best);
+            System.out.println("Worst: " + worst);
+            System.out.println("Median: " + median);
+            System.out.println("Mean: " + mean);
+            System.out.println("Std: " + std);
+            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        
+    }
+    
+    public static void MC2RSShadeMainCEC2015withGenerators(String path, int H, List<RankedGenerator> generators) throws Exception{
+ 
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        Mc2RS_SHADE shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        
+        res_writer.print("{");
+        
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new Mc2RS_SHADE(dimension, MAXFES, tf, H, NP, generator, generators);
+                shade.run();
+
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+
+                    if (i != shade.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+                bestArray[k] = shade.getBest().fitness - tf.optimum();
+
+            }
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+            System.out.println(tf.name());
+            System.out.println("=================================");
+            System.out.println("Best: " + best);
+            System.out.println("Worst: " + worst);
+            System.out.println("Median: " + median);
+            System.out.println("Mean: " + mean);
+            System.out.println("Std: " + std);
+            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        
+    }
+    
+    public static void MC2IRShadeMainCEC2015withGenerators(String path, int H, List<RankedGenerator> generators) throws Exception{
+ 
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        Mc2IR_SHADE shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        
+        res_writer.print("{");
+        
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new Mc2IR_SHADE(dimension, MAXFES, tf, H, NP, generator, generators);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -2310,8 +3094,8 @@ public class ShadeMain {
      */
     public static int dimension = 10;
     public static int MAXFES = 10000 * dimension;
-    public static final int runs = 1; //51
-    public static final String home_dir = "C:\\Users\\wiki\\Documents\\";
+    public static final int runs = 51; //51
+    public static String home_dir = "C:\\Users\\wiki\\Documents\\";
     
     /**
      * PSO
@@ -2349,13 +3133,81 @@ public class ShadeMain {
         String chaosName, path; 
         int H = 10;
         
-        dimension = 10;
+        dimension = 30;
         MAXFES = 10000 * dimension;
+        home_dir = "";
+        
+        path = "E:\\results\\CEC2015-EA_SHADE-30/";
+        
+        EAShadeMainCEC2015(path, H);
+        
+//        List<RankedGenerator> gens;
+//        
+//        gens = RankedGenerator.getAllChaosGeneratorsV2();
+//        path = "CEC2015-MC_SHADEv2-10/";
+//        MCShadeMainCEC2015withGenerators(path, H, gens);
+//        
+//        gens = RankedGenerator.getAllChaosGeneratorsV3();
+//        path = "CEC2015-MC_SHADEv3-10/";
+//        MCShadeMainCEC2015withGenerators(path, H, gens);
+//
+//        path = "CEC2015-IR_SHADE-10/";
+//        IRShadeMainCEC2015(path, H);
+//
+//        gens = RankedGenerator.getAllChaosGeneratorsV2();
+//        path = "CEC2015-MC2IR_SHADEv2-10/";
+//        MC2IRShadeMainCEC2015withGenerators(path, H, gens);
+//        
+//        chGenerator = new ArnoldCatRandom();
+//        chaosName = chGenerator.toString();
+//        path = "CEC2015-CSHADE-10/" + chaosName + "/";
+//        chaosShadeMainCEC2015(path, H, chGenerator);
+//        
+//        chGenerator = new BurgersRandom();
+//        chaosName = chGenerator.toString();
+//        path = "CEC2015-CSHADE-10/" + chaosName + "/";
+//        chaosShadeMainCEC2015(path, H, chGenerator);
+//        
+//        chGenerator = new DelayedLogisticRandom();
+//        chaosName = chGenerator.toString();
+//        path = "CEC2015-CSHADE-10/" + chaosName + "/";
+//        chaosShadeMainCEC2015(path, H, chGenerator);
+//        
+//        chGenerator = new DissipativeRandom();
+//        chaosName = chGenerator.toString();
+//        path = "CEC2015-CSHADE-10/" + chaosName + "/";
+//        chaosShadeMainCEC2015(path, H, chGenerator);
+//        
+//        chGenerator = new HenonRandom();
+//        chaosName = chGenerator.toString();
+//        path = "CEC2015-CSHADE-10/" + chaosName + "/";
+//        chaosShadeMainCEC2015(path, H, chGenerator);
+//        
+//        chGenerator = new IkedaRandom();
+//        chaosName = chGenerator.toString();
+//        path = "CEC2015-CSHADE-10/" + chaosName + "/";
+//        chaosShadeMainCEC2015(path, H, chGenerator);
+//        
+//        chGenerator = new LoziRandom();
+//        chaosName = chGenerator.toString();
+//        path = "CEC2015-CSHADE-10/" + chaosName + "/";
+//        chaosShadeMainCEC2015(path, H, chGenerator);
+//        
+//        chGenerator = new SinaiRandom();
+//        chaosName = chGenerator.toString();
+//        path = "CEC2015-CSHADE-10/" + chaosName + "/";
+//        chaosShadeMainCEC2015(path, H, chGenerator);
+//        
+//        chGenerator = new TinkerbellRandom();
+//        chaosName = chGenerator.toString();
+//        path = "CEC2015-CSHADE-10/" + chaosName + "/";
+//        chaosShadeMainCEC2015(path, H, chGenerator);
+        
 //        path = "CEC2015-PSp3_SHADE-10/";
 //        multiNormalShadeMainCEC2015(path, H);
         
-        path = "CEC2015-SOF_DErand1bin_AP-10/";
-        SOF_DErand1bin_APMainCEC2015(path);
+//        path = "CEC2015-SOF_DErand1bin_AP-10/";
+//        SOF_DErand1bin_APMainCEC2015(path);
         
 //        path = "CEC2015-McNLcg_SHADE-10/";
 //        McNLcgSHADEMainCEC2015(path, H);

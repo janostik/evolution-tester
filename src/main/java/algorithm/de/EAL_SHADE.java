@@ -21,12 +21,12 @@ import util.random.Random;
  * 
  * @author adam on 05/04/2016
  */
-public class Lfv_SHADE extends SHADE {
+public class EAL_SHADE extends SHADE {
 
     protected final int minPopSize;
     protected final int maxPopSize;
     
-    public Lfv_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
+    public EAL_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
         super(D, MAXFES, f, H, NP, rndGenerator);
         this.minPopSize = minPopSize;
         this.maxPopSize = NP;
@@ -76,6 +76,12 @@ public class Lfv_SHADE extends SHADE {
         int k = 0;
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
+        /**
+         * Archive hits
+         */
+        int archive_hit = 0;
+        int archive_good_hit = 0;
+        boolean hit = false;
 
         while (true) {
 
@@ -124,8 +130,14 @@ public class Lfv_SHADE extends SHADE {
                 pbest = pbestInd.vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
                 pr1 = this.P.get(rIndexes[0]).vector.clone();
+                /**
+                 * Archive hit
+                 */
+                hit = false;
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
+                    hit = true;
+                    archive_hit++;
                 } else {
                     pr2 = this.P.get(rIndexes[1]).vector.clone();
                 }
@@ -163,11 +175,19 @@ public class Lfv_SHADE extends SHADE {
                     newPop.add(trial);
                     this.S_F.add(Fg);
                     this.S_CR.add(CRg);
-                    this.Aext.add(x);
+                    //this.Aext.add(x);
                     wS.add(Math.abs(trial.fitness - x.fitness));
+                    
+                    /**
+                     * Archive hit
+                     */
+                    if(hit) {
+                        archive_good_hit++;
+                    }
                     
                 } else {
                     newPop.add(x);
+                    this.Aext.add(trial);
                 }
 
                 this.FES++;
@@ -219,10 +239,55 @@ public class Lfv_SHADE extends SHADE {
             this.P.addAll(newPop);
             NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
             P = this.resizePop(P, NP);
+            this.Aext = this.resizeAext(this.Aext, this.NP);
 
         }
 
+        System.out.println("{" + archive_hit + ", " + (double) archive_hit / (double) (this.MAXFES - this.NP) * 100 + ", " + archive_good_hit + ", " + (double) archive_good_hit / (double) archive_hit * 100 + ", " + String.format(Locale.US, "%.10f", this.best.fitness - this.f.optimum()) + "}");
+        
         return this.best;
+
+    }
+    
+    /**
+     *
+     * Pruning of the worst individuals in archive
+     * 
+     * @param list
+     * @param size
+     * @return
+     */
+    @Override
+    protected List<Individual> resizeAext(List<Individual> list, int size) {
+
+        if(size >= list.size()){
+            return list;
+        }
+
+        List<Individual> toRet = new ArrayList<>();
+        toRet.addAll(list);
+        int index, worst_index;
+        Individual worst;
+
+        while (toRet.size() > size) {
+
+            worst_index = -1;
+            worst = null;
+            
+            for(int i = 0; i < list.size(); i++) {
+                
+                if(worst == null || list.get(i).fitness > worst.fitness) {
+                    worst = list.get(i);
+                    worst_index = i;
+                }
+                
+            }
+
+            toRet.remove(worst_index);
+
+        }
+
+        return toRet;
 
     }
     
@@ -269,14 +334,14 @@ public class Lfv_SHADE extends SHADE {
         long seed = 10304050L;
         util.random.Random generator = new util.random.UniformRandom();
 
-        Lfv_SHADE shade;
+        EAL_SHADE shade;
 
         int runs = 1;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
+            shade = new EAL_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.run();
 

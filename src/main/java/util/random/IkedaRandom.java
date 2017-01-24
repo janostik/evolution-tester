@@ -4,9 +4,9 @@ package util.random;
  *
  * @author adam on 25/11/2015
  */
-public class BurgersRandom implements Random {
+public class IkedaRandom implements Random {
 
-    final private static model.chaos.Burgers rnd = new model.chaos.Burgers();
+    final private static model.chaos.Ikeda rnd = new model.chaos.Ikeda();
 
     @Override
     public double nextDouble() {
@@ -20,7 +20,7 @@ public class BurgersRandom implements Random {
 
     @Override
     public String toString() {
-        return "Burgers";
+        return "Ikeda";
     }
 
 }

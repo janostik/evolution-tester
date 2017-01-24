@@ -18,9 +18,9 @@ import util.random.Random;
  */
 public class DE_hbps extends DErand1bin {
     
-    public int[] score_total;
-    protected final int favor;
-    protected final int punish;
+    public double[] score_total;
+    protected final double favor;
+    protected final double punish;
     
     public DE_hbps(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR, int favor, int punish) {
         super(D, NP, MAXFES, f, rndGenerator, F, CR);
@@ -155,7 +155,7 @@ public class DE_hbps extends DErand1bin {
         Individual[] parrentArray = new Individual[4];
         List<Integer> indexes = new ArrayList<>();
         int index, score_index;
-        int[] score_max = new int[3];
+        double[] score_max = new double[3];
 
         for (int i = 0; i < NP; i++) {
             if (i != xIndex) {
@@ -171,7 +171,7 @@ public class DE_hbps extends DErand1bin {
         /**
          * a
          */
-        score_index = rndGenerator.nextInt(score_max[0]) + 1;
+        score_index = rndGenerator.nextInt((int)score_max[0]) + 1;
         for(index = 0; index < indexes.size(); index++) {
             
             score_index -= (P.get(indexes.get(index))).score_pos[0];
@@ -188,7 +188,7 @@ public class DE_hbps extends DErand1bin {
         /**
          * b
          */
-        score_index = rndGenerator.nextInt(score_max[1]) + 1;
+        score_index = rndGenerator.nextInt((int)score_max[1]) + 1;
         for(index = 0; index < indexes.size(); index++) {
             
             score_index -= (P.get(indexes.get(index))).score_pos[1];
@@ -204,7 +204,7 @@ public class DE_hbps extends DErand1bin {
         /**
          * c
          */
-        score_index = rndGenerator.nextInt(score_max[2]) + 1;
+        score_index = rndGenerator.nextInt((int)score_max[2]) + 1;
         for(index = 0; index < indexes.size(); index++) {
             
             score_index -= (P.get(indexes.get(index))).score_pos[2];
@@ -223,9 +223,9 @@ public class DE_hbps extends DErand1bin {
     * 
     * @return 
     */
-    protected int[] countScoreTotal() {
+    protected double[] countScoreTotal() {
         
-        int[] score = new int[]{0, 0, 0};
+        double[] score = new double[]{0, 0, 0};
         
         this.P.stream().map((ind) -> {
             score[0] += ind.score_pos[0];

@@ -28,7 +28,7 @@ import util.random.Random;
  */
 public class DE_hbrs extends DErand1bin {
     
-    public int score_total;
+    public double score_total;
     public List[] rank_history; 
     protected final int favor;
     protected final int punish;
@@ -181,91 +181,16 @@ public class DE_hbrs extends DErand1bin {
         return (ind);
     }
     
-    /**
-     *
-     * List of parents for mutation x, a, b, c
-     * 
-     * a, b, c are randomly selected, but the selection is biased towards the individuals whose score is higher.
-     *
-     * @param xIndex
-     * @return
-     */
-//    @Override
-//    protected Individual[] getParents(int xIndex) {
-//
-//        Individual[] parrentArray = new Individual[4];
-//        List<Integer> indexes = new ArrayList<>();
-//        int index, score_index, score_max;
-//
-//        for (int i = 0; i < NP; i++) {
-//            if (i != xIndex) {
-//                indexes.add(i);
-//            }
-//        }
-//
-//        parrentArray[0] = P.get(xIndex);
-//        score_max = this.score_total - parrentArray[0].score;
-//
-//        /**
-//         * a
-//         */
-//        score_index = rndGenerator.nextInt(score_max) + 1;
-//        for(index = 0; index < indexes.size(); index++) {
-//            
-//            score_index -= (P.get(indexes.get(index))).score;
-//            if(score_index <= 0) {
-//                break;
-//            }
-//            
-//        }
-//        parrentArray[1] = P.get(indexes.get(index));
-//        indexes.remove(index);
-//        score_max -= parrentArray[1].score;
-//
-//        /**
-//         * b
-//         */
-//        score_index = rndGenerator.nextInt(score_max) + 1;
-//        for(index = 0; index < indexes.size(); index++) {
-//            
-//            score_index -= (P.get(indexes.get(index))).score;
-//            if(score_index <= 0) {
-//                break;
-//            }
-//            
-//        }
-//        parrentArray[2] = P.get(indexes.get(index));
-//        indexes.remove(index);
-//        score_max -= parrentArray[2].score;
-//
-//        /**
-//         * c
-//         */
-//        score_index = rndGenerator.nextInt(score_max) + 1;
-//        for(index = 0; index < indexes.size(); index++) {
-//            
-//            score_index -= (P.get(indexes.get(index))).score;
-//            if(score_index <= 0) {
-//                break;
-//            }
-//            
-//        }
-//        parrentArray[3] = P.get(indexes.get(index));
-//
-//        return parrentArray;
-//
-//    }
-    
    /**
     * Sum score of the whole population.
     * 
     * @return 
     */
-    protected int countScoreTotal() {
+    protected double countScoreTotal() {
         
-        int score = 0;
+        double score = 0;
         
-        score = this.P.stream().map((ind) -> ind.score).reduce(score, Integer::sum);
+        score = this.P.stream().map((ind) -> ind.score).reduce(score, (accumulator, _item) -> accumulator + _item);
         
         return score;
     }

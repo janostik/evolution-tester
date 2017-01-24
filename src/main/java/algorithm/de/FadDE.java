@@ -209,7 +209,7 @@ public class FadDE extends DErand1bin {
         
         int dimension = 10;
         int NP = 20;
-        int iter = 100;
+        int iter = 1000;
         int MAXFES = iter * NP;
         int funcNumber = 5;
         TestFunction tf = new Schwefel();

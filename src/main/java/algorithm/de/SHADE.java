@@ -1,14 +1,21 @@
 package algorithm.de;
 
 import algorithm.Algorithm;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.tf.Dejong;
+import model.tf.Cec2015;
+import model.tf.PupilCostFunction;
 import model.tf.TestFunction;
 import model.tf.nwf.Spalovny3kraje_2;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -92,6 +99,12 @@ public class SHADE implements Algorithm {
         int k = 0;
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
+        /**
+         * Archive hits
+         */
+        int archive_hit = 0;
+        int archive_good_hit = 0;
+        boolean hit = false;
 
         while (true) {
             
@@ -139,8 +152,15 @@ public class SHADE implements Algorithm {
                 pbest = pbestInd.vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
                 pr1 = this.P.get(rIndexes[0]).vector.clone();
+                
+                /**
+                 * Archive hit
+                 */
+                hit = false;
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
+                    hit = true;
+                    archive_hit++;
                 } else {
                     pr2 = this.P.get(rIndexes[1]).vector.clone();
                 }
@@ -180,6 +200,14 @@ public class SHADE implements Algorithm {
                     this.S_CR.add(CRg);
                     this.Aext.add(x);
                     wS.add(x.fitness - trial.fitness);
+                    
+                    /**
+                     * Archive hit
+                     */
+                    if(hit) {
+                        archive_good_hit++;
+                    }
+                    
                 } else {
                     newPop.add(x);
                 }
@@ -234,6 +262,9 @@ public class SHADE implements Algorithm {
             
 
         }
+
+        System.out.println("Archive hits: " + archive_hit + " - " + (double) archive_hit / (double) this.MAXFES * 100 + "%");
+        System.out.println("Good hits: " + archive_good_hit + " - " + (double) archive_good_hit / (double) archive_hit * 100 + "%");
         
         return this.best;
 
@@ -678,19 +709,84 @@ public class SHADE implements Algorithm {
     }
     //</editor-fold>
 
-    public static void main(String[] args) throws Exception {
+    public static double runOneIris(int number) throws Exception {
 
-        int dimension = 10; //38
+        String path = "C:\\Users\\wiki\\Documents\\NetBeansProjects\\PupilCostFunctions\\" + number; 
+        
+        int dimension = 2; //38
         int NP = 20;
-        int MAXFES = 10 * NP;
+        int MAXFES = 100 * NP;
         int funcNumber = 14;
-        TestFunction tf = new Dejong();
+        TestFunction tf = new PupilCostFunction(path);
         int H = 10;
         util.random.Random generator;
 
         SHADE shade;
 
         int runs = 30;
+        double[] bestArray = new double[runs];
+        int i, best, count = 0;
+        double min;
+
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+
+            if(bestArray[k] == 0) {
+                count++;
+            }
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Iris: " + number);
+        System.out.println("Success: " + count + "/" + runs);
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+
+        return count/runs;
+        
+    }
+    
+    public static void main(String[] args) throws Exception {
+
+//        double prec = 0;
+//        int min = 1, max = 128;
+//        
+//        for(int i = min; i <= max; i++) {
+//            
+//            prec += runOneIris(i);
+//            
+//        }
+//        
+//        System.out.println("Overall precision: " + prec/max*100 + "%");
+//        
+//        String path = "C:\\Users\\wiki\\Documents\\NetBeansProjects\\PupilCostFunctions\\12"; 
+        
+        int dimension = 10; //38
+        int NP = 100;
+        int MAXFES = 1000 * NP;
+        int funcNumber = 3;
+        TestFunction tf = new Cec2015(dimension, funcNumber);
+        int H = 10;
+        util.random.Random generator;
+
+        SHADE shade;
+
+        int runs = 3;
         double[] bestArray = new double[runs];
         int i, best;
         double min;
@@ -733,8 +829,8 @@ public class SHADE implements Algorithm {
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());
-            System.out.println(Arrays.toString(shade.getBest().vector));
-            
+//            System.out.println(Arrays.toString(((PupilCostFunction)tf).getCoords(shade.getBest().vector)));
+//            
 //            Map<String, List> map = ((Spalovny3kraje_2)tf).getOutput(shade.getBest().vector);
 //            
 //            System.out.println("=================================");
@@ -760,8 +856,8 @@ public class SHADE implements Algorithm {
 //                System.out.println(line);
 //                
 //            }
-            
-            System.out.println("=================================");
+//            
+//            System.out.println("=================================");
             
             for(Individual ind : ((SHADE)shade).getBestHistory()){
                 i++;

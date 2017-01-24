@@ -1,12 +1,17 @@
 package algorithm.de;
 
 import algorithm.Algorithm;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.net.Net;
+import model.tf.PupilCostFunction;
 import model.tf.Schwefel;
 import model.tf.nwf.Network3;
 import model.tf.nwf.Network4;
@@ -618,14 +623,16 @@ public class DErand1bin implements Algorithm {
 
     }
     
-    public static void main(String[] args) throws Exception {
+    public static double runOneIris(int number) throws Exception {
     
-        int dimension = 10;
+        String path = "C:\\Users\\wiki\\Documents\\NetBeansProjects\\PupilCostFunctions\\" + number;     
+        
+        int dimension = 2;
         int NP = 20;
         int iter = 100;
         int MAXFES = iter * NP;
         int funcNumber = 5;
-        TestFunction tf = new Schwefel();
+        TestFunction tf = new PupilCostFunction(path);
         util.random.Random generator = new util.random.UniformRandom();
         util.random.Random chaos = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8;
@@ -635,28 +642,66 @@ public class DErand1bin implements Algorithm {
 
         int runs = 30;
         double[] bestArray = new double[runs];
+        int i, best, count = 0;
+        double min;
 
         for (int k = 0; k < runs; k++) {
 
             de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
 
             de.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
 
             bestArray[k] = de.getBest().fitness - tf.optimum();
-            System.out.println(de.getBest().fitness - tf.optimum());
+//            System.out.println(de.getBest().fitness - tf.optimum());
+//            System.out.println(Arrays.toString(((PupilCostFunction)tf).getCoords(de.getBest().vector)));
             
+//            System.out.println("=================================");
+//            
+//            for(Individual ind : ((DErand1bin)de).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
+//            }
+//            System.out.println("Best solution found in " + best + " CFE");
+            
+            if(bestArray[k] == 0) {
+                count++;
+            }
+
         }
-        
-        
-        
 
         System.out.println("=================================");
+        System.out.println("Iris: " + number);
+        System.out.println("Success: " + count + "/" + runs);
         System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
         System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
         System.out.println("Mean: " + new Mean().evaluate(bestArray));
         System.out.println("Median: " + new Median().evaluate(bestArray));
         System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
         System.out.println("=================================");
+        
+        return count/runs;
+        
+    }
+    
+    public static void main(String[] args) throws Exception {
+    
+        double prec = 0;
+        int min = 1, max = 128;
+        
+        for(int i = min; i <= max; i++) {
+            
+            prec += runOneIris(i);
+            
+        }
+        
+        System.out.println("Overall precision: " + prec/max*100 + "%");
         
     }
 }

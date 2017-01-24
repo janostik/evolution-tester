@@ -25,7 +25,7 @@ public class MCDEbest extends DEbest {
 
     public MCDEbest(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR) {
         super(D, NP, MAXFES, f, rndGenerator, F, CR);
-        chaosGenerator = RankedGenerator.getAllChaosGenerators();
+        chaosGenerator = RankedGenerator.getAllChaosGeneratorsV1();
     }
     
     private void writeChaosProbabilities(){

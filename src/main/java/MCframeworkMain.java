@@ -2,19 +2,17 @@
 import algorithm.de.MCDEbest;
 import algorithm.de.MCDEcurtopbest;
 import algorithm.de.MCDErand;
+import algorithm.de.Mc2_SHADE;
 import algorithm.de.Mc_SHADE;
 import algorithm.de.PSp_SHADE_5systems;
 import algorithm.de.SHADE;
 import java.io.PrintWriter;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.stream.DoubleStream;
-import model.tf.Ackley;
+import model.chaos.RankedGenerator;
 import model.tf.Cec2015;
-import model.tf.Dejong;
-import model.tf.Rastrigin;
-import model.tf.Rosenbrock;
-import model.tf.Schwefel;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -318,6 +316,97 @@ public class MCframeworkMain {
         for (int k = 0; k < runs; k++) {
 
             de = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
+            de.run();
+
+            writer = new PrintWriter(home_dir + resultPath + tf.name() + "-" + k + ".txt", "UTF-8");
+
+            writer.print("{");
+
+            for (int i = 0; i < de.getBestHistory().size(); i++) {
+
+                writer.print(String.format(Locale.US, "%.10f", de.getBestHistory().get(i).fitness));
+
+                if (i != de.getBestHistory().size() - 1) {
+                    writer.print(",");
+                }
+
+            }
+
+            writer.print("}");
+
+            writer.close();
+
+            bestArray[k] = de.getBest().fitness - tf.optimum();
+            
+            prPath = home_dir + probPath + "probs_" + tf.name() + "-" + k + ".txt";
+            
+            //writes chaos generator probabilities history into file
+            de.writeProbsToFile(prPath);
+
+        }
+
+        best = DoubleStream.of(bestArray).min().getAsDouble();
+        worst = DoubleStream.of(bestArray).max().getAsDouble();
+        median = new Median().evaluate(bestArray);
+        mean = new Mean().evaluate(bestArray);
+        std = new StandardDeviation().evaluate(bestArray);
+
+        sol_writer = new PrintWriter(home_dir + resultPath + "results_" + tf.name() + ".txt", "UTF-8");
+
+        sol_writer.print("{");
+        sol_writer.print(tf.name());
+        sol_writer.print(",");
+        sol_writer.print(String.format(Locale.US, "%.10f", best));
+        sol_writer.print(",");
+        sol_writer.print(String.format(Locale.US, "%.10f", worst));
+        sol_writer.print(",");
+        sol_writer.print(String.format(Locale.US, "%.10f", median));
+        sol_writer.print(",");
+        sol_writer.print(String.format(Locale.US, "%.10f", mean));
+        sol_writer.print(",");
+        sol_writer.print(String.format(Locale.US, "%.10f", std));
+        sol_writer.print("}");
+
+        sol_writer.close();
+
+        System.out.println(tf.name());
+        System.out.println("=================================");
+        System.out.println("Best: " + best);
+        System.out.println("Worst: " + worst);
+        System.out.println("Median: " + median);
+        System.out.println("Mean: " + mean);
+        System.out.println("Std: " + std);
+        System.out.println("=================================");
+
+    }
+    
+    /**
+     * 
+     * @param func
+     * @param resultPath
+     * @param probPath
+     * @throws Exception 
+     */
+    public static void writeHistoryMC2Shade(TestFunction func, String resultPath, String probPath) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        Mc2_SHADE de;
+        List<RankedGenerator> gens;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer;
+        double best,worst,median,mean,std;
+        String prPath = "";
+        
+        tf = func;
+        bestArray = new double[runs];
+
+        for (int k = 0; k < runs; k++) {
+
+            gens = RankedGenerator.getAllChaosGeneratorsV4();
+            de = new Mc2_SHADE(dimension, MAXFES, tf, H, NP, generator, gens);
             de.run();
 
             writer = new PrintWriter(home_dir + resultPath + tf.name() + "-" + k + ".txt", "UTF-8");

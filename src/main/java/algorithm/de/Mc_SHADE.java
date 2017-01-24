@@ -36,10 +36,15 @@ public class Mc_SHADE extends SHADE {
 
     public Mc_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
         super(D, MAXFES, f, H, NP, rndGenerator);
-        chaosGenerator = RankedGenerator.getAllChaosGenerators();
+        chaosGenerator = RankedGenerator.getAllChaosGeneratorsV1();
     }
     
-    private void writeChaosProbabilities(){
+    public Mc_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator, List<RankedGenerator> generators) {
+        super(D, MAXFES, f, H, NP, rndGenerator);
+        chaosGenerator = generators;
+    }
+    
+    protected void writeChaosProbabilities(){
         
         Double[] probs = new Double[this.chaosGenerator.size()];
         
@@ -310,11 +315,14 @@ public class Mc_SHADE extends SHADE {
 
     public void printOutRankings() {
 
+        double sum = 0;
+        
         System.out.println("Ranking");
-        chaosGenerator.stream().forEach((chaos) -> {
+        for(RankedGenerator chaos : chaosGenerator) {
             System.out.print(chaos.rank + " ");
-        });
-        System.out.println("");
+            sum += chaos.rank;
+        }
+        System.out.println("| " + sum);
 
     }
 

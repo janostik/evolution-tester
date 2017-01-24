@@ -1,12 +1,11 @@
 package algorithm.de;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.chaos.RankedGenerator;
-import model.tf.Schwefel;
+import model.tf.Cec2015;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -16,98 +15,17 @@ import util.random.Random;
 
 /**
  *
- * @author wiki
+ * Extended Archive Management - individuals are put into archive if they do not succeed in elitism and the size of the archive is
+ * maintained by pruning the worst individuals.
+ * 
+ * @author wiki on 13/12/2016
  */
-public class McLfv_SHADE extends Lfv_SHADE {
+public class EA_SHADE extends SHADE {
 
-    List<RankedGenerator> chaosGenerator;
-    List<Double[]> chaosProbabilities = new ArrayList<>();
-    int chosenChaos;
-    
-    public McLfv_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
-        super(D, MAXFES, f, H, NP, rndGenerator, minPopSize);
-        chaosGenerator = RankedGenerator.getAllChaosGeneratorsV1();
+    public EA_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator) {
+        super(D, MAXFES, f, H, NP, rndGenerator);
     }
     
-    private void writeChaosProbabilities(){
-        
-        Double[] probs = new Double[this.chaosGenerator.size()];
-        
-        for(int i = 0; i < this.chaosGenerator.size();i++){
-            probs[i] = this.chaosGenerator.get(i).rank;
-        }
-        
-        this.chaosProbabilities.add(probs);
-        
-    }
-    
-    /**
-     * Creation of initial population.
-     * Overrided because of chaos probabilities history.
-     */
-    @Override
-    protected void initializePopulation(){
-        
-        /**
-         * Initial population
-         */
-        id = 0;
-        double[] features;
-        this.P = new ArrayList<>();
-        Individual ind;
-
-        for (int i = 0; i < this.NP; i++) {
-            id = i;
-            features = this.f.generateTrial(this.D).clone();
-            ind = new Individual(String.valueOf(id), features, this.f.fitness(features));
-            this.isBest(ind);
-            this.P.add(ind);
-            this.FES++;
-            this.writeHistory();
-            this.writeChaosProbabilities();
-        }
-        
-    }
-    
-    /**
-     *
-     * @param list
-     * @return
-     */
-    @Override
-    protected Individual getRandBestFromList(List<Individual> list) {
-
-        int index = chaosGenerator.get(chosenChaos).chaos.nextInt(list.size());
-
-        return list.get(index);
-
-    }
-    
-    /**
-     * Updates rank values for chaos generators.
-     */
-    protected void updateRankings() {
-
-        if(chaosGenerator.get(chosenChaos).rank < 0.6){
-            double rankSum = 0, difference;
-
-            rankSum = chaosGenerator.stream().map((chaos) -> chaos.rank).reduce(rankSum, (accumulator, _item) -> accumulator + _item);
-
-            difference = rankSum / 100.0;
-            chaosGenerator.get(chosenChaos).rank += difference;
-
-            for (RankedGenerator chaos : chaosGenerator) {
-                chaos.rank = chaos.rank / (rankSum + difference);
-            }
-        }
-
-
-    }
-
-    /**
-     * 
-     * @return 
-     */
     @Override
     public Individual run() {
 
@@ -123,7 +41,7 @@ public class McLfv_SHADE extends Lfv_SHADE {
          * Initial population
          */
         initializePopulation();
-
+        
         this.M_F = new double[this.H];
         this.M_CR = new double[this.H];
 
@@ -140,16 +58,22 @@ public class McLfv_SHADE extends Lfv_SHADE {
         List<Individual> newPop, pBestArray;
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
-        Individual trial, pbestInd;
-        Individual x;
+        Individual trial;
+        Individual x, pbestInd;
         List<Double> wS;
         double wSsum, meanS_F1, meanS_F2, meanS_CR;
         int k = 0;
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
+        /**
+         * Archive hits
+         */
+        int archive_hit = 0;
+        int archive_good_hit = 0;
+        boolean hit = false;
 
         while (true) {
-
+            
             this.G++;
             this.S_F = new ArrayList<>();
             this.S_CR = new ArrayList<>();
@@ -168,7 +92,6 @@ public class McLfv_SHADE extends Lfv_SHADE {
                 if (Fg > 1) {
                     Fg = 1;
                 }
-                
 
                 CRg = OtherDistributionsUtil.normal(this.M_CR[r], 0.1);
                 if (CRg > 1) {
@@ -195,8 +118,15 @@ public class McLfv_SHADE extends Lfv_SHADE {
                 pbest = pbestInd.vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
                 pr1 = this.P.get(rIndexes[0]).vector.clone();
+                
+                /**
+                 * Archive hit
+                 */
+                hit = false;
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
+                    hit = true;
+                    archive_hit++;
                 } else {
                     pr2 = this.P.get(rIndexes[1]).vector.clone();
                 }
@@ -234,19 +164,20 @@ public class McLfv_SHADE extends Lfv_SHADE {
                     newPop.add(trial);
                     this.S_F.add(Fg);
                     this.S_CR.add(CRg);
-                    this.Aext.add(x);
-                    wS.add(Math.abs(trial.fitness - x.fitness));
+//                    this.Aext.add(x);
+                    wS.add(x.fitness - trial.fitness);
                     
                     /**
-                     * Chosen chaos rank update
+                     * Archive hit
                      */
-                    updateRankings();
+                    if(hit) {
+                        archive_good_hit++;
+                    }
                     
                 } else {
                     newPop.add(x);
+                    this.Aext.add(trial);
                 }
-                
-                this.writeChaosProbabilities();
 
                 this.FES++;
                 this.isBest(trial);
@@ -295,87 +226,110 @@ public class McLfv_SHADE extends Lfv_SHADE {
              */
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
-            NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
-            P = this.resizePop(P, NP);
+            
 
         }
 
+//        System.out.println("Archive hits: " + archive_hit + " - " + (double) archive_hit / (double) (this.MAXFES - this.NP) * 100 + "%");
+//        System.out.println("Good hits: " + archive_good_hit + " - " + (double) archive_good_hit / (double) archive_hit * 100 + "%");
+        
+        System.out.println("{" + archive_hit + ", " + (double) archive_hit / (double) (this.MAXFES - this.NP) * 100 + ", " + archive_good_hit + ", " + (double) archive_good_hit / (double) archive_hit * 100 + ", " + String.format(Locale.US, "%.10f", this.best.fitness - this.f.optimum()) + "}");
+        
         return this.best;
 
     }
     
-    public void printOutRankings() {
-
-        System.out.println("Ranking");
-        chaosGenerator.stream().forEach((chaos) -> {
-            System.out.print(chaos.rank + " ");
-        });
-        System.out.println("");
-
-    }
-
     @Override
     public String getName() {
-        return "McLfv_SHADE";
+        return "EA_SHADE";
+    }
+
+    /**
+     *
+     * Pruning of the worst individuals in archive
+     * 
+     * @param list
+     * @param size
+     * @return
+     */
+    @Override
+    protected List<Individual> resizeAext(List<Individual> list, int size) {
+
+        if(size >= list.size()){
+            return list;
+        }
+
+        List<Individual> toRet = new ArrayList<>();
+        toRet.addAll(list);
+        int index, worst_index;
+        Individual worst;
+
+        while (toRet.size() > size) {
+
+            worst_index = -1;
+            worst = null;
+            
+            for(int i = 0; i < list.size(); i++) {
+                
+                if(worst == null || list.get(i).fitness > worst.fitness) {
+                    worst = list.get(i);
+                    worst_index = i;
+                }
+                
+            }
+
+            toRet.remove(worst_index);
+
+        }
+
+        return toRet;
+
     }
     
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         
         int dimension = 10;
         int NP = 100;
-        int minNP = 20;
-        int MAXFES = 100 * NP;
-        int funcNumber = 14;
-        TestFunction tf = new Schwefel();
+        int MAXFES = 1000 * NP;
+        int funcNumber = 3;
+        TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 10;
-        util.random.Random generator = new util.random.UniformRandom();
+        util.random.Random generator;
 
-        McLfv_SHADE shade;
+        EA_SHADE shade;
 
-        int runs = 10;
+        int runs = 3;
         double[] bestArray = new double[runs];
+        int i, best;
+        double min;
 
         for (int k = 0; k < runs; k++) {
-
-            shade = new McLfv_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
+            
+            generator = new util.random.UniformRandom();
+            shade = new EA_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
-
-//            PrintWriter writer;
-//
-//            try {
-//                writer = new PrintWriter("CEC2015-" + funcNumber + "-shade" + k + ".txt", "UTF-8");
-//
-//                writer.print("{");
-//
-//                for (int i = 0; i < shade.getBestHistory().size(); i++) {
-//
-//                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
-//
-//                    if (i != shade.getBestHistory().size() - 1) {
-//                        writer.print(",");
-//                    }
-//
-//                }
-//
-//                writer.print("}");
-//
-//                writer.close();
-//
-//            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-//                Logger.getLogger(ShaDE.class.getName()).log(Level.SEVERE, null, ex);
-//            }
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
-            System.out.println(shade.getBest().fitness - tf.optimum());
-            System.out.println(Arrays.toString(shade.getBest().vector));
+//            System.out.println(shade.getBest().fitness - tf.optimum());
+
             
-//            for(Individual ind : shade.P){
-//                System.out.println("ID: " + ind.id + " - fitness: " + ind.fitness);
+//            for(Individual ind : ((SHADE)shade).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
 //            }
+//            System.out.println("Best solution found in " + best + " CFE");
+            
         }
 
         System.out.println("=================================");

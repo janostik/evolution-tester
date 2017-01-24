@@ -17,7 +17,7 @@ public class Individual {
      * 
      * 12/07/2016
      */
-    public int score;
+    public double score;
     
     /**
      * Extended individual for History Based Position Selection - hbps
@@ -25,11 +25,11 @@ public class Individual {
      * 
      * 12/07/2016
      */
-    public int[] score_pos;
+    public double[] score_pos;
 
     public Individual() {
         this.score = 1;
-        this.score_pos = new int[]{1,1,1};
+        this.score_pos = new double[]{1,1,1};
     }
 
     public Individual(String id, double[] vector, double fitness) {
@@ -37,18 +37,18 @@ public class Individual {
         this.vector = vector;
         this.fitness = fitness;
         this.score = 1;
-        this.score_pos = new int[]{1,1,1};
+        this.score_pos = new double[]{1,1,1};
     }
     
-    public Individual(String id, double[] vector, double fitness, int score) {
+    public Individual(String id, double[] vector, double fitness, double score) {
         this.id = id;
         this.vector = vector;
         this.fitness = fitness;
         this.score = score;
-        this.score_pos = new int[]{1,1,1};
+        this.score_pos = new double[]{1,1,1};
     }
     
-    public Individual(String id, double[] vector, double fitness, int score, int[] score_pos) {
+    public Individual(String id, double[] vector, double fitness, double score, double[] score_pos) {
         this.id = id;
         this.vector = vector;
         this.fitness = fitness;

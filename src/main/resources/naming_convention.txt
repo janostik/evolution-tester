@@ -6,6 +6,7 @@
 -Ls - Static linear decrease given by individual IDs.
 -Lmh - Metaheuristically selected vector of individual IDs, for linear decrease of population size.
 -Mc - multi chaotic system
+-Mc2 - multi chaotic system No. 2!!! - based on generator count and cumulative increment of probability
 -P - probabilistic generators used for indices selection
 -Sp - sorted population
 -C - chaos
@@ -13,11 +14,18 @@
 -CR - initialization of CR
 -A - aging
 -Npb - pbest selection based on centrality (only with network)
+-RS - restart search after stagnation
+-IR - intelligent Removal
+-EA - Enhanced Archive
 
 -SOF - synthetic objective function
--hbrs - history based random selection for indices selection
+-hbrs - history based random selection for indices selection - only score added for clustering
+-hbrs2 - history based random selection for indices selection - different weights for score based on F and CR
 -hbps - history based positioned selection for indices selection
 -FCRa - F and CR values adaptive as in SHADE
 
 -Pst - Population Size Tuning
 -Fad - F adaptive per dimension
+-uDE - userless DE
+
+-noCR - no crossover

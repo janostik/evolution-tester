@@ -31,7 +31,7 @@ public class RankedGenerator {
         
     }
     
-    public static List<RankedGenerator> getAllChaosGenerators() {
+    public static List<RankedGenerator> getAllChaosGeneratorsV1() {
 
         List<RankedGenerator> list = new ArrayList<>();
 
@@ -40,6 +40,46 @@ public class RankedGenerator {
         list.add(new RankedGenerator(new util.random.DissipativeRandom(), 0.2));
         list.add(new RankedGenerator(new util.random.LoziRandom(), 0.2));
         list.add(new RankedGenerator(new util.random.TinkerbellRandom(), 0.2));
+
+        return list;
+
+    }
+    
+    public static List<RankedGenerator> getAllChaosGeneratorsV2() {
+
+        List<RankedGenerator> list = new ArrayList<>();
+
+        list.add(new RankedGenerator(new util.random.UniformRandom(), 0.2));
+        list.add(new RankedGenerator(new util.random.DelayedLogisticRandom(), 0.2));
+        list.add(new RankedGenerator(new util.random.DissipativeRandom(), 0.2));
+        list.add(new RankedGenerator(new util.random.ArnoldCatRandom(), 0.2));
+        list.add(new RankedGenerator(new util.random.TinkerbellRandom(), 0.2));
+
+        return list;
+
+    }
+    
+    public static List<RankedGenerator> getAllChaosGeneratorsV3() {
+
+        List<RankedGenerator> list = new ArrayList<>();
+
+        list.add(new RankedGenerator(new util.random.UniformRandom(), 0.2));
+        list.add(new RankedGenerator(new util.random.DelayedLogisticRandom(), 0.2));
+        list.add(new RankedGenerator(new util.random.DissipativeRandom(), 0.2));
+        list.add(new RankedGenerator(new util.random.LoziRandom(), 0.2));
+        list.add(new RankedGenerator(new util.random.ArnoldCatRandom(), 0.2));
+
+        return list;
+
+    }
+    
+    public static List<RankedGenerator> getAllChaosGeneratorsV4() {
+
+        List<RankedGenerator> list = new ArrayList<>();
+
+        list.add(new RankedGenerator(new util.random.UniformRandom(), 1./3.));
+        list.add(new RankedGenerator(new util.random.DissipativeRandom(), 1./3.));
+        list.add(new RankedGenerator(new util.random.ArnoldCatRandom(), 1./3.));
 
         return list;
 
