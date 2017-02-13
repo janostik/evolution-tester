@@ -1,23 +1,15 @@
 package algorithm.de;
 
 import algorithm.Algorithm;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.Cec2015;
 import model.tf.PupilCostFunction;
 import model.tf.TestFunction;
-import model.tf.nwf.Spalovny3kraje_2;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -50,6 +42,7 @@ public class SHADE implements Algorithm {
     int H;
     util.random.Random rndGenerator;
     int id;
+    int Asize;
 
     public SHADE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
         this.D = D;
@@ -219,7 +212,7 @@ public class SHADE implements Algorithm {
                     break;
                 }
 
-                this.Aext = this.resizeAext(this.Aext, this.NP);
+                this.Aext = this.resizeAext(this.Aext, this.Asize);
                 
             }
 
@@ -263,8 +256,8 @@ public class SHADE implements Algorithm {
 
         }
 
-        System.out.println("Archive hits: " + archive_hit + " - " + (double) archive_hit / (double) this.MAXFES * 100 + "%");
-        System.out.println("Good hits: " + archive_good_hit + " - " + (double) archive_good_hit / (double) archive_hit * 100 + "%");
+//        System.out.println("Archive hits: " + archive_hit + " - " + (double) archive_hit / (double) this.MAXFES * 100 + "%");
+//        System.out.println("Good hits: " + archive_good_hit + " - " + (double) archive_good_hit / (double) archive_hit * 100 + "%");
         
         return this.best;
 
@@ -387,11 +380,11 @@ public class SHADE implements Algorithm {
 
         for (int i = 0; i < this.NP; i++) {
             id = i;
-//            features = this.f.generateTrial(this.D).clone();
-            features = new double[this.D];
-            for(int j = 0; j < this.D; j++){
-                features[j] = this.rndGenerator.nextDouble(this.f.min(this.D), this.f.max(this.D));
-            }
+            features = this.f.generateTrial(this.D).clone();
+//            features = new double[this.D];
+//            for(int j = 0; j < this.D; j++){
+//                features[j] = this.rndGenerator.nextDouble(this.f.min(this.D), this.f.max(this.D));
+//            }
             ind = new Individual(String.valueOf(id), features, this.f.fitness(features));
             this.isBest(ind);
             this.P.add(ind);
@@ -424,6 +417,10 @@ public class SHADE implements Algorithm {
      */
     protected List<Individual> resizeAext(List<Individual> list, int size) {
 
+        if(size <= 0) {
+            return new ArrayList<>();
+        }
+        
         if(size >= list.size()){
             return list;
         }
@@ -537,7 +534,18 @@ public class SHADE implements Algorithm {
      *
      */
     protected void writeHistory() {
+        
         this.bestHistory.add(this.best);
+        /**
+         * NOTE - only for huge problems with lots of generations
+         */
+        if(this.bestHistory.size() >= 1000) {
+            System.out.println("TIME at " + this.FES + " OFEs\n" + new Date());
+            System.out.println("OFV\n" + this.best.fitness);
+            System.out.println("SOLUTION\n" + Arrays.toString(this.best.vector));
+            System.out.println("-------------");
+            this.bestHistory = new ArrayList<>();
+        }
     }
 
     /**
@@ -760,7 +768,15 @@ public class SHADE implements Algorithm {
         return count/runs;
         
     }
-    
+
+    public int getAsize() {
+        return Asize;
+    }
+
+    public void setAsize(int Asize) {
+        this.Asize = Asize;
+    }
+
     public static void main(String[] args) throws Exception {
 
 //        double prec = 0;

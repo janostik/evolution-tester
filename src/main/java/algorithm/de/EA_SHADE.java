@@ -186,7 +186,7 @@ public class EA_SHADE extends SHADE {
                     break;
                 }
 
-                this.Aext = this.resizeAext(this.Aext, this.NP);
+                this.Aext = this.resizeAext(this.Aext, this.Asize);
                 
             }
 
@@ -233,7 +233,7 @@ public class EA_SHADE extends SHADE {
 //        System.out.println("Archive hits: " + archive_hit + " - " + (double) archive_hit / (double) (this.MAXFES - this.NP) * 100 + "%");
 //        System.out.println("Good hits: " + archive_good_hit + " - " + (double) archive_good_hit / (double) archive_hit * 100 + "%");
         
-        System.out.println("{" + archive_hit + ", " + (double) archive_hit / (double) (this.MAXFES - this.NP) * 100 + ", " + archive_good_hit + ", " + (double) archive_good_hit / (double) archive_hit * 100 + ", " + String.format(Locale.US, "%.10f", this.best.fitness - this.f.optimum()) + "}");
+//        System.out.println("{" + archive_hit + ", " + (double) archive_hit / (double) (this.MAXFES - this.NP) * 100 + ", " + archive_good_hit + ", " + (double) archive_good_hit / (double) archive_hit * 100 + ", " + String.format(Locale.US, "%.10f", this.best.fitness - this.f.optimum()) + "}");
         
         return this.best;
 
@@ -255,6 +255,10 @@ public class EA_SHADE extends SHADE {
     @Override
     protected List<Individual> resizeAext(List<Individual> list, int size) {
 
+        if(size <= 0) {
+            return new ArrayList<>();
+        }
+        
         if(size >= list.size()){
             return list;
         }
