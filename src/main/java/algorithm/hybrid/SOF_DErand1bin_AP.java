@@ -1,31 +1,32 @@
 package algorithm.hybrid;
 
-import AP.algorithm.Algorithm;
+
 import AP.algorithm.de.ap.AP_DEbest;
+import AP.model.tf.ap.regression.APdataset;
+import AP.util.APIndividualComparator;
+import algorithm.Algorithm;
 import algorithm.de.DErand1bin;
-import AP.model.AP_Individual;
+import algorithm.de.ap.AP_ShaDE.AP_Individual;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import AP.model.ap.objects.AP_Abs;
-import AP.model.ap.objects.AP_Cos;
-import AP.model.ap.objects.AP_Div;
-import AP.model.ap.objects.AP_Exp;
-import AP.model.ap.objects.AP_Ln;
-import AP.model.ap.objects.AP_Multiply;
-import AP.model.ap.objects.AP_Plus;
-import AP.model.ap.objects.AP_Quad;
-import AP.model.ap.objects.AP_Sin;
-import AP.model.ap.objects.AP_Sqrt;
-import AP.model.ap.objects.AP_Sub;
-import AP.model.ap.objects.AP_Tan;
-import AP.model.ap.objects.AP_aTOb;
-import AP.model.ap.objects.AP_object;
-import AP.model.ap.objects.AP_x1;
+import model.ap.objects.AP_Abs;
+import model.ap.objects.AP_Cos;
+import model.ap.objects.AP_Div;
+import model.ap.objects.AP_Exp;
+import model.ap.objects.AP_Ln;
+import model.ap.objects.AP_Multiply;
+import model.ap.objects.AP_Plus;
+import model.ap.objects.AP_Quad;
+import model.ap.objects.AP_Sin;
+import model.ap.objects.AP_Sqrt;
+import model.ap.objects.AP_Sub;
+import model.ap.objects.AP_Tan;
+import model.ap.objects.AP_aTOb;
+import model.ap.objects.AP_object;
+import model.ap.objects.logic.AP_x1;
 import model.tf.TestFunction;
-import AP.model.tf.ap.regression.APdataset;
-import AP.util.APIndividualComparator;
 import model.tf.Ackley;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -190,14 +191,14 @@ public class SOF_DErand1bin_AP extends DErand1bin {
          */
         for(int i = 0; i < this.SOF_dataset.size(); i++) {
             this.AP_datasets[i] = new APdataset(this.SOF_dataset.get(i), GFS, min_const, max_const);
-            AP_de = new AP_DEbest(AP_D, AP_NP, AP_MAXFES, this.AP_datasets[i], generator, AP_F, AP_CR, AP_populations[i]);
+//            AP_de = new AP_DEbest(AP_D, AP_NP, AP_MAXFES, this.AP_datasets[i], generator, AP_F, AP_CR, AP_populations[i]);
 //            AP_de = new AP_DErand1bin(AP_D, AP_NP, AP_MAXFES, this.AP_datasets[i], generator, AP_F, AP_CR);
 //            AP_de = new AP_ShaDE(AP_D, AP_NP, AP_MAXFES, this.AP_datasets[i], generator, 10);
-            AP_de.run();
-            if(AP_de.getBest().fitness <= AP_fitness_solutions[i]) {
-                AP_vector_solutions[i] = AP_de.getBest().vector.clone();
-                AP_fitness_solutions[i] = AP_de.getBest().fitness;
-            }
+//            AP_de.run();
+//            if(AP_de.getBest().fitness <= AP_fitness_solutions[i]) {
+//                AP_vector_solutions[i] = AP_de.getBest().vector.clone();
+//                AP_fitness_solutions[i] = AP_de.getBest().fitness;
+//            }
             
 //            AP_vector_solutions[i] = AP_de.getBest().vector.clone();
 //            AP_populations[i] = (List<AP_Individual>) AP_de.getPopulation();
@@ -215,7 +216,7 @@ public class SOF_DErand1bin_AP extends DErand1bin {
      */
     private List<AP_Individual> getOnlyHalfOfThePopulation(List<AP_Individual> population) {
         
-        population.sort(new APIndividualComparator());
+//        population.sort(new APIndividualComparator());
         List<AP_Individual> listToRet = new ArrayList<>();
         
         for(int i = 0; i < population.size()/2; i++) {

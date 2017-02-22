@@ -539,13 +539,13 @@ public class SHADE implements Algorithm {
         /**
          * NOTE - only for huge problems with lots of generations
          */
-        if(this.bestHistory.size() >= 1000) {
-            System.out.println("TIME at " + this.FES + " OFEs\n" + new Date());
-            System.out.println("OFV\n" + this.best.fitness);
-            System.out.println("SOLUTION\n" + Arrays.toString(this.best.vector));
-            System.out.println("-------------");
-            this.bestHistory = new ArrayList<>();
-        }
+//        if(this.bestHistory.size() >= 1000) {
+//            System.out.println("TIME at " + this.FES + " OFEs\n" + new Date());
+//            System.out.println("OFV\n" + this.best.fitness);
+//            System.out.println("SOLUTION\n" + Arrays.toString(this.best.vector));
+//            System.out.println("-------------");
+//            this.bestHistory = new ArrayList<>();
+//        }
     }
 
     /**
