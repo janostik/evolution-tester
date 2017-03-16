@@ -35,10 +35,14 @@ public class C_SHADE extends SHADE {
      * @return
      */
     @Override
-    protected Individual getRandBestFromList(List<Individual> list) {
+    protected Individual getRandBestFromList(List<Individual> list, String id) {
 
         int index = chaosGenerator.nextInt(list.size());
-
+        
+        while(list.get(index).id.equals(id)) {
+            index = chaosGenerator.nextInt(list.size());
+        }
+        
         return list.get(index);
 
     }

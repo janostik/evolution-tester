@@ -54,7 +54,7 @@ public class Npb_SHADE extends SHADE {
         List<Individual> tmp = new ArrayList<>();
         Net tmpNet = new Net(this.net);
         Individual tmpInd = null;
-        int highestDegree = -1;
+        double highestDegree = -1;
         tmp.addAll(list);
         
         //while the size of the list is smaller than the demanded
@@ -67,7 +67,7 @@ public class Npb_SHADE extends SHADE {
             }
             else{
                 //cycle through all nodes
-                for(Entry<Individual, Integer> entry : tmpNet.getDegreeMap().entrySet()) {
+                for(Entry<Individual, Double> entry : tmpNet.getDegreeMap().entrySet()) {
 
                     //greater degree of entry
                     if(entry.getValue() >= highestDegree){
@@ -193,7 +193,7 @@ public class Npb_SHADE extends SHADE {
                  */
                 parentArray = new Individual[4];
                 parentArray[0] = x;
-                parentArray[1] = this.getRandBestFromList(pBestArray);
+                parentArray[1] = this.getRandBestFromList(pBestArray, x.id);
                 pbestIndex = this.getPbestIndex(parentArray[1]);
                 pbest = parentArray[1].vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);

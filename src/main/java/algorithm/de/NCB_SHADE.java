@@ -1,11 +1,18 @@
 package algorithm.de;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.chaos.RankedGenerator;
+import model.net.BidirectionalEdge;
+import model.net.Edge;
+import model.net.Net;
 import model.tf.Cec2015;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -16,29 +23,22 @@ import util.random.Random;
 
 /**
  *
- * New approach to probabilities in multi-chaotic framework. There is a cumulative prtobability increment
- * based on how many times the new offspring did not improve its value compared to its parent (original vector).
+ * Pbest array is replaced by Cbest array, which accomodates best individuals in terms of centrality degree
+ * New net had to be added, so the Cbest array is selected from the net from previous generation
  * 
- * Initial value for icrement initInc is 0
- * It cumulates at rate 0.1/NP per one unimprovement
- * Generator count is abreviated as gCount
- * Minimum probability minProb of one generator is bounded to 0.1
- * Maximum probability maxProb of one generator is bounded to 1 - minProb*(gCount-1)
- * 
- * @author wiki on 22/11/2016
+ * @author wiki on 02/03/2017
  */
-public class Mc2_SHADE extends Mc_SHADE {
+public class NCB_SHADE extends N_SHADE {
 
-    protected int gCount;
-    protected double maxProb;
-    protected double minProb = 0.1;
-    protected double initInc = 0;
-    protected double increment;
+    Net new_net = new Net();
     
-    public Mc2_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, List<RankedGenerator> generators) {
-        super(D, MAXFES, f, H, NP, rndGenerator, generators);
-        this.gCount = this.chaosGenerator.size();
-        this.maxProb = 1 - (this.minProb*(this.gCount - 1));
+    public NCB_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int runNo, int funcNo, String path) {
+        super(D, MAXFES, f, H, NP, rndGenerator, runNo, funcNo, path);
+    }
+
+    @Override
+    public String getName() {
+        return "NCB_SHADE";
     }
     
     @Override
@@ -51,19 +51,46 @@ public class Mc2_SHADE extends Mc_SHADE {
         this.Aext = new ArrayList<>();
         this.best = null;
         this.bestHistory = new ArrayList<>();
-        this.increment = this.initInc;
 
         /**
          * Initial population
          */
         initializePopulation();
-
+        
         this.M_F = new double[this.H];
         this.M_CR = new double[this.H];
 
         for (int h = 0; h < this.H; h++) {
             this.M_F[h] = 0.5;
             this.M_CR[h] = 0.5;
+        }
+        
+        PrintWriter pw = null;
+        Individual indi;
+        
+        try {
+            /**
+             * PRINT OUT THE RANKINGS
+             */
+            pw = new PrintWriter(path + "rankings_" + this.funcNo + "_" + this.runNo + ".txt");
+
+            pw.print("{{");
+            
+            for(int idd = 0; idd < this.P.size(); idd++){
+
+                indi = this.P.get(idd);
+                
+                pw.print("{" + indi.id + ", " + this.getPositionFitness(indi) + ", " + this.getPositionCentrality(indi) + ", " + String.format(Locale.US, "%.10f", indi.fitness) + "}");
+                if(idd != this.P.size()-1) {
+                    pw.print(",");
+                }
+
+            }
+            
+            pw.print("}");
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(N_SHADE.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         /**
@@ -81,9 +108,11 @@ public class Mc2_SHADE extends Mc_SHADE {
         int k = 0;
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
+        Individual[] parentArray; //for edge creation
+        Edge edge;
 
         while (true) {
-
+            
             this.G++;
             this.S_F = new ArrayList<>();
             this.S_CR = new ArrayList<>();
@@ -123,25 +152,30 @@ public class Mc2_SHADE extends Mc_SHADE {
                 /**
                  * Parent selection
                  */
-                pbestInd = this.getRandBestFromList(pBestArray,x.id);
-                pbestIndex = this.getPbestIndex(pbestInd);
-                pbest = pbestInd.vector.clone();
+                parentArray = new Individual[4];
+                parentArray[0] = x;
+                parentArray[1] = this.getRandBestFromList(pBestArray, x.id);
+                pbestIndex = this.getPbestIndex(parentArray[1]);
+                pbest = parentArray[1].vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
-                pr1 = this.P.get(rIndexes[0]).vector.clone();
+                parentArray[2] = this.P.get(rIndexes[0]);
+                pr1 = parentArray[2].vector.clone();
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
+                    parentArray[3] = null;
                 } else {
-                    pr2 = this.P.get(rIndexes[1]).vector.clone();
+                    parentArray[3] = this.P.get(rIndexes[1]);
+                    pr2 = parentArray[3].vector.clone();
                 }
                 parents = new ArrayList<>();
                 parents.add(x.vector);
                 parents.add(pbest);
                 parents.add(pr1);
                 parents.add(pr2);
-
+                
                 /**
                  * Mutation
-                 */
+                 */               
                 v = mutation(parents, Fg);
 
                 /**
@@ -157,8 +191,9 @@ public class Mc2_SHADE extends Mc_SHADE {
                 /**
                  * Trial ready
                  */
-                id++;
-                trial = new Individual(String.valueOf(id), u, f.fitness(u));
+//                id++;
+//                trial = new Individual(String.valueOf(id), u, f.fitness(u));
+                trial = new Individual(x.id, u, f.fitness(u));
 
                 /**
                  * Trial is better
@@ -168,19 +203,20 @@ public class Mc2_SHADE extends Mc_SHADE {
                     this.S_F.add(Fg);
                     this.S_CR.add(CRg);
                     this.Aext.add(x);
-                    wS.add(Math.abs(trial.fitness - x.fitness));
-
-                    /**
-                     * Chosen chaos rank update
-                     */
-                    updateRankings();
+                    wS.add(x.fitness - trial.fitness);
+                    
+                    for (int par = 1; par < parentArray.length; par++ ) {
+                        if(parentArray[par] == null){
+                            continue;
+                        }
+                        edge = new BidirectionalEdge(parentArray[par], trial);
+                        edge.iter = G;
+                        new_net.addEdge(edge);
+                    }
                     
                 } else {
-                    this.increment += (0.1/NP);
                     newPop.add(x);
                 }
-                
-                writeChaosProbabilities();
 
                 this.FES++;
                 this.isBest(trial);
@@ -189,7 +225,7 @@ public class Mc2_SHADE extends Mc_SHADE {
                     break;
                 }
 
-                this.Aext = this.resizeAext(this.Aext, this.NP);
+                this.Aext = this.resizeAext(this.Aext, this.Asize);
                 
             }
 
@@ -223,75 +259,76 @@ public class Mc2_SHADE extends Mc_SHADE {
                     k = 0;
                 }
             }
-
+            
             /**
              * Resize of population and archives
              */
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
             
+            pw.print(",{");
+            for(int idd = 0; idd < this.P.size(); idd++){
+                
+                indi = this.P.get(idd);
+                
+                pw.print("{" + indi.id + ", " + this.getPositionFitness(indi) + ", " + this.getPositionCentrality(indi) + ", " + String.format(Locale.US, "%.10f", indi.fitness) + "}");
+                if(idd != this.P.size()-1) {
+                    pw.print(",");
+                }
+
+            }
+            pw.print("}");
+            
+            net = new Net();
+
+            new_net.getEdges().stream().forEach((e) -> {
+                net.addEdge(e);
+            });
+            
+            new_net = new Net();
 
         }
 
+        pw.print("}");
+        pw.close();
+        
         return this.best;
 
     }
     
     /**
-     * Updates probability values for generators.
+     *
+     * @param list
+     * @return
      */
     @Override
-    protected void updateRankings() {
+    protected int getIndexOfBestFromList(List<Individual> list) {
 
-        List<Integer> toDecrease = new ArrayList<>();
+        Individual b = null;
+        int i = 0;
+        int index = -1;
+
+        double ind_degree;
+        double b_degree = -1;
         
-        if(chaosGenerator.get(chosenChaos).rank < this.maxProb){
-            double rest, minDecr, ableCount, diff, sum = 0;
-            
-            chaosGenerator.get(chosenChaos).rank += this.increment;
-            if(chaosGenerator.get(chosenChaos).rank > this.maxProb) {
-                chaosGenerator.get(chosenChaos).rank = this.maxProb;
-            }
-            
-            sum = chaosGenerator.stream().map((r) -> r.rank).reduce(sum, (accumulator, _item) -> accumulator + _item);
-            
-            rest = sum - 1;
-            ableCount = (gCount - 1);
-            minDecr = rest / ableCount;
-            
-            
-            for(int i = 0; i < gCount; i++) {
-                
-                if(i == chosenChaos) {
-                    continue;
-                }
-                
-                if((chaosGenerator.get(i).rank - minDecr) < minProb) {
-                    ableCount -= 1;
-                    diff = chaosGenerator.get(i).rank - minProb;
-                    chaosGenerator.get(i).rank = minProb;
-                    rest -= diff;
-                } else {
-                    toDecrease.add(i);
-                }
-                
-            }
-            
-            minDecr = rest / ableCount;
-            
-            for(Integer index : toDecrease) {
-                chaosGenerator.get(index).rank -= minDecr;
-            }
+        for (Individual ind : list) {
 
+            ind_degree = this.net.getDegreeMap().get(ind) == null ? 0 : this.net.getDegreeMap().get(ind);
+
+            if (b == null) {
+                b = ind;
+                b_degree = this.net.getDegreeMap().get(b) == null ? 0 : this.net.getDegreeMap().get(b);
+                index = i;
+            } else if (ind_degree > b_degree) {
+                b = ind;
+                b_degree = this.net.getDegreeMap().get(b) == null ? 0 : this.net.getDegreeMap().get(b);
+                index = i;
+            }
+            i++;
         }
 
-        this.increment = this.initInc;
+        return index;
 
-    }
-    
-    @Override
-    public String getName() {
-        return "Mc2_SHADE";
     }
     
     /**
@@ -301,72 +338,34 @@ public class Mc2_SHADE extends Mc_SHADE {
         
         int dimension = 10;
         int NP = 100;
-        int MAXFES = 1000 * NP;
-        int funcNumber = 5;
+        int MAXFES = dimension * 10_000;
+        int funcNumber = 3;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 10;
-        util.random.Random generator;
+        util.random.Random generator = new util.random.UniformRandom();
+        String path = "E:\\results\\CEC2015-NCB_SHADE-10\\";
 
-        Mc2_SHADE shade;
-        List<RankedGenerator> gens;
+        NCB_SHADE shade;
 
-        int runs = 30;
+        int runs = 10;
         double[] bestArray = new double[runs];
-        int i, best;
-        double min;
 
         for (int k = 0; k < runs; k++) {
-            
-            generator = new util.random.UniformRandom();
-            gens = RankedGenerator.getAllChaosGeneratorsV4();
-            shade = new Mc2_SHADE(dimension, MAXFES, tf, H, NP, generator, gens);
+
+            //(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int runNo, int funcNo, String path)
+            shade = new NCB_SHADE(dimension, MAXFES, tf, H, NP, generator, k, funcNumber, path);
 
             shade.run();
-            
-            best = 0;
-            i = 0;
-            min = Double.MAX_VALUE;
-
-//            PrintWriter writer;
-//
-//            try {
-//                writer = new PrintWriter("CEC2015-" + funcNumber + "-shade" + k + ".txt", "UTF-8");
-//
-//                writer.print("{");
-//
-//                for (int i = 0; i < shade.getBestHistory().size(); i++) {
-//
-//                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
-//
-//                    if (i != shade.getBestHistory().size() - 1) {
-//                        writer.print(",");
-//                    }
-//
-//                }
-//
-//                writer.print("}");
-//
-//                writer.close();
-//
-//            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-//                Logger.getLogger(ShaDE.class.getName()).log(Level.SEVERE, null, ex);
-//            }
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());
             System.out.println(Arrays.toString(shade.getBest().vector));
-
-            shade.printOutRankings();
-            
-            for(Individual ind : ((Mc2_SHADE)shade).getBestHistory()){
-                i++;
-                if(ind.fitness < min){
-                    min = ind.fitness;
-                    best = i;
-                }
-            }
-            System.out.println("Best solution found in " + best + " CFE");
-            
+//            
+//            System.out.println("-------------------");
+//            ((NLfv_SHADE)shade).net.getDegreeMap().entrySet().stream().forEach((entry) -> {
+//                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
+//            });
+//            System.out.println("-------------------");
         }
 
         System.out.println("=================================");
@@ -379,4 +378,6 @@ public class Mc2_SHADE extends Mc_SHADE {
         
     }
 
+    
+    
 }

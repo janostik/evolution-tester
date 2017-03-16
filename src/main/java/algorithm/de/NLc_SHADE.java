@@ -122,7 +122,7 @@ public class NLc_SHADE extends Lfv_SHADE {
                  */
                 parentArray = new Individual[4];
                 parentArray[0] = x;
-                parentArray[1] = this.getRandBestFromList(pBestArray);
+                parentArray[1] = this.getRandBestFromList(pBestArray, x.id);
                 pbestIndex = this.getPbestIndex(parentArray[1]);
                 pbest = parentArray[1].vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);

@@ -111,7 +111,7 @@ public class SLfv_SHADE extends Lfv_SHADE {
                 /**
                  * Parent selection
                  */
-                pbestInd = this.getRandBestFromList(pBestArray);
+                pbestInd = this.getRandBestFromList(pBestArray, x.id);
                 pbestIndex = this.getPbestIndex(pbestInd);
                 pbest = pbestInd.vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);

@@ -1,13 +1,11 @@
 
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
-import java.util.Locale;
-import org.apache.commons.math3.stat.descriptive.moment.Mean;
-import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
-import org.apache.commons.math3.stat.descriptive.rank.Max;
-import org.apache.commons.math3.stat.descriptive.rank.Min;
-import util.random.IkedaRandom;
-import util.random.NormalRandom;
+import java.util.Map;
+import model.Individual;
+import model.net.Edge;
+import model.net.Net;
+import model.net.UnidirectionalEdge;
 
 /**
  *
@@ -19,6 +17,32 @@ public class MainForTests {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
+        
+        Net network = new Net();
+        Individual one, two, three, four;
+        Edge edge;
+        
+        one = new Individual("1", new double[10], 0);
+        two = new Individual("2", new double[10], 0);
+        three = new Individual("3", new double[10], 0);
+        four = new Individual("4", new double[10], 0);
+        
+        edge = new UnidirectionalEdge(one, one, 0.3);
+        network.addEdge(edge);
+        edge = new UnidirectionalEdge(two, one, 0.2);
+        network.addEdge(edge);
+        edge = new UnidirectionalEdge(three, one, 0.4);
+        network.addEdge(edge);
+        edge = new UnidirectionalEdge(four, one, 0.1);
+        network.addEdge(edge);
+        edge = new UnidirectionalEdge(one, two, 0.8);
+        network.addEdge(edge);
+        
+        Map<Individual, Double> map = network.getDegreeMap();
+
+        System.out.println("Oh");
+        
+        
         
 //        PrintWriter pw = new PrintWriter("histogram_data.txt");
 //        
@@ -196,33 +220,33 @@ public class MainForTests {
 //                    System.out.println(x);
 //            }
 //        }
-
-        
-        util.random.IkedaRandom rndGen = new IkedaRandom();
-        int count = 5000;
-        double rnd;
-        
-        double[] arr = new double[count];
-        
-        System.out.println("{");
-        
-        for(int i =0; i < count; i++) {
-            rnd = rndGen.nextDouble();
-            
-            System.out.print(String.format(Locale.US, "%.10f", rnd));
-            if(i < count-1) {
-              System.out.print(",");  
-            }
-            
-            arr[i] = rnd;
-        }
-        
-        System.out.println("\n}");
-        
-        System.out.println("Mean value: " + new Mean().evaluate(arr));
-        System.out.println("Min value: " + new Min().evaluate(arr));
-        System.out.println("Max value: " + new Max().evaluate(arr));
-        System.out.println("STD value: " + new StandardDeviation().evaluate(arr));
+//
+//        
+//        util.random.IkedaRandom rndGen = new IkedaRandom();
+//        int count = 5000;
+//        double rnd;
+//        
+//        double[] arr = new double[count];
+//        
+//        System.out.println("{");
+//        
+//        for(int i =0; i < count; i++) {
+//            rnd = rndGen.nextDouble();
+//            
+//            System.out.print(String.format(Locale.US, "%.10f", rnd));
+//            if(i < count-1) {
+//              System.out.print(",");  
+//            }
+//            
+//            arr[i] = rnd;
+//        }
+//        
+//        System.out.println("\n}");
+//        
+//        System.out.println("Mean value: " + new Mean().evaluate(arr));
+//        System.out.println("Min value: " + new Min().evaluate(arr));
+//        System.out.println("Max value: " + new Max().evaluate(arr));
+//        System.out.println("STD value: " + new StandardDeviation().evaluate(arr));
         
     
     }

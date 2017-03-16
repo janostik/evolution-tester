@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -91,20 +92,22 @@ public class DErand1bin implements Algorithm {
                 /**
                  * Mutation
                  */
-                u = mutation(parrentArray, F);
+                v = mutation(parrentArray, F);
 
                 /**
                  * Crossover
                  */
-                v = crossover(x.vector, u, CR);
+                u = crossover(x.vector, v, CR);
 
+                /**
+                 * Constrain check
+                 */
+                u = constrainCheck(u, x.vector);
+                
                 /**
                  * Trial
                  */
-                trial = makeIndividualFromVector(v);
-                if (checkFES()) {
-                    return best;
-                }
+                trial = new Individual(x.id, u, tf.fitness(u));
 
                 /**
                  * New generation building
@@ -114,14 +117,48 @@ public class DErand1bin implements Algorithm {
                 } else {
                     newPop.add(x);
                 }
+                
+                this.FES++;
+                this.isBest(trial);
+                this.writeHistory();
+                if (checkFES()) {
+                    break;
+                }
 
+            }
+            
+            if (checkFES()) {
+                break;
             }
 
             P = newPop;
 
         }
+        
+        return best;
     }
 
+    /**
+     * 
+     * @param u
+     * @param x
+     * @return 
+     */
+    protected double[] constrainCheck(double[] u, double[] x){
+        /**
+         * Constrain check
+         */
+        for (int d = 0; d < this.D; d++) {
+            if (u[d] < this.tf.min(this.D)) {
+                u[d] = (this.tf.min(this.D) + x[d]) / 2.0;
+            } else if (u[d] > this.tf.max(this.D)) {
+                u[d] = (this.tf.max(this.D) + x[d]) / 2.0;
+            }
+        }
+        
+        return u;
+    }
+    
     /**
      *
      * @param x
@@ -186,62 +223,64 @@ public class DErand1bin implements Algorithm {
      */
     protected Individual[] getParents(int xIndex) {
 
-        Individual[] parrentArray = new Individual[4];
-        List<Integer> indexes = new ArrayList<>();
-        int index;
+        int r1, r2, r3;
 
-        for (int i = 0; i < NP; i++) {
-            if (i != xIndex) {
-                indexes.add(i);
-            }
+        r1 = rndGenerator.nextInt(NP);
+        
+        while(r1 == xIndex){
+            r1 = rndGenerator.nextInt(NP);
         }
+        
+        r2 = rndGenerator.nextInt(NP);
+
+        while (r2 == r1 || r2 == xIndex) {
+            r2 = rndGenerator.nextInt(NP);
+        }
+        
+        r3 = rndGenerator.nextInt(NP);
+
+        while (r3 == r2 || r3 == r1 || r3 == xIndex) {
+            r3 = rndGenerator.nextInt(NP);
+        }
+        
+        Individual[] parrentArray = new Individual[4];
 
         parrentArray[0] = P.get(xIndex);
-
-        /**
-         * a
-         */
-        index = rndGenerator.nextInt(indexes.size());
-        parrentArray[1] = P.get(indexes.get(index));
-
-        indexes.remove(index);
-
-        /**
-         * b
-         */
-        index = rndGenerator.nextInt(indexes.size());
-        parrentArray[2] = P.get(indexes.get(index));
-
-        indexes.remove(index);
-
-        /**
-         * c
-         */
-        index = rndGenerator.nextInt(indexes.size());
-        parrentArray[3] = P.get(indexes.get(index));
+        parrentArray[1] = P.get(r1);
+        parrentArray[2] = P.get(r2);
+        parrentArray[3] = P.get(r3);
 
         return parrentArray;
 
     }
 
     /**
-     *
+     * Creation of initial population.
      */
-    protected void initializePopulation() {
+    protected void initializePopulation(){
+        
+        /**
+         * Initial population
+         */
+        id = 0;
+        double[] features = new double[this.D];
+        this.P = new ArrayList<>();
+        Individual ind;
 
-        P = new ArrayList<>();
-        double[] vector;
-
-        for (int i = 0; i < NP; i++) {
-
-            if (checkFES()) {
-                return;
-            }
-            vector = tf.generateTrial(D);
-            P.add(makeIndividualFromVector(vector));
-            
+        for (int i = 0; i < this.NP; i++) {
+            id = i;
+            features = this.tf.generateTrial(this.D).clone();
+//            features = new double[this.D];
+//            for(int j = 0; j < this.D; j++){
+//                features[j] = this.rndGenerator.nextDouble(this.f.min(this.D), this.f.max(this.D));
+//            }
+            ind = new Individual(String.valueOf(id), features, this.tf.fitness(features));
+            this.isBest(ind);
+            this.P.add(ind);
+            this.FES++;
+            this.writeHistory();
         }
-
+        
     }
 
     /**
@@ -692,16 +731,72 @@ public class DErand1bin implements Algorithm {
     
     public static void main(String[] args) throws Exception {
     
-        double prec = 0;
-        int min = 1, max = 128;
-        
-        for(int i = min; i <= max; i++) {
+        int dimension = 10;
+        int NP = 100;
+        int MAXFES = 100 * NP;
+        int funcNumber = 5;
+        TestFunction tf = new Schwefel();
+        util.random.Random generator = new util.random.UniformRandom();
+        double f = 0.5, cr = 0.8;
+        Net net;
+
+        Algorithm de;
+
+        int runs = 10;
+        double[] bestArray = new double[runs];
+        PrintWriter pw;
+
+        for (int k = 0; k < runs; k++) {
+
+            de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
+
+            de.run();
             
-            prec += runOneIris(i);
+//            System.out.println(((APE_DErand1bin)de).G);
+//            System.out.println("Node");
+//            if(((APE_DErand1bin) de).net.getNodeWithHighestDegree() != null) {
+//                System.out.println("ID: " + ((APE_DErand1bin) de).net.getNodeWithHighestDegree().id);
+//                System.out.println("Fitness: " + ((APE_DErand1bin) de).net.getNodeWithHighestDegree().fitness);
+//                System.out.println("Degree: " + ((APE_DErand1bin) de).net.getHighestDegree());
+//            }
+//            else {
+//                System.out.println("No edges in the net.");
+//            }
+
+            bestArray[k] = de.getBest().fitness - tf.optimum();
+            System.out.println(de.getBest().fitness - tf.optimum());
+            
+           /**
+            * NET manipulating
+            */
+
+//           pw = new PrintWriter("/Users/adam/Documents/RomanData/DErand/net_50iter_" + tf.name() + "_" + chaos.toString() + ".csv");
+//
+//           pw.println("source,target,iter;directed");
+//           
+//           net = ((NetLDErand1bin) de).net;
+//
+//           for(Edge edge : net.getEdges()){
+//               
+//               pw.println(edge.getSource().id + "," + edge.getTarget().id + "," + edge.iter + ",TRUE");
+//               
+//           }
+//
+//           pw.close();
             
         }
         
-        System.out.println("Overall precision: " + prec/max*100 + "%");
+        
+        
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
         
     }
+
 }

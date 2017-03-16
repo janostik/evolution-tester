@@ -80,7 +80,7 @@ public class NLfv_SHADE extends Lfv_SHADE {
         Individual[] parentArray; //for edge creation
         Edge edge;
         PrintWriter pw;
-        String directory = "E:\\results\\NETWORK\\L-SHADE\\15\\";
+        String directory = "E:\\results\\NETWORK\\SHADE\\3\\";
 
         while (true) {
 
@@ -126,7 +126,7 @@ public class NLfv_SHADE extends Lfv_SHADE {
                  */
                 parentArray = new Individual[4];
                 parentArray[0] = x;
-                parentArray[1] = this.getRandBestFromList(pBestArray);
+                parentArray[1] = this.getRandBestFromList(pBestArray, x.id);
                 pbestIndex = this.getPbestIndex(parentArray[1]);
                 pbest = parentArray[1].vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
@@ -273,10 +273,10 @@ public class NLfv_SHADE extends Lfv_SHADE {
     public static void main(String[] args) throws Exception {
         
         int dimension = 10;
-        int NP = 1000;
+        int NP = 100;
         int minNP = 100;
-        int MAXFES = 100_000;
-        int funcNumber = 15;
+        int MAXFES = 10000;
+        int funcNumber = 3;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 10;
         util.random.Random generator = new util.random.UniformRandom();

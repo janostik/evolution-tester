@@ -13,7 +13,7 @@ import model.Individual;
  */
 public class NetworkIndividual extends Individual implements Comparable {
     
-    public int degree;
+    public double degree;
     public int position_centrality;
     public int position_fitness;
 
@@ -27,7 +27,7 @@ public class NetworkIndividual extends Individual implements Comparable {
         this.position_fitness = position_fitness;
     }
 
-    public NetworkIndividual(Individual individual, int degree, int position_centrality, int position_fitness) {
+    public NetworkIndividual(Individual individual, double degree, int position_centrality, int position_fitness) {
         super(individual);
         this.degree = degree;
         this.position_centrality = position_centrality;

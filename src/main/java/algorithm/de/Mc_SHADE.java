@@ -165,7 +165,7 @@ public class Mc_SHADE extends SHADE {
                 /**
                  * Parent selection
                  */
-                pbestInd = this.getRandBestFromList(pBestArray);
+                pbestInd = this.getRandBestFromList(pBestArray, x.id);
                 pbestIndex = this.getPbestIndex(pbestInd);
                 pbest = pbestInd.vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
@@ -284,10 +284,14 @@ public class Mc_SHADE extends SHADE {
      * @return
      */
     @Override
-    protected Individual getRandBestFromList(List<Individual> list) {
+    protected Individual getRandBestFromList(List<Individual> list, String id) {
 
         int index = chaosGenerator.get(chosenChaos).chaos.nextInt(list.size());
-
+        
+        while(list.get(index).id.equals(id)) {
+            index = chaosGenerator.get(chosenChaos).chaos.nextInt(list.size());
+        }
+        
         return list.get(index);
 
     }

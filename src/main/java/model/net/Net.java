@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class Net {
 
     List<Edge> edges = new ArrayList<>();
-    Map<Individual, Integer> degreeMap = new HashMap<>();
+    Map<Individual, Double> degreeMap = new HashMap<>();
 
     public Net() {
     }
@@ -26,28 +26,28 @@ public class Net {
     }
 
     public void addEdge(Edge edge) {
-        int v;
+        double v;
         edges.add(edge);
         if(edge.getClass().equals(UnidirectionalEdge.class)){
 //            degreeMap.put(edge.source, degreeMap.getOrDefault(edge.source, 0) + 1);
-            v = degreeMap.getOrDefault(edge.source, 0) + 1;
+            v = degreeMap.getOrDefault(edge.source, 0.0) + edge.getWeight();
             degreeMap.remove(edge.source);
             degreeMap.put(edge.source, v);
         }
         else {
 //            degreeMap.put(edge.source, degreeMap.getOrDefault(edge.source, 0) + 1);
 //            degreeMap.put(edge.target, degreeMap.getOrDefault(edge.target, 0) + 1);
-            v = degreeMap.getOrDefault(edge.target, 0) + 1;
+            v = degreeMap.getOrDefault(edge.target, 0.0) + edge.getWeight();
             degreeMap.remove(edge.target);
             degreeMap.put(edge.target, v);
-            v = degreeMap.getOrDefault(edge.source, 0) + 1;
+            v = degreeMap.getOrDefault(edge.source, 0.0) + edge.getWeight();
             degreeMap.remove(edge.source);
             degreeMap.put(edge.source, v);
         }
     }
 
-    public int getHighestDegree() {
-        Integer val = MapUtil.getHighestValue(degreeMap);
+    public double getHighestDegree() {
+        Double val = MapUtil.getHighestValue(degreeMap);
         return val == null ? 0 : val;
     }
 
@@ -55,8 +55,8 @@ public class Net {
         return MapUtil.getKeyForMaxValue(degreeMap);
     }
     
-    public int getLowestDegree() {
-        Integer val = MapUtil.getLowestValue(degreeMap);
+    public double getLowestDegree() {
+        Double val = MapUtil.getLowestValue(degreeMap);
         return val == null ? 0 : val;
     }
     
@@ -83,7 +83,7 @@ public class Net {
         return edges;
     }
 
-    public Map<Individual, Integer> getDegreeMap() {
+    public Map<Individual, Double> getDegreeMap() {
         return degreeMap;
     }
 

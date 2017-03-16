@@ -154,7 +154,7 @@ public class A_SHADE extends SHADE {
                 /**
                  * Parent selection
                  */
-                pbestInd = (AgingIndividual) this.getRandBestFromList(pBestArray);
+                pbestInd = (AgingIndividual) this.getRandBestFromList(pBestArray, x.id);
                 pbestIndex = this.getPbestIndex(pbestInd);
                 pbest = pbestInd.vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);

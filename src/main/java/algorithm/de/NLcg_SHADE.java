@@ -134,7 +134,7 @@ public class NLcg_SHADE extends NLc_SHADE {
                  */
                 parentArray = new Individual[4];
                 parentArray[0] = x;
-                parentArray[1] = this.getRandBestFromList(pBestArray);
+                parentArray[1] = this.getRandBestFromList(pBestArray, x.id);
                 pbestIndex = this.getPbestIndex(parentArray[1]);
                 pbest = parentArray[1].vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
@@ -355,10 +355,10 @@ public class NLcg_SHADE extends NLc_SHADE {
      */
     protected int getPositionCentrality(Individual ind) {
         
-        Map<Individual, Integer> degMap = this.net.getDegreeMap();
+        Map<Individual, Double> degMap = this.net.getDegreeMap();
         int position = 0;
         
-        int ind_degree = this.net.getDegreeMap().get(ind) == null ? 0 : this.net.getDegreeMap().get(ind);
+        double ind_degree = this.net.getDegreeMap().get(ind) == null ? 0 : this.net.getDegreeMap().get(ind);
         
         position = degMap.entrySet().stream().filter((entry) -> (entry.getValue() < ind_degree)).map((_item) -> 1).reduce(position, Integer::sum);
         

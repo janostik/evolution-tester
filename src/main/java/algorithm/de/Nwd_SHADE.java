@@ -1,14 +1,21 @@
 package algorithm.de;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.chaos.RankedGenerator;
 import model.net.BidirectionalEdge;
 import model.net.Edge;
-import model.tf.Schwefel;
+import model.net.Net;
+import model.net.UnidirectionalEdge;
+import model.tf.Cec2015;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -18,118 +25,33 @@ import util.random.Random;
 
 /**
  *
- * SHADE algorithm with linear decrease of population size by the centrality rank N(0.48, 0.082)
- * and Multi-Chaotic parent selection.
+ * Network is created during SHADE run and is directed and weighted
+ * CRr stand for real xover
  * 
- * @author wiki on 13/05/2016
+ * w_i = (1-CRr) + CRr(1-F)
+ * w_r1 = CRr*F
+ * w_r2 = -CRr*F
+ * w_pbest = CRr*F
+ * 
+ * TODO : Pbest array is replaced by Cbest array, which accomodates best individuals in terms of centrality degree
+ * New net had to be added, so the Cbest array is selected from the net from previous generation
+ * 
+ * @author wiki on 02/03/2017
  */
-public class McNLcg_SHADE extends NLcg_SHADE {
+public class Nwd_SHADE extends N_SHADE {
 
-    List<RankedGenerator> chaosGenerator;
-    List<Double[]> chaosProbabilities = new ArrayList<>();
-    int chosenChaos;
+    Net new_net = new Net();
+    double CRr;
     
-    public McNLcg_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
-        super(D, MAXFES, f, H, NP, rndGenerator, minPopSize);
-        chaosGenerator = RankedGenerator.getAllChaosGeneratorsV1();
+    public Nwd_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int runNo, int funcNo, String path) {
+        super(D, MAXFES, f, H, NP, rndGenerator, runNo, funcNo, path);
     }
-    
-    private void writeChaosProbabilities(){
-        
-        Double[] probs = new Double[this.chaosGenerator.size()];
-        
-        for(int i = 0; i < this.chaosGenerator.size();i++){
-            probs[i] = this.chaosGenerator.get(i).rank;
-        }
-        
-        this.chaosProbabilities.add(probs);
-        
-    }
-    
-    /**
-     * Creation of initial population.
-     * Overrided because of chaos probabilities history.
-     */
+
     @Override
-    protected void initializePopulation(){
-        
-        /**
-         * Initial population
-         */
-        id = 0;
-        double[] features;
-        this.P = new ArrayList<>();
-        Individual ind;
-
-        for (int i = 0; i < this.NP; i++) {
-            id = i;
-            features = this.f.generateTrial(this.D).clone();
-            ind = new Individual(String.valueOf(id), features, this.f.fitness(features));
-            this.isBest(ind);
-            this.P.add(ind);
-            this.FES++;
-            this.writeHistory();
-            this.writeChaosProbabilities();
-        }
-        
+    public String getName() {
+        return "Nwd_SHADE";
     }
     
-    /**
-     *
-     * @param list
-     * @return
-     */
-    @Override
-    protected Individual getRandBestFromList(List<Individual> list, String id) {
-
-        int index = chaosGenerator.get(chosenChaos).chaos.nextInt(list.size());
-        
-        while(list.get(index).id.equals(id)) {
-            index = chaosGenerator.get(chosenChaos).chaos.nextInt(list.size());
-        }
-        
-        return list.get(index);
-
-    }
-    
-    /**
-     * Updates rank values for chaos generators.
-     */
-    protected void updateRankings() {
-
-        if(chaosGenerator.get(chosenChaos).rank < 0.6){
-            double rankSum = 0, difference;
-
-            rankSum = chaosGenerator.stream().map((chaos) -> chaos.rank).reduce(rankSum, (accumulator, _item) -> accumulator + _item);
-
-            difference = rankSum / 100.0;
-            chaosGenerator.get(chosenChaos).rank += difference;
-
-            for (RankedGenerator chaos : chaosGenerator) {
-                chaos.rank = chaos.rank / (rankSum + difference);
-            }
-        }
-
-    }
-    
-    /**
-     * 
-     */
-    public void printOutRankings() {
-
-        System.out.println("Ranking");
-        chaosGenerator.stream().forEach((chaos) -> {
-            System.out.print(chaos.rank + " ");
-        });
-        System.out.println("");
-
-    }
-    
-    /**
-     * MAIN METHOD
-     * 
-     * @return 
-     */
     @Override
     public Individual run() {
 
@@ -145,13 +67,41 @@ public class McNLcg_SHADE extends NLcg_SHADE {
          * Initial population
          */
         initializePopulation();
-
+        
         this.M_F = new double[this.H];
         this.M_CR = new double[this.H];
 
         for (int h = 0; h < this.H; h++) {
             this.M_F[h] = 0.5;
             this.M_CR[h] = 0.5;
+        }
+        
+        PrintWriter pw = null;
+        Individual indi;
+        
+        try {
+            /**
+             * PRINT OUT THE RANKINGS
+             */
+            pw = new PrintWriter(path + "rankings_" + this.funcNo + "_" + this.runNo + ".txt");
+
+            pw.print("{{");
+            
+            for(int idd = 0; idd < this.P.size(); idd++){
+
+                indi = this.P.get(idd);
+                
+                pw.print("{" + indi.id + ", " + this.getPositionFitness(indi) + ", " + this.getPositionCentrality(indi) + ", " + String.format(Locale.US, "%.10f", indi.fitness) + ", " + this.getActiveNode(indi) + "}");
+                if(idd != this.P.size()-1) {
+                    pw.print(",");
+                }
+
+            }
+            
+            pw.print("}");
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(N_SHADE.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         /**
@@ -163,7 +113,7 @@ public class McNLcg_SHADE extends NLcg_SHADE {
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
         Individual trial;
-        Individual x;
+        Individual x, pbestInd;
         List<Double> wS;
         double wSsum, meanS_F1, meanS_F2, meanS_CR;
         int k = 0;
@@ -171,19 +121,11 @@ public class McNLcg_SHADE extends NLcg_SHADE {
         List<double[]> parents;
         Individual[] parentArray; //for edge creation
         Edge edge;
+        double w_i, w_pbest, w_r1, w_r2;
 
         while (true) {
-
+            
             this.G++;
-            
-//            if(G == 3 || G == 100) {
-//                try {
-//                    this.printOutNetwork(G);
-//                } catch (FileNotFoundException ex) {
-//                    Logger.getLogger(NLcg_SHADE.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//            }
-            
             this.S_F = new ArrayList<>();
             this.S_CR = new ArrayList<>();
             wS = new ArrayList<>();
@@ -201,7 +143,6 @@ public class McNLcg_SHADE extends NLcg_SHADE {
                 if (Fg > 1) {
                     Fg = 1;
                 }
-                
 
                 CRg = OtherDistributionsUtil.normal(this.M_CR[r], 0.1);
                 if (CRg > 1) {
@@ -274,28 +215,37 @@ public class McNLcg_SHADE extends NLcg_SHADE {
                     this.S_F.add(Fg);
                     this.S_CR.add(CRg);
                     this.Aext.add(x);
-                    wS.add(Math.abs(trial.fitness - x.fitness));
+                    wS.add(x.fitness - trial.fitness);
                     
-                    for (int par = 1; par < parentArray.length; par++ ) {
-                        if(parentArray[par] == null){
-                            continue;
-                        }
-                        edge = new BidirectionalEdge(parentArray[par], trial);
-                        edge.iter = G;
-                        net.addEdge(edge);
-                    }
+                    // w_i = (1-CRr) + CRr(1+F)/(1+4F)
+                    // w_r1 = w_r2 = w_pbest = CRr*F/(1+2F)
                     
-                    /**
-                     * Chosen chaos rank update
-                     */
-                    updateRankings();
+                    w_i = (1-this.CRr) + this.CRr*(1-Fg);
+                    w_pbest = this.CRr*Fg;
+                    w_r1 = this.CRr*Fg;
+                    w_r2 = -this.CRr*Fg;
+                    
+                    //x_i edge
+                    edge = new UnidirectionalEdge(parentArray[0], trial, w_i);
+                    edge.iter = G;
+                    new_net.addEdge(edge);
+                    //x_pbest edge
+                    edge = new UnidirectionalEdge(parentArray[1], trial, w_pbest);
+                    edge.iter = G;
+                    new_net.addEdge(edge);
+                    //x_r1 edge
+                    edge = new UnidirectionalEdge(parentArray[2], trial, w_r1);
+                    edge.iter = G;
+                    new_net.addEdge(edge);
+                    //x_r2 edge
+                    edge = new UnidirectionalEdge(parentArray[3], trial, w_r2);
+                    edge.iter = G;
+                    new_net.addEdge(edge);
                     
                 } else {
                     newPop.add(x);
                 }
 
-                this.writeChaosProbabilities();
-                
                 this.FES++;
                 this.isBest(trial);
                 this.writeHistory();
@@ -303,7 +253,7 @@ public class McNLcg_SHADE extends NLcg_SHADE {
                     break;
                 }
 
-                this.Aext = this.resizeAext(this.Aext, this.NP);
+                this.Aext = this.resizeAext(this.Aext, this.Asize);
                 
             }
 
@@ -343,104 +293,151 @@ public class McNLcg_SHADE extends NLcg_SHADE {
              */
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
-            NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
             
-            /**
-             * Print out of the nodes and their centrality
-             */
-//            System.out.println("-------------------");
-//            net.getDegreeMap().entrySet().stream().forEach((entry) -> {
-//                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
-//            });
-//            System.out.println("-------------------");
+            net = new Net();
+
+            new_net.getEdges().stream().forEach((e) -> {
+                net.addEdge(e);
+            });
             
-            P = this.resizePop(P, NP);
+            new_net = new Net();
             
-            /**
-             * Print out of the nodes and their centrality
-             */
-//            System.out.println("-------------------");
-//            net.getDegreeMap().entrySet().stream().forEach((entry) -> {
-//                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
-//            });
-//            System.out.println("-------------------");
+            pw.print(",{");
+            for(int idd = 0; idd < this.P.size(); idd++){
+                
+                indi = this.P.get(idd);
+                
+                pw.print("{" + indi.id + ", " + this.getPositionFitness(indi) + ", " + this.getPositionCentrality(indi) + ", " + String.format(Locale.US, "%.10f", indi.fitness) + ", " + this.getActiveNode(indi) + "}");
+                if(idd != this.P.size()-1) {
+                    pw.print(",");
+                }
+
+            }
+            pw.print("}");
 
         }
 
+        pw.print("}");
+        pw.close();
+        
         return this.best;
 
     }
     
-    @Override
-    public String getName() {
-        return "McNLcg_SHADE";
+    /**
+     * 
+     * @param ind
+     * @return 
+     */
+    protected int getActiveNode(Individual ind) {
+
+        return this.net.getDegreeMap().get(ind) == null ? 0 : 1;
+        
     }
+    
+    /**
+     * 
+     * @param CR
+     * @param v
+     * @param x
+     * @return 
+     */
+    @Override
+    protected double[] crossover(double CR, double[] v, double[] x){
+        
+        int CRcount = 0;
+        
+        /**
+         * Crossover
+         */
+        double[] u = new double[this.D];
+        int jrand = rndGenerator.nextInt(this.D);
+
+        for (int j = 0; j < this.D; j++) {
+            if (getRandomCR() <= CR || j == jrand) {
+                u[j] = v[j];
+                CRcount++;
+            } else {
+                u[j] = x[j];
+            }
+        }
+        
+        this.CRr = (double) CRcount / (double) this.D;
+        
+        return u;
+        
+    }
+    
+    /**
+     *
+     * @param list
+     * @return
+     */
+//    @Override
+//    protected int getIndexOfBestFromList(List<Individual> list) {
+//
+//        Individual b = null;
+//        int i = 0;
+//        int index = -1;
+//
+//        double ind_degree;
+//        double b_degree = -1;
+//        
+//        for (Individual ind : list) {
+//
+//            ind_degree = this.net.getDegreeMap().get(ind) == null ? 0 : this.net.getDegreeMap().get(ind);
+//
+//            if (b == null) {
+//                b = ind;
+//                b_degree = this.net.getDegreeMap().get(b) == null ? 0 : this.net.getDegreeMap().get(b);
+//                index = i;
+//            } else if (ind_degree > b_degree) {
+//                b = ind;
+//                b_degree = this.net.getDegreeMap().get(b) == null ? 0 : this.net.getDegreeMap().get(b);
+//                index = i;
+//            }
+//            i++;
+//        }
+//
+//        return index;
+//
+//    }
     
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         
         int dimension = 10;
         int NP = 100;
-        int minNP = 20;
-        int MAXFES = 100 * NP;
-        int funcNumber = 14;
-        TestFunction tf = new Schwefel();
+        int MAXFES = dimension * 10_000;
+        int funcNumber = 1;
+        TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 10;
         util.random.Random generator = new util.random.UniformRandom();
+        String path = "E:\\results\\CEC2015-Nwd_SHADE-10\\";
 
-        McNLcg_SHADE shade;
+        Nwd_SHADE shade;
 
         int runs = 10;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new McNLcg_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
+            //(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int runNo, int funcNo, String path)
+            shade = new Nwd_SHADE(dimension, MAXFES, tf, H, NP, generator, k, funcNumber, path);
 
             shade.run();
-            
-//            try {
-//                shade.printOutNetwork(200);
-//            } catch (FileNotFoundException ex) {
-//                Logger.getLogger(NLcg_SHADE.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-
-//            PrintWriter writer;
-//
-//            try {
-//                writer = new PrintWriter("CEC2015-" + funcNumber + "-shade" + k + ".txt", "UTF-8");
-//
-//                writer.print("{");
-//
-//                for (int i = 0; i < shade.getBestHistory().size(); i++) {
-//
-//                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
-//
-//                    if (i != shade.getBestHistory().size() - 1) {
-//                        writer.print(",");
-//                    }
-//
-//                }
-//
-//                writer.print("}");
-//
-//                writer.close();
-//
-//            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-//                Logger.getLogger(ShaDE.class.getName()).log(Level.SEVERE, null, ex);
-//            }
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());
             System.out.println(Arrays.toString(shade.getBest().vector));
-            
-            System.out.println("-------------------");
-            ((McNLcg_SHADE)shade).net.getDegreeMap().entrySet().stream().forEach((entry) -> {
-                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
-            });
-            System.out.println("-------------------");
+//            
+//            System.out.println("-------------------");
+//            ((NLfv_SHADE)shade).net.getDegreeMap().entrySet().stream().forEach((entry) -> {
+//                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
+//            });
+//            System.out.println("-------------------");
         }
 
         System.out.println("=================================");
@@ -452,5 +449,7 @@ public class McNLcg_SHADE extends NLcg_SHADE {
         System.out.println("=================================");
         
     }
+
+    
     
 }

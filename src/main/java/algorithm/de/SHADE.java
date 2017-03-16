@@ -140,7 +140,7 @@ public class SHADE implements Algorithm {
                 /**
                  * Parent selection
                  */
-                pbestInd = this.getRandBestFromList(pBestArray);
+                pbestInd = this.getRandBestFromList(pBestArray, x.id);
                 pbestIndex = this.getPbestIndex(pbestInd);
                 pbest = pbestInd.vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
@@ -493,11 +493,16 @@ public class SHADE implements Algorithm {
     /**
      *
      * @param list
+     * @param id
      * @return
      */
-    protected Individual getRandBestFromList(List<Individual> list) {
+    protected Individual getRandBestFromList(List<Individual> list, String id) {
         
         int index = rndGenerator.nextInt(list.size());
+        
+        while(list.get(index).id.equals(id)) {
+            index = rndGenerator.nextInt(list.size());
+        }
 
         return list.get(index);
 

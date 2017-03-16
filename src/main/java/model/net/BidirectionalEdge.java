@@ -11,6 +11,10 @@ public class BidirectionalEdge extends Edge {
         super(source, target);
     }
 
+    public BidirectionalEdge(Individual source, Individual target, double weight) {
+        super(source, target, weight);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

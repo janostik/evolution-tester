@@ -123,7 +123,7 @@ public class Mc2IR_SHADE extends Mc2RS_SHADE {
                 /**
                  * Parent selection
                  */
-                pbestInd = this.getRandBestFromList(pBestArray);
+                pbestInd = this.getRandBestFromList(pBestArray,x.id);
                 pbestIndex = this.getPbestIndex(pbestInd);
                 pbest = pbestInd.vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);

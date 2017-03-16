@@ -19,7 +19,7 @@ public class SpalovnyProjektMain {
 
     /**
      * 
-     * Main to solve spalovny in CR - 10 facilities
+     * Main to solve spalovny in CR
      * 
      * @throws Exception 
      */
