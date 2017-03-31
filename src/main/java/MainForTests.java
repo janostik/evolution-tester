@@ -1,11 +1,13 @@
 
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
-import model.Individual;
-import model.net.Edge;
-import model.net.Net;
-import model.net.UnidirectionalEdge;
+import util.distance.Distance;
+import util.distance.EuclideanDistance;
+import util.distance.SquaredEuclideanDistance;
+import util.kmeans.Forgy;
+import util.kmeans.KMeans;
 
 /**
  *
@@ -18,29 +20,69 @@ public class MainForTests {
      */
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
         
-        Net network = new Net();
-        Individual one, two, three, four;
-        Edge edge;
+//        double[][] data_array = new double[][]{{1,6.95823},{2,5.72046},{3,3.69541},{4,8.2794},{5,8.07507},{6,13.5255},{7,11.2484},{8,19.3141},{9,21.2487},{10,16.1882},{11,17.3731},{12,21.7097},{13,30.0264},{14,30.5398},{15,33.2217},{16,36.7747},{17,37.2571},{18,32.4902},{19,41.284},{20,43.7988},{21,43.8994},{22,43.1335},{23,42.3654},{24,47.8101},{25,47.0841},{26,50.701},{27,55.018},{28,55.7302},{29,57.7139},{30,58.7748},{31,59.7984},{32,66.7561},{33,65.8787},{34,68.2909},{35,73.064},{36,69.736},{37,78.6401},{38,72.408},{39,82.7844},{40,82.8187},{41,83.2628},{42,83.4515},{43,84.3698},{44,85.9758},{45,87.6655},{46,88.9595},{47,94.3834},{48,96.9993},{49,96.8178},{50,95.4017}};
+//        List<double[]> data = Arrays.asList(data_array);
+//        Regression regr = new LinearRegression();
+//        
+//        double[] params = regr.getRegressionParameters(data);
+//        String sign = "+";
+//        if(params[1] < 0) {
+//            sign = "-";
+//        }
+//        
+//        System.out.println(params[0] + "*x " + sign + " " + params[1]);
         
-        one = new Individual("1", new double[10], 0);
-        two = new Individual("2", new double[10], 0);
-        three = new Individual("3", new double[10], 0);
-        four = new Individual("4", new double[10], 0);
+        double[] A = new double[]{-1,-8,-7};
+        double[] B = new double[]{-2,5,-9};
+        double[] C = new double[]{-4,0,7};
+        double[] D = new double[]{9,5,8};
+        double[] E = new double[]{10,8,3};
+        double[] F = new double[]{6,-4,-2};
+        double[] G = new double[]{1,9,-9};
+        double[] H = new double[]{-1,-4,2};
+        double[] I = new double[]{6,5,-10};
+        double[] J = new double[]{7,-7,-7};
+        Map<Integer, double[]> points = new HashMap<>();
+        points.put(1,A);
+        points.put(2,B);
+        points.put(3,C);
+        points.put(4,D);
+        points.put(5,E);
+        points.put(6,F);
+        points.put(7,G);
+        points.put(8,H);
+        points.put(9,I);
+        points.put(10,J);
+        Distance d = new EuclideanDistance();
+        KMeans kmeans = new KMeans(3, points, new Forgy(), new SquaredEuclideanDistance());
+        kmeans.run();
         
-        edge = new UnidirectionalEdge(one, one, 0.3);
-        network.addEdge(edge);
-        edge = new UnidirectionalEdge(two, one, 0.2);
-        network.addEdge(edge);
-        edge = new UnidirectionalEdge(three, one, 0.4);
-        network.addEdge(edge);
-        edge = new UnidirectionalEdge(four, one, 0.1);
-        network.addEdge(edge);
-        edge = new UnidirectionalEdge(one, two, 0.8);
-        network.addEdge(edge);
+        System.out.println(kmeans);
         
-        Map<Individual, Double> map = network.getDegreeMap();
-
-        System.out.println("Oh");
+        
+//        Net network = new Net();
+//        Individual one, two, three, four;
+//        Edge edge;
+//        
+//        one = new Individual("1", new double[10], 0);
+//        two = new Individual("2", new double[10], 0);
+//        three = new Individual("3", new double[10], 0);
+//        four = new Individual("4", new double[10], 0);
+//        
+//        edge = new UnidirectionalEdge(one, one, 0.3);
+//        network.addEdge(edge);
+//        edge = new UnidirectionalEdge(two, one, 0.2);
+//        network.addEdge(edge);
+//        edge = new UnidirectionalEdge(three, one, 0.4);
+//        network.addEdge(edge);
+//        edge = new UnidirectionalEdge(four, one, 0.1);
+//        network.addEdge(edge);
+//        edge = new UnidirectionalEdge(one, two, 0.8);
+//        network.addEdge(edge);
+//        
+//        Map<Individual, Double> map = network.getDegreeMap();
+//
+//        System.out.println("Oh");
         
         
         
