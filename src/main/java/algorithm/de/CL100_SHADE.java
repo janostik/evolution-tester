@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package algorithm.de;
 
 import java.util.ArrayList;
@@ -21,6 +16,7 @@ import util.OtherDistributionsUtil;
 import util.distance.SquaredEuclideanDistance;
 import util.kmeans.KMeans;
 import util.kmeans.KMeans.Cluster;
+import util.kmeans.KMeans.ClusterComparator;
 import util.kmeans.RandomPartition;
 import util.random.Random;
 import util.regression.LinearRegression;
@@ -43,7 +39,7 @@ public class CL100_SHADE extends SHADE {
     
     /**
      * 
-     * Writes the score of current population itno the score_map
+     * Writes the score of current population into the score_map
      * 
      */
     public void writeScoreToMap() {
@@ -358,30 +354,26 @@ public class CL100_SHADE extends SHADE {
         /**
          * Selection of the most successful cluster
          */
-        slope = -1;
-        Cluster c;
-        int successful = -1;
+        List<Cluster> sorted_clusters = new ArrayList<>();
+        sorted_clusters.addAll(kmeans.clusters);
+        sorted_clusters.sort(new ClusterComparator());
+
+        Cluster c = null;
         
-        for(int i = 0; i < kmeans.clusters.size(); i++) {
+        for(int i = sorted_clusters.size()-1; i > -1; i--) {
             
-            c = kmeans.clusters.get(i);
+            c = sorted_clusters.get(i);
             
-            if(c.getCentroid() == null || c.getCentroid().length == 0) {
-                continue;
-            }
-            
-            if(c.getCentroid()[0] > slope) {
-                slope = c.getCentroid()[0];
-                successful = i;
+            if(c.getCentroid() != null && c.getCentroid().length != 0) {
+                break;
             }
             
         }
         
-        if(successful == -1) {
+        if(c == null) {
             return null;
         }
-        
-        c = kmeans.clusters.get(successful);
+
         
         List<String> ids = new ArrayList<>();
         for(Entry<Integer, double[]> entry : c.points.entrySet()) {
@@ -399,6 +391,7 @@ public class CL100_SHADE extends SHADE {
     
     /**
      * @param args the command line arguments
+     * @throws java.lang.Exception
      */
     public static void main(String[] args) throws Exception {
 
