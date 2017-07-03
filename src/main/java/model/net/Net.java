@@ -26,23 +26,31 @@ public class Net {
     }
 
     public void addEdge(Edge edge) {
-        double v;
-        edges.add(edge);
+        double v, vv;
+        v = degreeMap.getOrDefault(edge.target, 0.0) + edge.getWeight();
+        vv = degreeMap.getOrDefault(edge.source, 0.0) + edge.getWeight();
+        Edge newEdge;
+        if(edge.getClass().equals(UnidirectionalEdge.class)){
+            newEdge = new UnidirectionalEdge(edge.source, edge.target, v);
+        }
+        else {
+            newEdge = new BidirectionalEdge(edge.source, edge.target, v);
+        }
+        newEdge.iter = edge.iter;
+
+        edges.add(newEdge);
         if(edge.getClass().equals(UnidirectionalEdge.class)){
 //            degreeMap.put(edge.source, degreeMap.getOrDefault(edge.source, 0) + 1);
-            v = degreeMap.getOrDefault(edge.source, 0.0) + edge.getWeight();
-            degreeMap.remove(edge.source);
-            degreeMap.put(edge.source, v);
+            degreeMap.remove(edge.target);
+            degreeMap.put(edge.target, v);
         }
         else {
 //            degreeMap.put(edge.source, degreeMap.getOrDefault(edge.source, 0) + 1);
 //            degreeMap.put(edge.target, degreeMap.getOrDefault(edge.target, 0) + 1);
-            v = degreeMap.getOrDefault(edge.target, 0.0) + edge.getWeight();
             degreeMap.remove(edge.target);
             degreeMap.put(edge.target, v);
-            v = degreeMap.getOrDefault(edge.source, 0.0) + edge.getWeight();
             degreeMap.remove(edge.source);
-            degreeMap.put(edge.source, v);
+            degreeMap.put(edge.source, vv);
         }
     }
 

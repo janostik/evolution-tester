@@ -288,7 +288,7 @@ public class DErand1bin implements Algorithm {
      * @return
      */
     protected boolean checkFES() {
-        return (FES >= MAXFES);
+        return (FES > MAXFES);
     }
 
     /**

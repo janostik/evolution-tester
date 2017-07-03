@@ -3,7 +3,6 @@ package algorithm.de;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.Ackley;
@@ -12,29 +11,36 @@ import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import util.OtherDistributionsUtil;
+import util.distance.Distance;
+import util.distance.EuclideanDistance;
 import util.random.Random;
 
 /**
  *
- * SHADE algorithm with linear decrease of population size.
- * Inidividuals that are going to be killed are selected based on their fitness value.
+ * L-SHADE algorithm with scaling factor based on objective function value, and second scaling factor based on distance.
  * 
- * @author adam on 05/04/2016
+ * @author adam on 26/06/2017
  */
-public class Lfv_SHADE extends SHADE {
+public class EEL_SHADE extends SHADE {
 
+    double[] M_dF;
+    List<Double> S_dF;
+    Distance dist;
+    
     protected final int minPopSize;
     protected final int maxPopSize;
     
-    public Lfv_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
+    public EEL_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
         super(D, MAXFES, f, H, NP, rndGenerator);
         this.minPopSize = minPopSize;
         this.maxPopSize = NP;
+        
+        this.dist = new EuclideanDistance();
     }
  
     @Override
     public String getName() {
-        return "Lfv_SHADE";
+        return "EEL_SHADE";
     }
     
     @Override
@@ -47,7 +53,6 @@ public class Lfv_SHADE extends SHADE {
         this.Aext = new ArrayList<>();
         this.best = null;
         this.bestHistory = new ArrayList<>();
-        this.M_Fhistory = new ArrayList<>();
 
         /**
          * Initial population
@@ -55,27 +60,27 @@ public class Lfv_SHADE extends SHADE {
         initializePopulation();
 
         this.M_F = new double[this.H];
+        this.M_dF = new double[this.H];
         this.M_CR = new double[this.H];
 
         for (int h = 0; h < this.H; h++) {
             this.M_F[h] = 0.5;
+            this.M_dF[h] = 0.5;
             this.M_CR[h] = 0.5;
         }
-        
-        this.M_Fhistory.add(this.M_F.clone());
 
         /**
          * Generation iteration;
          */
         int r, Psize, pbestIndex;
-        double Fg, CRg;
+        double Fg, CRg, dFg;
         List<Individual> newPop, pBestArray;
         double[] v, pbest, pr1, pr2, u;
         int[] rIndexes;
-        Individual trial, pbestInd;
-        Individual x;
-        List<Double> wS;
-        double wSsum, meanS_F1, meanS_F2, meanS_CR;
+        Individual trial;
+        Individual x, pbestInd;
+        List<Double> wS, dwS;
+        double wSsum, dwSsum, meanS_F1, meanS_F2, meanS_CR, meanS_dF1, meanS_dF2;
         int k = 0;
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
@@ -84,8 +89,10 @@ public class Lfv_SHADE extends SHADE {
 
             this.G++;
             this.S_F = new ArrayList<>();
+            this.S_dF = new ArrayList<>();
             this.S_CR = new ArrayList<>();
             wS = new ArrayList<>();
+            dwS = new ArrayList<>();
 
             newPop = new ArrayList<>();
 
@@ -101,6 +108,13 @@ public class Lfv_SHADE extends SHADE {
                     Fg = 1;
                 }
                 
+                dFg = OtherDistributionsUtil.cauchy(this.M_dF[r], 0.1);
+                while (dFg <= 0) {
+                    dFg = OtherDistributionsUtil.cauchy(this.M_dF[r], 0.1);
+                }
+                if (dFg > 2) {
+                    dFg = 2;
+                }
 
                 CRg = OtherDistributionsUtil.normal(this.M_CR[r], 0.1);
                 if (CRg > 1) {
@@ -141,7 +155,7 @@ public class Lfv_SHADE extends SHADE {
                 /**
                  * Mutation
                  */               
-                v = mutation(parents, Fg);
+                v = mutation(parents, Fg, dFg);
 
                 /**
                  * Crossover
@@ -165,9 +179,11 @@ public class Lfv_SHADE extends SHADE {
                 if (trial.fitness < x.fitness) {
                     newPop.add(trial);
                     this.S_F.add(Fg);
+                    this.S_dF.add(dFg);
                     this.S_CR.add(CRg);
                     this.Aext.add(x);
                     wS.add(Math.abs(trial.fitness - x.fitness));
+                    dwS.add(this.dist.getDistance(x.vector, trial.vector));
                     
                 } else {
                     newPop.add(x);
@@ -193,20 +209,29 @@ public class Lfv_SHADE extends SHADE {
              */
             if (this.S_F.size() > 0) {
                 wSsum = 0;
+                dwSsum = 0;
                 for (Double num : wS) {
                     wSsum += num;
                 }
+                for (Double num : dwS) {
+                    dwSsum += num;
+                }
                 meanS_F1 = 0;
                 meanS_F2 = 0;
+                meanS_dF1 = 0;
+                meanS_dF2 = 0;
                 meanS_CR = 0;
 
                 for (int s = 0; s < this.S_F.size(); s++) {
                     meanS_F1 += (wS.get(s) / wSsum) * this.S_F.get(s) * this.S_F.get(s);
                     meanS_F2 += (wS.get(s) / wSsum) * this.S_F.get(s);
+                    meanS_dF1 += (dwS.get(s) / dwSsum) * this.S_dF.get(s) * this.S_dF.get(s);
+                    meanS_dF2 += (dwS.get(s) / dwSsum) * this.S_dF.get(s);
                     meanS_CR += (wS.get(s) / wSsum) * this.S_CR.get(s);
                 }
 
                 this.M_F[k] = (meanS_F1 / meanS_F2);
+                this.M_dF[k] = (meanS_dF1 / meanS_dF2);
                 this.M_CR[k] = meanS_CR;
 
                 k++;
@@ -222,18 +247,32 @@ public class Lfv_SHADE extends SHADE {
             this.P.addAll(newPop);
             NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
             P = this.resizePop(P, NP);
-            
-//            if(G % (this.MAXFES/this.maxPopSize/10) == 0) {
-//                System.out.println(((double) this.FES/(double) this.MAXFES)*100 + "%");
-//            }
-            
-            this.M_Fhistory.add(this.M_F.clone());
 
         }
 
-//        System.out.println("100%");
         return this.best;
 
+    }
+    
+    protected double[] mutation(List<double[]> parents, double F, double dF){
+        
+        /**
+         * Parents:
+         * x
+         * pbest
+         * pr1
+         * pr2
+         */
+        
+        double[] v = new double[this.D];
+        for (int j = 0; j < this.D; j++) {
+
+            v[j] = parents.get(0)[j] + F * (parents.get(1)[j] - parents.get(0)[j]) + dF * (parents.get(2)[j] - parents.get(3)[j]);
+
+        }
+        
+        return v;
+        
     }
     
     /**
@@ -279,14 +318,14 @@ public class Lfv_SHADE extends SHADE {
         long seed = 10304050L;
         util.random.Random generator = new util.random.UniformRandom();
 
-        Lfv_SHADE shade;
+        EEL_SHADE shade;
 
         int runs = 1;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
+            shade = new EEL_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.run();
 

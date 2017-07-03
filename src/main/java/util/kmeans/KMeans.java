@@ -15,7 +15,7 @@ import util.distance.Distance;
  * @author wiki on 30/03/2017
  */
 public class KMeans {
-    
+
     /**
      * Cluster class for individual clusters
      * with centroid and dimension
@@ -102,6 +102,9 @@ public class KMeans {
         }
         
         public int getSize(){
+            if(this.points == null) {
+                return 0;
+            }
             return this.points.size();
         }
 

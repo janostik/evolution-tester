@@ -1,16 +1,10 @@
 package algorithm.de;
 
 import algorithm.Algorithm;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.Cec2015;
@@ -20,16 +14,15 @@ import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import util.OtherDistributionsUtil;
+import util.distance.EuclideanDistance;
 
 /**
  *
- * ShaDE algorithm
+ * SHADE switching between two F memories, one for exploitation (objective function value based) and one for exploration (distance based)
  *
- * @see <a href="http://goo.gl/eYB26Z">Original paper from CEC2013</a>
- *
- * @author adam on 16/11/2015 update 25/11/2015
+ * @author adam on 26/06/2017
  */
-public class SHADE implements Algorithm {
+public class SwEE_SHADE implements Algorithm {
     
     int D;
     int G;
@@ -42,16 +35,17 @@ public class SHADE implements Algorithm {
     Individual best;
     List<Individual> bestHistory;
     double[] M_F;
+    double[] M_dF;
     double[] M_CR;
     List<Double> S_F;
+    List<Double> S_dF;
     List<Double> S_CR;
     int H;
     util.random.Random rndGenerator;
     int id;
     int Asize;
-    List<double[]> M_Fhistory;
 
-    public SHADE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
+    public SwEE_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
         this.D = D;
         this.MAXFES = MAXFES;
         this.f = f;
@@ -70,7 +64,6 @@ public class SHADE implements Algorithm {
         this.Aext = new ArrayList<>();
         this.best = null;
         this.bestHistory = new ArrayList<>();
-        this.M_Fhistory = new ArrayList<>();
 
         /**
          * Initial population
@@ -78,18 +71,20 @@ public class SHADE implements Algorithm {
         initializePopulation();
         
         this.M_F = new double[this.H];
+        this.M_dF = new double[this.H];
         this.M_CR = new double[this.H];
 
         for (int h = 0; h < this.H; h++) {
             this.M_F[h] = 0.5;
+            this.M_dF[h] = 0.5;
             this.M_CR[h] = 0.5;
         }
-        
-        this.M_Fhistory.add(this.M_F.clone());
 
         /**
          * Generation iteration;
          */
+        boolean exploration = false; //false - exploitation, true - exploration
+        boolean improvement;
         int r, Psize, pbestIndex;
         double Fg, CRg;
         List<Individual> newPop, pBestArray;
@@ -97,24 +92,24 @@ public class SHADE implements Algorithm {
         int[] rIndexes;
         Individual trial;
         Individual x, pbestInd;
-        List<Double> wS;
-        double wSsum, meanS_F1, meanS_F2, meanS_CR;
+        List<Double> wS, dwS;
+        double wSsum, dwSsum, meanS_F1, meanS_F2, meanS_CR, meanS_dF1, meanS_dF2;
         int k = 0;
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
-        /**
-         * Archive hits
-         */
-        int archive_hit = 0;
-        int archive_good_hit = 0;
-        boolean hit = false;
+        
+        EuclideanDistance euclid = new EuclideanDistance();
 
         while (true) {
             
+            improvement = false;
+            
             this.G++;
             this.S_F = new ArrayList<>();
+            this.S_dF = new ArrayList<>();
             this.S_CR = new ArrayList<>();
             wS = new ArrayList<>();
+            dwS = new ArrayList<>();
 
             newPop = new ArrayList<>();
 
@@ -122,12 +117,27 @@ public class SHADE implements Algorithm {
 
                 x = this.P.get(i);
                 r = rndGenerator.nextInt(this.H);
-                Fg = OtherDistributionsUtil.cauchy(this.M_F[r], 0.1);
-                while (Fg <= 0) {
+                
+                if(exploration) {
+                    
+                    Fg = OtherDistributionsUtil.cauchy(this.M_dF[r], 0.1);
+                    while (Fg <= 0) {
+                        Fg = OtherDistributionsUtil.cauchy(this.M_dF[r], 0.1);
+                    }
+                    if (Fg > 2) {
+                        Fg = 2;
+                    }
+                    
+                } else {
+                
                     Fg = OtherDistributionsUtil.cauchy(this.M_F[r], 0.1);
-                }
-                if (Fg > 1) {
-                    Fg = 1;
+                    while (Fg <= 0) {
+                        Fg = OtherDistributionsUtil.cauchy(this.M_F[r], 0.1);
+                    }
+                    if (Fg > 1) {
+                        Fg = 1;
+                    }
+                    
                 }
 
                 CRg = OtherDistributionsUtil.normal(this.M_CR[r], 0.1);
@@ -155,15 +165,9 @@ public class SHADE implements Algorithm {
                 pbest = pbestInd.vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
                 pr1 = this.P.get(rIndexes[0]).vector.clone();
-                
-                /**
-                 * Archive hit
-                 */
-                hit = false;
+
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
-                    hit = true;
-                    archive_hit++;
                 } else {
                     pr2 = this.P.get(rIndexes[1]).vector.clone();
                 }
@@ -200,16 +204,13 @@ public class SHADE implements Algorithm {
                 if (trial.fitness < x.fitness) {
                     newPop.add(trial);
                     this.S_F.add(Fg);
+                    this.S_dF.add(Fg);
                     this.S_CR.add(CRg);
                     this.Aext.add(x);
                     wS.add(x.fitness - trial.fitness);
+                    dwS.add(euclid.getDistance(x.vector, trial.vector));
                     
-                    /**
-                     * Archive hit
-                     */
-                    if(hit) {
-                        archive_good_hit++;
-                    }
+                    improvement = true;
                     
                 } else {
                     newPop.add(x);
@@ -235,20 +236,29 @@ public class SHADE implements Algorithm {
              */
             if (this.S_F.size() > 0) {
                 wSsum = 0;
+                dwSsum = 0;
                 for (Double num : wS) {
                     wSsum += num;
                 }
+                for (Double num : dwS) {
+                    dwSsum += num;
+                }
                 meanS_F1 = 0;
                 meanS_F2 = 0;
+                meanS_dF1 = 0;
+                meanS_dF2 = 0;
                 meanS_CR = 0;
 
                 for (int s = 0; s < this.S_F.size(); s++) {
                     meanS_F1 += (wS.get(s) / wSsum) * this.S_F.get(s) * this.S_F.get(s);
                     meanS_F2 += (wS.get(s) / wSsum) * this.S_F.get(s);
+                    meanS_dF1 += (dwS.get(s) / dwSsum) * this.S_dF.get(s) * this.S_dF.get(s);
+                    meanS_dF2 += (dwS.get(s) / dwSsum) * this.S_dF.get(s);
                     meanS_CR += (wS.get(s) / wSsum) * this.S_CR.get(s);
                 }
 
                 this.M_F[k] = (meanS_F1 / meanS_F2);
+                this.M_dF[k] = (meanS_dF1 / meanS_dF2);
                 this.M_CR[k] = meanS_CR;
 
                 k++;
@@ -257,7 +267,9 @@ public class SHADE implements Algorithm {
                 }
             }
             
-            this.M_Fhistory.add(this.M_F.clone());
+            if(!improvement) {
+                exploration = !exploration;
+            }
             
             /**
              * Resize of population and archives
@@ -268,59 +280,8 @@ public class SHADE implements Algorithm {
 
         }
 
-//        System.out.println("Archive hits: " + archive_hit + " - " + (double) archive_hit / (double) this.MAXFES * 100 + "%");
-//        System.out.println("Good hits: " + archive_good_hit + " - " + (double) archive_good_hit / (double) archive_hit * 100 + "%");
-        
         return this.best;
 
-    }
-    
-    /**
-     * Writes MF history into predefined (by path) file
-     * 
-     * @param path 
-     */
-    public void writeMFhistory(String path) {
-        
-        double[] mf;
-        
-        try {
-            PrintWriter writer = new PrintWriter(path, "UTF-8");
-            
-            writer.print("{");
-            
-            for(int i = 0; i < this.M_Fhistory.size(); i++) {
-                
-                mf = this.M_Fhistory.get(i);
-                
-                writer.print("{");
-                
-                for(int j = 0; j < mf.length; j++) {
-                    writer.print(String.format(Locale.US, "%.10f", mf[j]));
-                    
-                    if(j != mf.length-1) {
-                        writer.print(",");
-                    }
-                }
-                
-                writer.print("}");
-                
-                if(i != this.M_Fhistory.size()-1) {
-                    writer.print(",");
-                }
-                
-            }
-            
-            writer.print("}");
-            
-            writer.close();
-            
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(SHADE.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(SHADE.class.getName()).log(Level.SEVERE, null, ex);
-        }
-       
     }
     
     /**
@@ -466,7 +427,7 @@ public class SHADE implements Algorithm {
 
     @Override
     public String getName() {
-        return "SHADE";
+        return "SwEE_SHADE";
     }
 
     /**
@@ -782,58 +743,6 @@ public class SHADE implements Algorithm {
     }
     //</editor-fold>
 
-    public static double runOneIris(int number) throws Exception {
-
-        String path = "C:\\Users\\wiki\\Documents\\NetBeansProjects\\PupilCostFunctions\\" + number; 
-        
-        int dimension = 2; //38
-        int NP = 20;
-        int MAXFES = 100 * NP;
-        int funcNumber = 14;
-        TestFunction tf = new PupilCostFunction(path);
-        int H = 10;
-        util.random.Random generator;
-
-        SHADE shade;
-
-        int runs = 30;
-        double[] bestArray = new double[runs];
-        int i, best, count = 0;
-        double min;
-
-        for (int k = 0; k < runs; k++) {
-            
-            generator = new util.random.UniformRandom();
-            shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
-
-            shade.run();
-            
-            best = 0;
-            i = 0;
-            min = Double.MAX_VALUE;
-
-            bestArray[k] = shade.getBest().fitness - tf.optimum();
-
-            if(bestArray[k] == 0) {
-                count++;
-            }
-            
-        }
-
-        System.out.println("=================================");
-        System.out.println("Iris: " + number);
-        System.out.println("Success: " + count + "/" + runs);
-        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
-        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
-        System.out.println("Mean: " + new Mean().evaluate(bestArray));
-        System.out.println("Median: " + new Median().evaluate(bestArray));
-        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
-        System.out.println("=================================");
-
-        return count/runs;
-        
-    }
-
     public int getAsize() {
         return Asize;
     }
@@ -859,13 +768,13 @@ public class SHADE implements Algorithm {
         
         int dimension = 10; //38
         int NP = 100;
-        int MAXFES = 100 * NP;
+        int MAXFES = 1000 * NP;
         int funcNumber = 3;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 10;
         util.random.Random generator;
 
-        SHADE shade;
+        SwEE_SHADE shade;
 
         int runs = 3;
         double[] bestArray = new double[runs];
@@ -875,7 +784,7 @@ public class SHADE implements Algorithm {
         for (int k = 0; k < runs; k++) {
             
             generator = new util.random.UniformRandom();
-            shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
+            shade = new SwEE_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
             
@@ -940,7 +849,7 @@ public class SHADE implements Algorithm {
 //            
 //            System.out.println("=================================");
             
-            for(Individual ind : ((SHADE)shade).getBestHistory()){
+            for(Individual ind : ((SwEE_SHADE)shade).getBestHistory()){
                 i++;
                 if(ind.fitness < min){
                     min = ind.fitness;

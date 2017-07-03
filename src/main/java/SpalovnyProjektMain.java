@@ -25,7 +25,7 @@ public class SpalovnyProjektMain {
      */
     public static void spalovnyProjektMain() throws Exception {
         
-        int dimension = 206+39; //38
+        int dimension = 206+40; //38
         int NP = 100;
         int NPfinal = 20;
         int MAXFES = 100000 * NP; //100000 * NP;

@@ -12,21 +12,21 @@ import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import util.OtherDistributionsUtil;
+import util.distance.EuclideanDistance;
 import util.random.Random;
 
 /**
  *
- * SHADE algorithm with linear decrease of population size.
- * Inidividuals that are going to be killed are selected based on their fitness value.
+ * L-SHADE with F & CR weights according to distance rather than fitness difference 
  * 
- * @author adam on 05/04/2016
+ * @author adam on 26/06/2017
  */
-public class Lfv_SHADE extends SHADE {
+public class DbL_SHADE extends SHADE {
 
     protected final int minPopSize;
     protected final int maxPopSize;
     
-    public Lfv_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
+    public DbL_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
         super(D, MAXFES, f, H, NP, rndGenerator);
         this.minPopSize = minPopSize;
         this.maxPopSize = NP;
@@ -34,7 +34,7 @@ public class Lfv_SHADE extends SHADE {
  
     @Override
     public String getName() {
-        return "Lfv_SHADE";
+        return "DbL_SHADE";
     }
     
     @Override
@@ -80,6 +80,8 @@ public class Lfv_SHADE extends SHADE {
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
 
+        EuclideanDistance euclid = new EuclideanDistance();
+        
         while (true) {
 
             this.G++;
@@ -167,7 +169,7 @@ public class Lfv_SHADE extends SHADE {
                     this.S_F.add(Fg);
                     this.S_CR.add(CRg);
                     this.Aext.add(x);
-                    wS.add(Math.abs(trial.fitness - x.fitness));
+                    wS.add(euclid.getDistance(x.vector, trial.vector));
                     
                 } else {
                     newPop.add(x);
@@ -222,16 +224,11 @@ public class Lfv_SHADE extends SHADE {
             this.P.addAll(newPop);
             NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
             P = this.resizePop(P, NP);
-            
-//            if(G % (this.MAXFES/this.maxPopSize/10) == 0) {
-//                System.out.println(((double) this.FES/(double) this.MAXFES)*100 + "%");
-//            }
-            
-            this.M_Fhistory.add(this.M_F.clone());
 
+            this.M_Fhistory.add(this.M_F.clone());
+            
         }
 
-//        System.out.println("100%");
         return this.best;
 
     }
@@ -279,14 +276,14 @@ public class Lfv_SHADE extends SHADE {
         long seed = 10304050L;
         util.random.Random generator = new util.random.UniformRandom();
 
-        Lfv_SHADE shade;
+        DbL_SHADE shade;
 
         int runs = 1;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {
 
-            shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
+            shade = new DbL_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.run();
 
