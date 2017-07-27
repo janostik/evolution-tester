@@ -36,6 +36,7 @@ import algorithm.hybrid.SOF_DErand1bin_AP;
 import algorithm.pso.NetPso;
 import algorithm.pso.Pso;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.DoubleStream;
@@ -4549,6 +4550,7 @@ public class ShadeMain {
                 bestArray[k] = shade.getBest().fitness - tf.optimum();
                 
                 shade.writeMFhistory(home_dir + mfpath + "mf" + funcNumber + "-" + k + ".txt");
+                shade.writeMCRhistory(home_dir + mfpath + "mcr" + funcNumber + "-" + k + ".txt");
 
             }
             
@@ -4658,6 +4660,7 @@ public class ShadeMain {
                 bestArray[k] = shade.getBest().fitness - tf.optimum();
                 
                 shade.writeMFhistory(home_dir + mfpath + "mf" + funcNumber + "-" + k + ".txt");
+                shade.writeMCRhistory(home_dir + mfpath + "mcr" + funcNumber + "-" + k + ".txt");
 
             }
             
@@ -4767,6 +4770,7 @@ public class ShadeMain {
                 bestArray[k] = shade.getBest().fitness - tf.optimum();
                 
                 shade.writeMFhistory(home_dir + mfpath + "mf" + funcNumber + "-" + k + ".txt");
+                shade.writeMCRhistory(home_dir + mfpath + "mcr" + funcNumber + "-" + k + ".txt");
 
             }
             
@@ -4876,6 +4880,7 @@ public class ShadeMain {
                 bestArray[k] = shade.getBest().fitness - tf.optimum();
                 
                 shade.writeMFhistory(home_dir + mfpath + "mf" + funcNumber + "-" + k + ".txt");
+                shade.writeMCRhistory(home_dir + mfpath + "mcr" + funcNumber + "-" + k + ".txt");
 
             }
             
@@ -4991,18 +4996,26 @@ public class ShadeMain {
         MAXFES = 10000 * dimension;
         home_dir = "";
         
-        path = "E:\\results\\SSCI2017\\CEC2015-SHADE-10/";
+//        System.out.println("\n\nTime: " + new Date() + " start SHADE " + dimension + "D\n\n");
+//        
+//        path = "E:\\results\\SSCI2017\\CEC2015-SHADE-10/";
+//        
+//        SSCI2017shadeMainCEC2015(path, H, path);
         
-        SSCI2017shadeMainCEC2015(path, H, path);
-
+        System.out.println("\n\nTime: " + new Date() + " start L-SHADE " + dimension + "D\n\n");
+        
         path = "E:\\results\\SSCI2017\\CEC2015-L-SHADE-10/";
         
         SSCI2017lshadeMainCEC2015(path, H, path);
+        
+        System.out.println("\n\nTime: " + new Date() + " start Db-SHADE " + dimension + "D\n\n");
         
         path = "E:\\results\\SSCI2017\\CEC2015-Db-SHADE-10/";
         
         SSCI2017dbshadeMainCEC2015(path, H, path);
 
+        System.out.println("\n\nTime: " + new Date() + " start DbL-SHADE " + dimension + "D\n\n");
+        
         path = "E:\\results\\SSCI2017\\CEC2015-DbL-SHADE-10/";
         
         SSCI2017dblshadeMainCEC2015(path, H, path);
@@ -5010,21 +5023,31 @@ public class ShadeMain {
         dimension = 30;
         MAXFES = 10000 * dimension;
         
+        System.out.println("\n\nTime: " + new Date() + " start SHADE " + dimension + "D\n\n");
+        
         path = "E:\\results\\SSCI2017\\CEC2015-SHADE-30/";
         
         SSCI2017shadeMainCEC2015(path, H, path);
 
+        System.out.println("\n\nTime: " + new Date() + " start L-SHADE " + dimension + "D\n\n");
+        
         path = "E:\\results\\SSCI2017\\CEC2015-L-SHADE-30/";
         
         SSCI2017lshadeMainCEC2015(path, H, path);
+        
+        System.out.println("\n\nTime: " + new Date() + " start Db-SHADE " + dimension + "D\n\n");
         
         path = "E:\\results\\SSCI2017\\CEC2015-Db-SHADE-30/";
         
         SSCI2017dbshadeMainCEC2015(path, H, path);
 
+        System.out.println("\n\nTime: " + new Date() + " start DbL-SHADE " + dimension + "D\n\n");
+        
         path = "E:\\results\\SSCI2017\\CEC2015-DbL-SHADE-30/";
         
         SSCI2017dblshadeMainCEC2015(path, H, path);
+        
+        System.out.println("\n\nTime: " + new Date() + " END ALL");
         
 //        dimension = 10;
 //        MAXFES = 10000 * dimension;

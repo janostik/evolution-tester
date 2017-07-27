@@ -48,6 +48,7 @@ public class Lfv_SHADE extends SHADE {
         this.best = null;
         this.bestHistory = new ArrayList<>();
         this.M_Fhistory = new ArrayList<>();
+        this.M_CRhistory = new ArrayList<>();
 
         /**
          * Initial population
@@ -63,6 +64,7 @@ public class Lfv_SHADE extends SHADE {
         }
         
         this.M_Fhistory.add(this.M_F.clone());
+        this.M_CRhistory.add(this.M_CR.clone());
 
         /**
          * Generation iteration;
@@ -228,6 +230,7 @@ public class Lfv_SHADE extends SHADE {
 //            }
             
             this.M_Fhistory.add(this.M_F.clone());
+            this.M_CRhistory.add(this.M_CR.clone());
 
         }
 

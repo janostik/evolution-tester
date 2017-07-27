@@ -50,6 +50,7 @@ public class SHADE implements Algorithm {
     int id;
     int Asize;
     List<double[]> M_Fhistory;
+    List<double[]> M_CRhistory;
 
     public SHADE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
         this.D = D;
@@ -71,6 +72,7 @@ public class SHADE implements Algorithm {
         this.best = null;
         this.bestHistory = new ArrayList<>();
         this.M_Fhistory = new ArrayList<>();
+        this.M_CRhistory = new ArrayList<>();
 
         /**
          * Initial population
@@ -86,6 +88,7 @@ public class SHADE implements Algorithm {
         }
         
         this.M_Fhistory.add(this.M_F.clone());
+        this.M_CRhistory.add(this.M_CR.clone());
 
         /**
          * Generation iteration;
@@ -258,6 +261,7 @@ public class SHADE implements Algorithm {
             }
             
             this.M_Fhistory.add(this.M_F.clone());
+            this.M_CRhistory.add(this.M_CR.clone());
             
             /**
              * Resize of population and archives
@@ -306,6 +310,54 @@ public class SHADE implements Algorithm {
                 writer.print("}");
                 
                 if(i != this.M_Fhistory.size()-1) {
+                    writer.print(",");
+                }
+                
+            }
+            
+            writer.print("}");
+            
+            writer.close();
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(SHADE.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(SHADE.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
+    }
+    
+    /**
+     * Writes MCR history into predefined (by path) file
+     * 
+     * @param path 
+     */
+    public void writeMCRhistory(String path) {
+        
+        double[] mcr;
+        
+        try {
+            PrintWriter writer = new PrintWriter(path, "UTF-8");
+            
+            writer.print("{");
+            
+            for(int i = 0; i < this.M_CRhistory.size(); i++) {
+                
+                mcr = this.M_CRhistory.get(i);
+                
+                writer.print("{");
+                
+                for(int j = 0; j < mcr.length; j++) {
+                    writer.print(String.format(Locale.US, "%.10f", mcr[j]));
+                    
+                    if(j != mcr.length-1) {
+                        writer.print(",");
+                    }
+                }
+                
+                writer.print("}");
+                
+                if(i != this.M_CRhistory.size()-1) {
                     writer.print(",");
                 }
                 

@@ -24,25 +24,6 @@ import util.random.Random;
  * @author adam on 16/05/2017
  */
 public class Db_SHADE extends SHADE {
-    
-    int D;
-    int G;
-    int NP;
-    List<Individual> Aext;
-    List<Individual> P;
-    int FES;
-    int MAXFES;
-    TestFunction f;
-    Individual best;
-    List<Individual> bestHistory;
-    double[] M_F;
-    double[] M_CR;
-    List<Double> S_F;
-    List<Double> S_CR;
-    int H;
-    util.random.Random rndGenerator;
-    int id;
-    int Asize;
 
     public Db_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator) {
         super(D, MAXFES, f, H, NP, rndGenerator);
@@ -59,6 +40,7 @@ public class Db_SHADE extends SHADE {
         this.best = null;
         this.bestHistory = new ArrayList<>();
         this.M_Fhistory = new ArrayList<>();
+        this.M_CRhistory = new ArrayList<>();
         
         /**
          * Initial population
@@ -74,6 +56,7 @@ public class Db_SHADE extends SHADE {
         }
         
         this.M_Fhistory.add(this.M_F.clone());
+        this.M_CRhistory.add(this.M_CR.clone());
 
         /**
          * Generation iteration;
@@ -229,6 +212,7 @@ public class Db_SHADE extends SHADE {
             }
             
             this.M_Fhistory.add(this.M_F.clone());
+            this.M_CRhistory.add(this.M_CR.clone());
             
             /**
              * Resize of population and archives
