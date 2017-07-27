@@ -2,10 +2,12 @@ package util.kmeans;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import util.distance.Distance;
 
 /**
@@ -101,6 +103,10 @@ public class KMeans {
             this.centroid = centroid;
         }
         
+        public double getMeanCentroid() {
+            return new Mean().evaluate(this.centroid);
+        }
+        
         public int getSize(){
             if(this.points == null) {
                 return 0;
@@ -138,6 +144,31 @@ public class KMeans {
         }
         
     }
+    
+    public static class ClusterComparator implements Comparator<Cluster> {
+    
+    @Override
+    public int compare(Cluster t, Cluster t1) {
+
+        if(t.getCentroid() == null || t.getCentroid().length == 0) {
+            return -1;
+        }
+        else if(t1.getCentroid() == null || t1.getCentroid().length == 0) {
+            return 1;
+        }
+        else if(t.getMeanCentroid() < t1.getMeanCentroid()) {
+            return -1;
+        }
+        else if(t.getMeanCentroid() == t1.getMeanCentroid()){
+            return 0;
+        }
+        else {
+            return 1;
+        }
+
+    }
+    
+}
     
     private final int cluster_count;
     private final Map<Integer, double[]> data;
