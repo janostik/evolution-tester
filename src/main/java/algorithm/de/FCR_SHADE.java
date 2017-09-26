@@ -120,7 +120,7 @@ public class FCR_SHADE implements Algorithm {
         Individual trial;
         Individual x;
         List<Double> wS;
-        double[] meanS_F1, meanS_F2, meanS_F, meanS_CR;
+        double[] meanS_F1, meanS_F2, meanS_F, meanS_CR1, meanS_CR2, meanS_CR;
         int k = 0;
         double pmin = 2 / (double) this.NP;
 
@@ -275,13 +275,16 @@ public class FCR_SHADE implements Algorithm {
 //                meanS_CR = 0;
                 meanS_F1 = new double[this.D];
                 meanS_F2 = new double[this.D];
-                meanS_CR = new double[this.D];
+                meanS_CR1 = new double[this.D];
+                meanS_CR2 = new double[this.D];
                 meanS_F = new double[this.D];
+                meanS_CR = new double[this.D];
 
                 for (int dim = 0; dim < this.D; dim++ ) {
                     meanS_F1[dim] = 0;
                     meanS_F2[dim] = 0;
-                    meanS_CR[dim] = 0;
+                    meanS_CR1[dim] = 0;
+                    meanS_CR2[dim] = 0;
                 }
                     
                 for (int s = 0; s < this.S_F.size(); s++) {
@@ -290,13 +293,15 @@ public class FCR_SHADE implements Algorithm {
 
                         meanS_F1[dim] += (wS.get(s) / wSsum) * this.S_F.get(s)[dim] * this.S_F.get(s)[dim];
                         meanS_F2[dim] += (wS.get(s) / wSsum) * this.S_F.get(s)[dim];
-                        meanS_CR[dim] += (wS.get(s) / wSsum) * this.S_CR.get(s)[dim];
+                        meanS_CR1[dim] += (wS.get(s) / wSsum) * this.S_CR.get(s)[dim] * this.S_CR.get(s)[dim];
+                        meanS_CR2[dim] += (wS.get(s) / wSsum) * this.S_CR.get(s)[dim];
 
                     }
                 }
                 
                 for (int dim = 0; dim < this.D; dim++ ) {
                     meanS_F[dim] = meanS_F1[dim]/meanS_F2[dim];
+                    meanS_CR[dim] = meanS_CR1[dim]/meanS_CR2[dim];
                 }
  
                 this.M_F.set(k,meanS_F);

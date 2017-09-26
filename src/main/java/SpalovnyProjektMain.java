@@ -225,6 +225,474 @@ public class SpalovnyProjektMain {
     
     /**
      * 
+     * Main to solve spalovny in JM+Olm+Zlin+Moravskoslezsky+Pardubicky+Vysocina+Jihocesky+kralovehrad+stredocesky+Praha+Liberec
+     * 
+     * @throws Exception 
+     */
+    public static void jedenactKrajuMain() throws Exception {
+        
+        /**
+         * JM kraj + Olomoucky kraj + Zlinsky
+         */
+        int[] use_prod = new int[]{0,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205,61,62,63,64,65,66,67,68,69,70};
+        int[] use_inc = new int[]{0,4,5,31,14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33,2};
+        int dimension = use_prod.length + use_inc.length;
+
+        int NP = 100;
+        int NPfinal = 20;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_projekt(use_inc, use_prod);
+        int H = 10;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        Lfv_SHADE shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_projekt)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+            for(Individual ind : ((Lfv_SHADE)shade).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+            
+            /**
+             * History write
+             */
+            writeResult(home_dir + "11kraju\\res" + k + ".txt", shade.getBestHistory(), shade.getBest());
+            
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
+    /**
+     * 
+     * Main to solve spalovny in JM+Olm+Zlin+Moravskoslezsky+Pardubicky+Vysocina+Jihocesky+kralovehrad+stredocesky+Praha
+     * 
+     * @throws Exception 
+     */
+    public static void deset2KrajuMain() throws Exception {
+        
+        /**
+         * JM kraj + Olomoucky kraj + Zlinsky
+         */
+        int[] use_prod = new int[]{0,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        int[] use_inc = new int[]{0,4,5,31,14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+        int dimension = use_prod.length + use_inc.length;
+
+        int NP = 100;
+        int NPfinal = 20;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_projekt(use_inc, use_prod);
+        int H = 10;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        Lfv_SHADE shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_projekt)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+            for(Individual ind : ((Lfv_SHADE)shade).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+            
+            /**
+             * History write
+             */
+            writeResult(home_dir + "10kraju2\\res" + k + ".txt", shade.getBestHistory(), shade.getBest());
+            
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
+    /**
+     * 
+     * Main to solve spalovny in JM+Olm+Zlin+Moravskoslezsky+Pardubicky+Vysocina+Jihocesky+kralovehrad+stredocesky
+     * 
+     * @throws Exception 
+     */
+    public static void devetKrajuMain() throws Exception {
+        
+        /**
+         * JM kraj + Olomoucky kraj + Zlinsky
+         */
+        int[] use_prod = new int[]{136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        int[] use_inc = new int[]{4,5,31,14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+        int dimension = use_prod.length + use_inc.length;
+
+        int NP = 100;
+        int NPfinal = 20;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_projekt(use_inc, use_prod);
+        int H = 10;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        Lfv_SHADE shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_projekt)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+            for(Individual ind : ((Lfv_SHADE)shade).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+            
+            /**
+             * History write
+             */
+            writeResult(home_dir + "9kraju\\res" + k + ".txt", shade.getBestHistory(), shade.getBest());
+            
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
+    /**
+     * 
+     * Main to solve spalovny in JM+Olm+Zlin+Moravskoslezsky+Pardubicky+Vysocina+Jihocesky+kralovehrad
+     * 
+     * @throws Exception 
+     */
+    public static void osmKrajuMain() throws Exception {
+        
+        /**
+         * JM kraj + Olomoucky kraj + Zlinsky
+         */
+        int[] use_prod = new int[]{46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        int[] use_inc = new int[]{14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+        int dimension = use_prod.length + use_inc.length;
+
+        int NP = 100;
+        int NPfinal = 20;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_projekt(use_inc, use_prod);
+        int H = 10;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        Lfv_SHADE shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_projekt)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+            for(Individual ind : ((Lfv_SHADE)shade).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+            
+            /**
+             * History write
+             */
+            writeResult(home_dir + "8kraju\\res" + k + ".txt", shade.getBestHistory(), shade.getBest());
+            
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
+    /**
+     * 
      * Main to solve spalovny in JM+Olm+Zlin+Moravskoslezsky+Pardubicky+Vysocina+Jihocesky
      * 
      * @throws Exception 
@@ -1666,7 +2134,8 @@ public class SpalovnyProjektMain {
     
     public static int maxfes = 1_000_000;
     public static int runs = 10;
-    public static String home_dir = "E:\\results\\Spalovny\\S PENALIZACI\\";
+//    public static String home_dir = "E:\\results\\Spalovny\\S PENALIZACI\\";
+    public static String home_dir = "E:\\results\\Spalovny\\";
     
     /**
      * @param args the command line arguments
@@ -1675,6 +2144,19 @@ public class SpalovnyProjektMain {
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
         
+
+//        System.out.println("------------------");
+//        System.out.println("---------Zlin---------");
+//        System.out.println("------------------");
+//
+//        zlinMain();        
+//        
+        System.out.println("------------------");
+        System.out.println("---------Olomouc---------");
+        System.out.println("------------------");
+
+        olmMain();
+//
 //        System.out.println("------------------");
 //        System.out.println("---------4kraje---------");
 //        System.out.println("------------------");
@@ -1698,13 +2180,38 @@ public class SpalovnyProjektMain {
 //        System.out.println("------------------");
 //        
 //        sedmKrajuMain();
-        
-        System.out.println("------------------");
-        System.out.println("---------10kraju---------");
-        System.out.println("------------------");
-        
-        desetKrajuMain();
-        
+//        
+//        System.out.println("------------------");
+//        System.out.println("---------10kraju---------");
+//        System.out.println("------------------");
+//
+//        System.out.println("------------------");
+//        System.out.println("---------8kraju---------");
+//        System.out.println("------------------");
+//
+//        osmKrajuMain();
+//        
+//        System.out.println("------------------");
+//        System.out.println("---------9kraju---------");
+//        System.out.println("------------------");
+//
+//        devetKrajuMain();
+//        
+//        System.out.println("------------------");
+//        System.out.println("---------10kraju2---------");
+//        System.out.println("------------------");
+//
+//        deset2KrajuMain();
+//        
+//        System.out.println("------------------");
+//        System.out.println("---------11kraju---------");
+//        System.out.println("------------------");
+//
+//        jedenactKrajuMain();
+//
+//        
+//        desetKrajuMain();
+//        
 //        System.out.println("------------------");
 //        System.out.println("---------ZLIN---------");
 //        System.out.println("------------------");
@@ -1723,11 +2230,11 @@ public class SpalovnyProjektMain {
 //        
 //        jmZlinOlmMain();
 //        
-        System.out.println("------------------");
-        System.out.println("---------Cela CR---------");
-        System.out.println("------------------");
-        
-        spalovnyProjektMain();
+//        System.out.println("------------------");
+//        System.out.println("---------Cela CR---------");
+//        System.out.println("------------------");
+//        
+//        spalovnyProjektMain();
 //        
 //        System.out.println("------------------");
 //        System.out.println("---------OLM---------");

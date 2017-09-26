@@ -108,7 +108,7 @@ public class P_SHADE extends SHADE {
         Individual trial;
         Individual x, pbestInd;
         List<Double> wS;
-        double wSsum, meanS_F1, meanS_F2, meanS_CR;
+        double wSsum, meanS_F1, meanS_F2, meanS_CR1, meanS_CR2;
         int k = 0;
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
@@ -237,16 +237,18 @@ public class P_SHADE extends SHADE {
                 }
                 meanS_F1 = 0;
                 meanS_F2 = 0;
-                meanS_CR = 0;
+                meanS_CR1 = 0;
+                meanS_CR2 = 0;
 
                 for (int s = 0; s < this.S_F.size(); s++) {
                     meanS_F1 += (wS.get(s) / wSsum) * this.S_F.get(s) * this.S_F.get(s);
                     meanS_F2 += (wS.get(s) / wSsum) * this.S_F.get(s);
-                    meanS_CR += (wS.get(s) / wSsum) * this.S_CR.get(s);
+                    meanS_CR1 += (wS.get(s) / wSsum) * this.S_CR.get(s) * this.S_CR.get(s);
+                    meanS_CR2 += (wS.get(s) / wSsum) * this.S_CR.get(s);
                 }
 
                 this.M_F[k] = (meanS_F1 / meanS_F2);
-                this.M_CR[k] = meanS_CR;
+                this.M_CR[k] = (meanS_CR1 / meanS_CR2);
 
                 k++;
                 if (k >= this.H) {
