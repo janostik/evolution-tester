@@ -6,9 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.net.Net;
@@ -41,6 +45,11 @@ public class DErand1bin implements Algorithm {
     protected int id;
     protected double F;
     protected double CR;
+    
+    /**
+     * Population diversity
+     */
+    List<Double> P_div_history;
 
     public DErand1bin(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR) {
         this.D = D;
@@ -52,6 +61,42 @@ public class DErand1bin implements Algorithm {
         this.id = 0;
         this.F = F;
         this.CR = CR;
+    }
+    
+    /**
+     * Population diversity according to Polakova
+     * @param pop
+     * @return 
+     */
+    public double calculateDiversity(List<Individual> pop) {
+        
+        if(pop == null || pop.isEmpty()) {
+            return -1;
+        }
+        
+        double[] means = new double[this.D];
+        for(int i = 0; i < this.D; i++) {
+              means[i] = 0;  
+        }
+        pop.stream().forEach((ind) -> {
+            for(int i = 0; i < this.D; i++) {
+                means[i] += (ind.vector[i]/(double) pop.size());
+            }
+        });
+        
+        double DI = 0;
+        
+        for(Individual ind : pop) {
+            for(int i = 0; i < this.D; i++) {
+                DI += Math.pow(ind.vector[i] - means[i], 2);
+            }
+        }
+        
+        DI = Math.sqrt((1.0 / (double) pop.size())*DI);
+        
+        
+        return DI;
+        
     }
 
     @Override
@@ -70,6 +115,12 @@ public class DErand1bin implements Algorithm {
         double[] u, v;
         Individual[] parrentArray;
 
+        /**
+         * Diversity
+         */
+        this.P_div_history = new ArrayList<>();
+        this.P_div_history.add(this.calculateDiversity(this.P));
+        
         /**
          * generation itteration
          */
@@ -132,10 +183,48 @@ public class DErand1bin implements Algorithm {
             }
 
             P = newPop;
+            
+            /**
+             * Diversity and clustering
+             */
+            this.P_div_history.add(this.calculateDiversity(this.P));
 
         }
         
         return best;
+    }
+    
+    /**
+     * Writes population diversity history into a file
+     * 
+     * @param path 
+     */
+    public void writePopDiversityHistory(String path) {
+        
+        try {
+            PrintWriter writer = new PrintWriter(path, "UTF-8");
+            
+            writer.print("{");
+            
+            for(int i = 0; i < this.P_div_history.size(); i++) {
+                
+                
+                writer.print(String.format(Locale.US, "%.10f", this.P_div_history.get(i)));
+                
+                if(i != this.P_div_history.size()-1) {
+                    writer.print(",");
+                }
+                
+            }
+            
+            writer.print("}");
+            
+            writer.close();
+            
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            Logger.getLogger(DErand1bin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
     }
 
     /**

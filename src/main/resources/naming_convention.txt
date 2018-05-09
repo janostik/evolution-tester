@@ -24,6 +24,8 @@
 -CL100 - Successful clusters evaluated after 100 generations and used in mutation strategy 
 -SS - Scaled Score
 -Db - distance based - for adaptive algorithms, to use distance rather than fitness
+-Cm - Clustering management of population size
+-DIb - Distance/Improvement based parameter adaptation
 
 -SOF - synthetic objective function
 -hbrs - history based random selection for indices selection - only score added for clustering

@@ -18,7 +18,7 @@ import util.random.Random;
  * @author adam on 30/11/2015
  */
 public class DEbest extends DErand1bin {
-
+    
     /**
      * @param args the command line arguments
      * @throws java.lang.Exception

@@ -1,50 +1,32 @@
 package algorithm.de;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.net.BidirectionalEdge;
-import model.net.Edge;
-import model.net.Net;
 import model.tf.Cec2015;
 import model.tf.TestFunction;
+import org.apache.commons.math3.ml.clustering.Cluster;
+import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
+import org.apache.commons.math3.ml.distance.ChebyshevDistance;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
+import util.IndividualComparator;
 import util.OtherDistributionsUtil;
+import util.distance.EuclideanDistance;
 import util.random.Random;
 
 /**
  *
- * SHADE with network creation for analysis
+ * Db_SHADE algorithm with clustering management of population size.
  * 
- * @author wiki on 27/02/2017
+ * @author wiki on 15/02/2018
  */
-public class N_SHADE extends SHADE {
+public class CmDb_SHADE extends Db_SHADE_analysis {
 
-    Net net = new Net();
-    int runNo;
-    int funcNo;
-    String path;
-    
-    public N_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int runNo, int funcNo, String path) {
+    public CmDb_SHADE(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator) {
         super(D, MAXFES, f, H, NP, rndGenerator);
-        this.runNo = runNo;
-        this.funcNo = funcNo;
-        this.path = path;
-    }
-    
-    @Override
-    public String getName() {
-        return "N_SHADE";
     }
     
     @Override
@@ -57,7 +39,19 @@ public class N_SHADE extends SHADE {
         this.Aext = new ArrayList<>();
         this.best = null;
         this.bestHistory = new ArrayList<>();
-
+        this.M_Fhistory = new ArrayList<>();
+        this.M_CRhistory = new ArrayList<>();
+        
+        /**
+         * Diversity and clustering
+         */
+        this.P_div_history = new ArrayList<>();
+        this.Cluster_history = new ArrayList<>();
+        this.Noise_history = new ArrayList<>();
+        this.cl_eps = Math.abs((this.f.max(0)-this.f.min(0)))/100.0;
+        this.cl_minPts = 4;
+        this.cl_distance = new ChebyshevDistance();
+        
         /**
          * Initial population
          */
@@ -71,33 +65,18 @@ public class N_SHADE extends SHADE {
             this.M_CR[h] = 0.5;
         }
         
-        PrintWriter pw = null;
-        Individual indi;
+        this.M_Fhistory.add(this.M_F.clone());
+        this.M_CRhistory.add(this.M_CR.clone());
         
-        try {
-            /**
-             * PRINT OUT THE RANKINGS
-             */
-            pw = new PrintWriter(path + "rankings_" + this.funcNo + "_" + this.runNo + ".txt");
-
-            pw.print("{{");
-            
-            for(int idd = 0; idd < this.P.size(); idd++){
-
-                indi = this.P.get(idd);
-                
-                pw.print("{" + indi.id + ", " + this.getPositionFitness(indi) + ", " + this.getPositionCentrality(indi) + ", " + String.format(Locale.US, "%.10f", indi.fitness) + "}");
-                if(idd != this.P.size()-1) {
-                    pw.print(",");
-                }
-
-            }
-            
-            pw.print("}");
-
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(N_SHADE.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        /**
+         * Diversity and clustering
+         */
+        int[] cl_res;
+        DBSCANClusterer clusterer = new DBSCANClusterer(this.cl_eps, this.cl_minPts, this.cl_distance);
+        this.P_div_history.add(this.calculateDiversity(this.P));
+        cl_res = this.clusteringViaDBSCAN(P, clusterer);
+        this.Cluster_history.add(cl_res[0]);
+        this.Noise_history.add(cl_res[1]);
 
         /**
          * Generation iteration;
@@ -114,8 +93,8 @@ public class N_SHADE extends SHADE {
         int k = 0;
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
-        Individual[] parentArray; //for edge creation
-        Edge edge;
+        
+        EuclideanDistance euclid = new EuclideanDistance();
 
         while (true) {
             
@@ -158,20 +137,16 @@ public class N_SHADE extends SHADE {
                 /**
                  * Parent selection
                  */
-                parentArray = new Individual[4];
-                parentArray[0] = x;
-                parentArray[1] = this.getRandBestFromList(pBestArray, x.id);
-                pbestIndex = this.getPbestIndex(parentArray[1]);
-                pbest = parentArray[1].vector.clone();
+                pbestInd = this.getRandBestFromList(pBestArray, x.id);
+                pbestIndex = this.getPbestIndex(pbestInd);
+                pbest = pbestInd.vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
-                parentArray[2] = this.P.get(rIndexes[0]);
-                pr1 = parentArray[2].vector.clone();
+                pr1 = this.P.get(rIndexes[0]).vector.clone();
+
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
-                    parentArray[3] = null;
                 } else {
-                    parentArray[3] = this.P.get(rIndexes[1]);
-                    pr2 = parentArray[3].vector.clone();
+                    pr2 = this.P.get(rIndexes[1]).vector.clone();
                 }
                 parents = new ArrayList<>();
                 parents.add(x.vector);
@@ -197,9 +172,8 @@ public class N_SHADE extends SHADE {
                 /**
                  * Trial ready
                  */
-//                id++;
-//                trial = new Individual(String.valueOf(id), u, f.fitness(u));
-                trial = new Individual(x.id, u, f.fitness(u));
+                id++;
+                trial = new Individual(String.valueOf(id), u, f.fitness(u));
 
                 /**
                  * Trial is better
@@ -209,16 +183,7 @@ public class N_SHADE extends SHADE {
                     this.S_F.add(Fg);
                     this.S_CR.add(CRg);
                     this.Aext.add(x);
-                    wS.add(x.fitness - trial.fitness);
-                    
-                    for (int par = 1; par < parentArray.length; par++ ) {
-                        if(parentArray[par] == null){
-                            continue;
-                        }
-                        edge = new BidirectionalEdge(parentArray[par], trial);
-                        edge.iter = G;
-                        net.addEdge(edge);
-                    }
+                    wS.add(euclid.getDistance(x.vector, trial.vector));
                     
                 } else {
                     newPop.add(x);
@@ -268,65 +233,129 @@ public class N_SHADE extends SHADE {
                 }
             }
             
+            this.M_Fhistory.add(this.M_F.clone());
+            this.M_CRhistory.add(this.M_CR.clone());
+            
             /**
              * Resize of population and archives
              */
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
-            
-            pw.print(",{");
-            for(int idd = 0; idd < this.P.size(); idd++){
-                
-                indi = this.P.get(idd);
-                
-                pw.print("{" + indi.id + ", " + this.getPositionFitness(indi) + ", " + this.getPositionCentrality(indi) + ", " + String.format(Locale.US, "%.10f", indi.fitness) + "}");
-                if(idd != this.P.size()-1) {
-                    pw.print(",");
-                }
 
-            }
-            pw.print("}");
-            
-            net = new Net();
+            /**
+             * Diversity and clustering
+             */
+            this.P_div_history.add(this.calculateDiversity(this.P));
+            cl_res = this.clusteringViaDBSCAN(P, clusterer);
+            this.Cluster_history.add(cl_res[0]);
+            this.Noise_history.add(cl_res[1]);
 
         }
 
-        pw.print("}");
-        pw.close();
-        
         return this.best;
 
     }
     
     /**
+     * Clustering done via apache commons DBSCAN implementation
      * 
-     * @param ind
+     * Returns array of [number of clusters, number of noise points]
+     * 
+     * @param pop
+     * @param clusterer
      * @return 
      */
-    protected int getPositionCentrality(Individual ind) {
+    @Override
+    public int[] clusteringViaDBSCAN(List<Individual> pop, DBSCANClusterer clusterer) {
         
-        Map<Individual, Double> degMap = this.net.getDegreeMap();
-        int position = 0;
+        if(pop == null || pop.isEmpty()) {
+            return null;
+        }
         
-        double ind_degree = this.net.getDegreeMap().get(ind) == null ? 0 : this.net.getDegreeMap().get(ind);
+        List<Cluster<Individual>> clusters = clusterer.cluster(pop);
         
-        position = degMap.entrySet().stream().filter((entry) -> (entry.getValue() < ind_degree)).map((_item) -> 1).reduce(position, Integer::sum);
+        int[] result = new int[2];
+        result[0] = clusters.size();
+        result[1] = pop.size();
         
-        return position;
+        clusters.stream().forEach((cl) -> {
+            result[1] -= cl.getPoints().size();
+        });
+        
+        /**
+         * Population management
+         */
+        if(result[0] > 0) {
+            clusters.stream().forEach((cluster) -> {
+                this.deleteClusterFromPopulation(cluster);
+            });
+        }
+        
+        while(this.P.size() < this.NP) {
+            this.P.add(this.addIndividual());
+        }
+        
+        return result;
         
     }
     
     /**
      * 
-     * @param ind
+     * Deletes individuals from population, that are in the cluster, but leaves the best one.
+     * 
+     * @param cluster 
+     */
+    public void deleteClusterFromPopulation(Cluster<Individual> cluster) {
+     
+        if(this.P.size() <= 4) {
+            return;
+        }
+        
+        List<Individual> list = cluster.getPoints();
+        list.sort(new IndividualComparator());
+        Individual indToDel;
+        
+        if(list.size() <= 4) {
+            return;
+        }
+        
+        for(int i = list.size()-1; i > 3; i--) {
+            
+            indToDel = list.get(i);
+            this.P.remove(indToDel);
+            
+            if(this.P.size() <= 4) {
+                return;
+            }
+            
+        }
+        
+    }
+    
+    /**
+     * Creation of initial population.
      * @return 
      */
-    protected int getPositionFitness(Individual ind) {
-        int position = 0;
+    protected Individual addIndividual(){
+
+        double[] features;
+        Individual ind;
+
+        id++;
+        features = this.f.generateTrial(this.D).clone();
+        ind = new Individual(String.valueOf(id), features, this.f.fitness(features));
+        this.isBest(ind);
+        this.P.add(ind);
+        this.FES++;
+        this.writeHistory();
         
-        position = this.P.stream().filter((i) -> (i.fitness > ind.fitness)).map((_item) -> 1).reduce(position, Integer::sum);
+        return ind;
         
-        return position;
+    }
+
+    @Override
+    public String getName() {
+        return "CmDb_SHADE";
     }
     
     /**
@@ -334,36 +363,47 @@ public class N_SHADE extends SHADE {
      */
     public static void main(String[] args) throws Exception {
         
-        int dimension = 50;
+        int dimension = 10;
         int NP = 100;
-        int MAXFES = dimension * 100;
-        int funcNumber = 11;
+        int MAXFES = 1000 * NP;
+        int funcNumber = 1;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 10;
-        util.random.Random generator = new util.random.UniformRandom();
-        String path = "E:\\results\\N_SHADE-50\\";
+        util.random.Random generator;
 
-        N_SHADE shade;
+        CmDb_SHADE shade;
 
-        int runs = 2;
+        int runs = 3;
         double[] bestArray = new double[runs];
+        int i, best;
+        double min;
 
         for (int k = 0; k < runs; k++) {
-
-            //(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int runNo, int funcNo, String path)
-            shade = new N_SHADE(dimension, MAXFES, tf, H, NP, generator, k, funcNumber, path);
+            
+            generator = new util.random.UniformRandom();
+            shade = new CmDb_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());
-            System.out.println(Arrays.toString(shade.getBest().vector));
-//            
-//            System.out.println("-------------------");
-//            ((NLfv_SHADE)shade).net.getDegreeMap().entrySet().stream().forEach((entry) -> {
-//                System.out.println("ID: " + entry.getKey().id + " - degree: " + entry.getValue() + " - fitness: " + entry.getKey().fitness);
-//            });
-//            System.out.println("-------------------");
+
+            for(Individual ind : ((SHADE_analysis)shade).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+            
+//            System.out.println("Clustering");
+//            System.out.println(Arrays.toString(shade.P_div_history.toArray()));
+            
         }
 
         System.out.println("=================================");
@@ -375,7 +415,5 @@ public class N_SHADE extends SHADE {
         System.out.println("=================================");
         
     }
-
-    
     
 }

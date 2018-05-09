@@ -1,11 +1,12 @@
 package model;
 
 import java.util.Arrays;
+import org.apache.commons.math3.ml.clustering.Clusterable;
 
 /**
  * Created by jakub on 27/10/15.
  */
-public class Individual {
+public class Individual implements Clusterable {
 
     public double[] vector;
     public double fitness;
@@ -88,5 +89,10 @@ public class Individual {
                 ", fitness=" + fitness +
                 ", score=" + score +
                 '}';
+    }
+
+    @Override
+    public double[] getPoint() {
+        return this.vector;
     }
 }

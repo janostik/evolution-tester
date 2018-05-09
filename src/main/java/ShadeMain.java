@@ -1596,7 +1596,7 @@ public class ShadeMain {
         
         res_writer.print("{");
         
-        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        for (int funcNumber = 11; funcNumber <= maxFuncNum; funcNumber++){
         
             tf = new Cec2015(dimension, funcNumber);
             bestArray = new double[runs];
@@ -4989,66 +4989,77 @@ public class ShadeMain {
         int H = 10;
         
         /**
-         * SSCI 2017 data
+         * HAIS SI 2017 data
          */
         
-        dimension = 10;
+        dimension = 50;
         MAXFES = 10000 * dimension;
         home_dir = "";
+        path = "E:\\results\\N_SHADE-50/";
         
+        nShadeMainCEC2015(path, H);
+        
+//        /**
+//         * SSCI 2017 data
+//         */
+//        
+//        dimension = 10;
+//        MAXFES = 10000 * dimension;
+//        home_dir = "";
+//        
 //        System.out.println("\n\nTime: " + new Date() + " start SHADE " + dimension + "D\n\n");
 //        
 //        path = "E:\\results\\SSCI2017\\CEC2015-SHADE-10/";
 //        
 //        SSCI2017shadeMainCEC2015(path, H, path);
-        
-        System.out.println("\n\nTime: " + new Date() + " start L-SHADE " + dimension + "D\n\n");
-        
-        path = "E:\\results\\SSCI2017\\CEC2015-L-SHADE-10/";
-        
-        SSCI2017lshadeMainCEC2015(path, H, path);
-        
-        System.out.println("\n\nTime: " + new Date() + " start Db-SHADE " + dimension + "D\n\n");
-        
-        path = "E:\\results\\SSCI2017\\CEC2015-Db-SHADE-10/";
-        
-        SSCI2017dbshadeMainCEC2015(path, H, path);
-
-        System.out.println("\n\nTime: " + new Date() + " start DbL-SHADE " + dimension + "D\n\n");
-        
-        path = "E:\\results\\SSCI2017\\CEC2015-DbL-SHADE-10/";
-        
-        SSCI2017dblshadeMainCEC2015(path, H, path);
-        
-        dimension = 30;
-        MAXFES = 10000 * dimension;
-        
-        System.out.println("\n\nTime: " + new Date() + " start SHADE " + dimension + "D\n\n");
-        
-        path = "E:\\results\\SSCI2017\\CEC2015-SHADE-30/";
-        
-        SSCI2017shadeMainCEC2015(path, H, path);
-
-        System.out.println("\n\nTime: " + new Date() + " start L-SHADE " + dimension + "D\n\n");
-        
-        path = "E:\\results\\SSCI2017\\CEC2015-L-SHADE-30/";
-        
-        SSCI2017lshadeMainCEC2015(path, H, path);
-        
-        System.out.println("\n\nTime: " + new Date() + " start Db-SHADE " + dimension + "D\n\n");
-        
-        path = "E:\\results\\SSCI2017\\CEC2015-Db-SHADE-30/";
-        
-        SSCI2017dbshadeMainCEC2015(path, H, path);
-
-        System.out.println("\n\nTime: " + new Date() + " start DbL-SHADE " + dimension + "D\n\n");
-        
-        path = "E:\\results\\SSCI2017\\CEC2015-DbL-SHADE-30/";
-        
-        SSCI2017dblshadeMainCEC2015(path, H, path);
-        
-        System.out.println("\n\nTime: " + new Date() + " END ALL");
-        
+//        
+//        System.out.println("\n\nTime: " + new Date() + " start L-SHADE " + dimension + "D\n\n");
+//        
+//        path = "E:\\results\\SSCI2017\\CEC2015-L-SHADE-10/";
+//        
+//        SSCI2017lshadeMainCEC2015(path, H, path);
+//        
+//        System.out.println("\n\nTime: " + new Date() + " start Db-SHADE " + dimension + "D\n\n");
+//        
+//        path = "E:\\results\\SSCI2017\\CEC2015-Db-SHADE-10/";
+//        
+//        SSCI2017dbshadeMainCEC2015(path, H, path);
+//
+//        System.out.println("\n\nTime: " + new Date() + " start DbL-SHADE " + dimension + "D\n\n");
+//        
+//        path = "E:\\results\\SSCI2017\\CEC2015-DbL-SHADE-10/";
+//        
+//        SSCI2017dblshadeMainCEC2015(path, H, path);
+//        
+//        dimension = 30;
+//        MAXFES = 10000 * dimension;
+//        
+//        System.out.println("\n\nTime: " + new Date() + " start SHADE " + dimension + "D\n\n");
+//        
+//        path = "E:\\results\\SSCI2017\\CEC2015-SHADE-30/";
+//        
+//        SSCI2017shadeMainCEC2015(path, H, path);
+//
+//        System.out.println("\n\nTime: " + new Date() + " start L-SHADE " + dimension + "D\n\n");
+//        
+//        path = "E:\\results\\SSCI2017\\CEC2015-L-SHADE-30/";
+//        
+//        SSCI2017lshadeMainCEC2015(path, H, path);
+//        
+//        System.out.println("\n\nTime: " + new Date() + " start Db-SHADE " + dimension + "D\n\n");
+//        
+//        path = "E:\\results\\SSCI2017\\CEC2015-Db-SHADE-30/";
+//        
+//        SSCI2017dbshadeMainCEC2015(path, H, path);
+//
+//        System.out.println("\n\nTime: " + new Date() + " start DbL-SHADE " + dimension + "D\n\n");
+//        
+//        path = "E:\\results\\SSCI2017\\CEC2015-DbL-SHADE-30/";
+//        
+//        SSCI2017dblshadeMainCEC2015(path, H, path);
+//        
+//        System.out.println("\n\nTime: " + new Date() + " END ALL");
+//        
 //        dimension = 10;
 //        MAXFES = 10000 * dimension;
 //        home_dir = "";

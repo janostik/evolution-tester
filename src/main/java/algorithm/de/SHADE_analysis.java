@@ -5,8 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -16,6 +14,11 @@ import model.Individual;
 import model.tf.Cec2015;
 import model.tf.PupilCostFunction;
 import model.tf.TestFunction;
+import org.apache.commons.math3.ml.clustering.Cluster;
+import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
+import org.apache.commons.math3.ml.clustering.DoublePoint;
+import org.apache.commons.math3.ml.distance.ChebyshevDistance;
+import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -29,7 +32,7 @@ import util.OtherDistributionsUtil;
  *
  * @author adam on 16/11/2015 update 25/11/2015
  */
-public class SHADE implements Algorithm {
+public class SHADE_analysis implements Algorithm {
     
     int D;
     int G;
@@ -51,52 +54,33 @@ public class SHADE implements Algorithm {
     int Asize;
     List<double[]> M_Fhistory;
     List<double[]> M_CRhistory;
-
+    
     /**
-     * Population diversity
+     * Population diversity and clustering analysis
      */
     List<Double> P_div_history;
+    List<Integer> Cluster_history;
+    List<Integer> Noise_history;
+    int cl_minPts;
+    double cl_eps;
+    DistanceMeasure cl_distance;
     
-    public SHADE(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
+    
+    /**
+     * @param D
+     * @param MAXFES
+     * @param f
+     * @param H
+     * @param NP
+     * @param rndGenerator 
+     */
+    public SHADE_analysis(int D, int MAXFES, TestFunction f, int H, int NP, util.random.Random rndGenerator) {
         this.D = D;
         this.MAXFES = MAXFES;
         this.f = f;
         this.H = H;
         this.NP = NP;
         this.rndGenerator = rndGenerator;
-    }
-
-    /**
-     * Writes population diversity history into a file
-     * 
-     * @param path 
-     */
-    public void writePopDiversityHistory(String path) {
-        
-        try {
-            PrintWriter writer = new PrintWriter(path, "UTF-8");
-            
-            writer.print("{");
-            
-            for(int i = 0; i < this.P_div_history.size(); i++) {
-                
-                
-                writer.print(String.format(Locale.US, "%.10f", this.P_div_history.get(i)));
-                
-                if(i != this.P_div_history.size()-1) {
-                    writer.print(",");
-                }
-                
-            }
-            
-            writer.print("}");
-            
-            writer.close();
-            
-        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-            Logger.getLogger(DErand1bin.class.getName()).log(Level.SEVERE, null, ex);
-        }
-       
     }
     
     /**
@@ -135,6 +119,40 @@ public class SHADE implements Algorithm {
         
     }
     
+    /**
+     * Clustering done via apache commons DBSCAN implementation
+     * 
+     * Returns array of [number of clusters, number of noise points]
+     * 
+     * @param pop
+     * @param clusterer
+     * @return 
+     */
+    public int[] clusteringViaDBSCAN(List<Individual> pop, DBSCANClusterer clusterer) {
+        
+        if(pop == null || pop.isEmpty()) {
+            return null;
+        }
+
+        List<DoublePoint> pop_points = new ArrayList<>();
+        pop.stream().forEach((ind) -> {
+            pop_points.add(new DoublePoint(ind.vector));
+        });
+        
+        List<Cluster<DoublePoint>> clusters = clusterer.cluster(pop_points);
+        
+        int[] result = new int[2];
+        result[0] = clusters.size();
+        result[1] = pop.size();
+        
+        clusters.stream().forEach((cl) -> {
+            result[1] -= cl.getPoints().size();
+        });
+        
+        return result;
+        
+    }
+
     @Override
     public Individual run() {
 
@@ -148,6 +166,16 @@ public class SHADE implements Algorithm {
         this.M_Fhistory = new ArrayList<>();
         this.M_CRhistory = new ArrayList<>();
 
+        /**
+         * Diversity and clustering
+         */
+        this.P_div_history = new ArrayList<>();
+        this.Cluster_history = new ArrayList<>();
+        this.Noise_history = new ArrayList<>();
+        this.cl_eps = Math.abs((this.f.max(0)-this.f.min(0)))/100.0;
+        this.cl_minPts = 4;
+        this.cl_distance = new ChebyshevDistance();
+        
         /**
          * Initial population
          */
@@ -165,10 +193,14 @@ public class SHADE implements Algorithm {
         this.M_CRhistory.add(this.M_CR.clone());
         
         /**
-         * Diversity
+         * Diversity and clustering
          */
-        this.P_div_history = new ArrayList<>();
+        int[] cl_res;
+        DBSCANClusterer clusterer = new DBSCANClusterer(this.cl_eps, this.cl_minPts, this.cl_distance);
         this.P_div_history.add(this.calculateDiversity(this.P));
+        cl_res = this.clusteringViaDBSCAN(P, clusterer);
+        this.Cluster_history.add(cl_res[0]);
+        this.Noise_history.add(cl_res[1]);
 
         /**
          * Generation iteration;
@@ -185,12 +217,7 @@ public class SHADE implements Algorithm {
         int k = 0;
         double pmin = 2 / (double) this.NP;
         List<double[]> parents;
-        /**
-         * Archive hits
-         */
-        int archive_hit = 0;
-        int archive_good_hit = 0;
-        boolean hit = false;
+
 
         while (true) {
             
@@ -239,14 +266,9 @@ public class SHADE implements Algorithm {
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
                 pr1 = this.P.get(rIndexes[0]).vector.clone();
                 
-                /**
-                 * Archive hit
-                 */
-                hit = false;
+
                 if (rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
-                    hit = true;
-                    archive_hit++;
                 } else {
                     pr2 = this.P.get(rIndexes[1]).vector.clone();
                 }
@@ -286,13 +308,6 @@ public class SHADE implements Algorithm {
                     this.S_CR.add(CRg);
                     this.Aext.add(x);
                     wS.add(x.fitness - trial.fitness);
-                    
-                    /**
-                     * Archive hit
-                     */
-                    if(hit) {
-                        archive_good_hit++;
-                    }
                     
                 } else {
                     newPop.add(x);
@@ -355,12 +370,11 @@ public class SHADE implements Algorithm {
              * Diversity and clustering
              */
             this.P_div_history.add(this.calculateDiversity(this.P));
-            
+            cl_res = this.clusteringViaDBSCAN(P, clusterer);
+            this.Cluster_history.add(cl_res[0]);
+            this.Noise_history.add(cl_res[1]);
 
         }
-
-//        System.out.println("Archive hits: " + archive_hit + " - " + (double) archive_hit / (double) this.MAXFES * 100 + "%");
-//        System.out.println("Good hits: " + archive_good_hit + " - " + (double) archive_good_hit / (double) archive_hit * 100 + "%");
         
         return this.best;
 
@@ -407,9 +421,9 @@ public class SHADE implements Algorithm {
             writer.close();
             
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(SHADE.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SHADE_analysis.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(SHADE.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SHADE_analysis.class.getName()).log(Level.SEVERE, null, ex);
         }
        
     }
@@ -455,9 +469,79 @@ public class SHADE implements Algorithm {
             writer.close();
             
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(SHADE.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SHADE_analysis.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(SHADE.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SHADE_analysis.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
+    }
+    
+    /**
+     * Writes population diversity history into a file
+     * 
+     * @param path 
+     */
+    public void writePopDiversityHistory(String path) {
+        
+        try {
+            PrintWriter writer = new PrintWriter(path, "UTF-8");
+            
+            writer.print("{");
+            
+            for(int i = 0; i < this.P_div_history.size(); i++) {
+                
+                
+                writer.print(String.format(Locale.US, "%.10f", this.P_div_history.get(i)));
+                
+                if(i != this.P_div_history.size()-1) {
+                    writer.print(",");
+                }
+                
+            }
+            
+            writer.print("}");
+            
+            writer.close();
+            
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            Logger.getLogger(SHADE_analysis.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
+    }
+    
+    /**
+     * Writes clustering history into a file
+     * 
+     * @param path 
+     */
+    public void writeClusteringHistory(String path) {
+        
+        try {
+            PrintWriter writer = new PrintWriter(path, "UTF-8");
+            
+            writer.print("{");
+            
+            for(int i = 0; i < this.Cluster_history.size(); i++) {
+                
+                writer.print("{");
+                writer.print(this.Cluster_history.get(i));
+                writer.print(",");
+                writer.print(this.Noise_history.get(i));
+                writer.print("}");
+                
+                
+                if(i != this.P_div_history.size()-1) {
+                    writer.print(",");
+                }
+                
+            }
+            
+            writer.print("}");
+            
+            writer.close();
+            
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            Logger.getLogger(SHADE_analysis.class.getName()).log(Level.SEVERE, null, ex);
         }
        
     }
@@ -933,7 +1017,7 @@ public class SHADE implements Algorithm {
         int H = 10;
         util.random.Random generator;
 
-        SHADE shade;
+        SHADE_analysis shade;
 
         int runs = 30;
         double[] bestArray = new double[runs];
@@ -943,7 +1027,7 @@ public class SHADE implements Algorithm {
         for (int k = 0; k < runs; k++) {
             
             generator = new util.random.UniformRandom();
-            shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
+            shade = new SHADE_analysis(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
             
@@ -982,29 +1066,16 @@ public class SHADE implements Algorithm {
     }
 
     public static void main(String[] args) throws Exception {
-
-//        double prec = 0;
-//        int min = 1, max = 128;
-//        
-//        for(int i = min; i <= max; i++) {
-//            
-//            prec += runOneIris(i);
-//            
-//        }
-//        
-//        System.out.println("Overall precision: " + prec/max*100 + "%");
-//        
-//        String path = "C:\\Users\\wiki\\Documents\\NetBeansProjects\\PupilCostFunctions\\12"; 
         
-        int dimension = 10; //38
+        int dimension = 10;
         int NP = 100;
-        int MAXFES = 100 * NP;
-        int funcNumber = 3;
+        int MAXFES = 1000 * NP;
+        int funcNumber = 1;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 10;
         util.random.Random generator;
 
-        SHADE shade;
+        SHADE_analysis shade;
 
         int runs = 3;
         double[] bestArray = new double[runs];
@@ -1014,7 +1085,7 @@ public class SHADE implements Algorithm {
         for (int k = 0; k < runs; k++) {
             
             generator = new util.random.UniformRandom();
-            shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
+            shade = new SHADE_analysis(dimension, MAXFES, tf, H, NP, generator);
 
             shade.run();
             
@@ -1022,64 +1093,10 @@ public class SHADE implements Algorithm {
             i = 0;
             min = Double.MAX_VALUE;
 
-//            PrintWriter writer;
-//
-//            try {
-//                writer = new PrintWriter("CEC2015-" + funcNumber + "-shade" + k + ".txt", "UTF-8");
-//
-//                writer.print("{");
-//
-//                for (int i = 0; i < shade.getBestHistory().size(); i++) {
-//
-//                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
-//
-//                    if (i != shade.getBestHistory().size() - 1) {
-//                        writer.print(",");
-//                    }
-//
-//                }
-//
-//                writer.print("}");
-//
-//                writer.close();
-//
-//            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-//                Logger.getLogger(ShaDE.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());
-//            System.out.println(Arrays.toString(((PupilCostFunction)tf).getCoords(shade.getBest().vector)));
-//            
-//            Map<String, List> map = ((Spalovny3kraje_2)tf).getOutput(shade.getBest().vector);
-//            
-//            System.out.println("=================================");
-//            String line;
-//          
-//            for(Entry<String,List> entry : map.entrySet()){
-//                line = "";
-//                System.out.println(entry.getKey());
-//                line += "{";
-////                System.out.print("{");
-//                for(int pup = 0; pup < entry.getValue().size(); pup++){
-////                    System.out.print(entry.getValue().get(pup));
-//                    line += entry.getValue().get(pup);
-//                    if(pup != entry.getValue().size()-1){
-////                       System.out.print(","); 
-//                       line += ",";
-//                    }
-//                }
-////                System.out.println("}");
-//                line += "}";
-//                line = line.replace("[", "{");
-//                line = line.replace("]", "}");
-//                System.out.println(line);
-//                
-//            }
-//            
-//            System.out.println("=================================");
-            
-            for(Individual ind : ((SHADE)shade).getBestHistory()){
+
+            for(Individual ind : ((SHADE_analysis)shade).getBestHistory()){
                 i++;
                 if(ind.fitness < min){
                     min = ind.fitness;
@@ -1087,6 +1104,9 @@ public class SHADE implements Algorithm {
                 }
             }
             System.out.println("Best solution found in " + best + " CFE");
+            
+//            System.out.println("Clustering");
+//            System.out.println(Arrays.toString(shade.P_div_history.toArray()));
             
         }
 

@@ -11,7 +11,7 @@ public class Dissipative extends Chaos {
 
     public Dissipative(){
 
-        B = 0.6;
+        B = 0.1;
         k = 8.8;
         super.generateChaoticData();
     }

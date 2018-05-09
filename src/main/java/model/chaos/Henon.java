@@ -13,7 +13,7 @@ public final class Henon extends Chaos {
 
     public Henon(){
 
-        A = 1.2;
+        A = 1.4;
         B = 0.3;
         Random rnd = new Random();
         super.xRndStart = (rnd.nextDouble() * 0.1);

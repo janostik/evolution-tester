@@ -12,7 +12,7 @@ public final class ArnoldCat extends Chaos {
 
     public ArnoldCat(){
 
-        k = 0.1;
+        k = 2.0;
         Random rnd = new Random();
         super.xRndStart = (rnd.nextDouble() * 0.1);
         super.yRndStart = ((rnd.nextDouble() * 0.1) + 0.7);
