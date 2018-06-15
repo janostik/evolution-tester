@@ -7,6 +7,8 @@ import algorithm.de.DbL_SHADE_analysis;
 import algorithm.de.Db_SHADE_analysis;
 import algorithm.de.L_SHADE_analysis;
 import algorithm.de.SHADE_analysis;
+import algorithm.de.liteSHADE2_analysis;
+import algorithm.de.liteSHADE_analysis;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Locale;
@@ -1093,6 +1095,272 @@ public class ANALYSIS {
     }
     
     /**
+     * Main class for Db_SHADE algorithm and POPULATION DIVERSITY/CLUSTERING analysis
+     * 
+     * @param path
+     * @param H
+     * @param mfpath
+     * @throws Exception 
+     */
+    public static void liteShadeCEC2015(String path, String mfpath) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        liteSHADE_analysis shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer, final_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        final_writer = new PrintWriter(home_dir + path + "final_res.csv", "UTF-8");
+        
+        res_writer.print("{");
+        
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new liteSHADE_analysis(dimension, MAXFES, tf, NP, generator);
+                shade.run();
+
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+
+                    if (i != shade.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+                bestArray[k] = shade.getBest().fitness - tf.optimum();
+                
+                shade.writeMFhistory(home_dir + mfpath + "mf" + funcNumber + "-" + k + ".txt");
+                shade.writeMCRhistory(home_dir + mfpath + "mcr" + funcNumber + "-" + k + ".txt");
+                shade.writePopDiversityHistory(home_dir + mfpath + "PopDiv" + funcNumber + "-" + k + ".txt");
+                shade.writeClusteringHistory(home_dir + mfpath + "Cluster" + funcNumber + "-" + k + ".txt");
+
+            }
+            
+            for(int z = 0; z < bestArray.length; z++) {
+                final_writer.print(String.format(Locale.US, "%.10f", bestArray[z]));
+                
+                if(z != bestArray.length-1) {
+                    final_writer.print(',');
+                }
+                else {
+                    final_writer.println();
+                }
+            }
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+            System.out.println(tf.name());
+            System.out.println("=================================");
+            System.out.println("Best: " + best);
+            System.out.println("Worst: " + worst);
+            System.out.println("Median: " + median);
+            System.out.println("Mean: " + mean);
+            System.out.println("Std: " + std);
+            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        final_writer.close();
+        
+    }
+    
+    /**
+     * Main class for Db_SHADE algorithm and POPULATION DIVERSITY/CLUSTERING analysis
+     * 
+     * @param path
+     * @param H
+     * @param mfpath
+     * @throws Exception 
+     */
+    public static void liteShade2CEC2015(String path, String mfpath) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        liteSHADE2_analysis shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer, final_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        final_writer = new PrintWriter(home_dir + path + "final_res.csv", "UTF-8");
+        
+        res_writer.print("{");
+        
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new liteSHADE2_analysis(dimension, MAXFES, tf, NP, generator);
+                shade.run();
+
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+
+                    if (i != shade.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+                bestArray[k] = shade.getBest().fitness - tf.optimum();
+                
+                shade.writeMFhistory(home_dir + mfpath + "mf" + funcNumber + "-" + k + ".txt");
+                shade.writeMCRhistory(home_dir + mfpath + "mcr" + funcNumber + "-" + k + ".txt");
+                shade.writePopDiversityHistory(home_dir + mfpath + "PopDiv" + funcNumber + "-" + k + ".txt");
+                shade.writeClusteringHistory(home_dir + mfpath + "Cluster" + funcNumber + "-" + k + ".txt");
+
+            }
+            
+            for(int z = 0; z < bestArray.length; z++) {
+                final_writer.print(String.format(Locale.US, "%.10f", bestArray[z]));
+                
+                if(z != bestArray.length-1) {
+                    final_writer.print(',');
+                }
+                else {
+                    final_writer.println();
+                }
+            }
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+            System.out.println(tf.name());
+            System.out.println("=================================");
+            System.out.println("Best: " + best);
+            System.out.println("Worst: " + worst);
+            System.out.println("Median: " + median);
+            System.out.println("Mean: " + mean);
+            System.out.println("Std: " + std);
+            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        final_writer.close();
+        
+    }
+    
+    /**
      * Overall
      */
     public static int dimension = 10;
@@ -1123,33 +1391,57 @@ public class ANALYSIS {
         String path;
         home_dir = "";
         
-        dimension = 100;
+        dimension = 10;
         MAXFES = 10000 * dimension;
 
-        System.out.println("\n\nTime: " + new Date() + " start SHADE " + dimension + "D\n\n");
+        System.out.println("\n\nTime: " + new Date() + " start liteSHADE2 " + dimension + "D\n\n");
         
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-SHADE-" + dimension + "/";
+        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-liteSHADE2-" + dimension + "/";
         
-        shadeCEC2015(path, H, path);
+        liteShade2CEC2015(path, path);
         
-        System.out.println("\n\nTime: " + new Date() + " start L_SHADE " + dimension + "D\n\n");
-        
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-L_SHADE-" + dimension + "/";
-        
-        lshadeCEC2015(path, H, path);
+        dimension = 30;
+        MAXFES = 10000 * dimension;
 
-        System.out.println("\n\nTime: " + new Date() + " start Db_SHADE " + dimension + "D\n\n");
+        System.out.println("\n\nTime: " + new Date() + " start liteSHADE2 " + dimension + "D\n\n");
         
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-Db_SHADE-" + dimension + "/";
+        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-liteSHADE2-" + dimension + "/";
         
-        DBshadeCEC2015(path, H, path);
+        liteShade2CEC2015(path, path);
         
-        System.out.println("\n\nTime: " + new Date() + " start DbL_SHADE " + dimension + "D\n\n");
+        dimension = 50;
+        MAXFES = 10000 * dimension;
+
+        System.out.println("\n\nTime: " + new Date() + " start liteSHADE2 " + dimension + "D\n\n");
         
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DbL_SHADE-" + dimension + "/";
+        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-liteSHADE2-" + dimension + "/";
         
-        DBlshadeCEC2015(path, H, path);
+        liteShade2CEC2015(path, path);
         
+//        System.out.println("\n\nTime: " + new Date() + " start SHADE " + dimension + "D\n\n");
+//        
+//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-SHADE-" + dimension + "/";
+//        
+//        shadeCEC2015(path, H, path);
+//        
+//        System.out.println("\n\nTime: " + new Date() + " start L_SHADE " + dimension + "D\n\n");
+//        
+//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-L_SHADE-" + dimension + "/";
+//        
+//        lshadeCEC2015(path, H, path);
+//
+//        System.out.println("\n\nTime: " + new Date() + " start Db_SHADE " + dimension + "D\n\n");
+//        
+//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-Db_SHADE-" + dimension + "/";
+//        
+//        DBshadeCEC2015(path, H, path);
+//        
+//        System.out.println("\n\nTime: " + new Date() + " start DbL_SHADE " + dimension + "D\n\n");
+//        
+//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DbL_SHADE-" + dimension + "/";
+//        
+//        DBlshadeCEC2015(path, H, path);
+//        
 //        /**
 //         * 1 1
 //         */
