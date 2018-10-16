@@ -1,14 +1,12 @@
 package algorithm.de;
 
 import algorithm.Algorithm;
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -16,8 +14,8 @@ import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.net.Net;
+import model.tf.Cec2017;
 import model.tf.PupilCostFunction;
-import model.tf.Schwefel;
 import model.tf.nwf.Network3;
 import model.tf.nwf.Network4;
 import model.tf.TestFunction;
@@ -822,9 +820,9 @@ public class DErand1bin implements Algorithm {
     
         int dimension = 10;
         int NP = 100;
-        int MAXFES = 100 * NP;
-        int funcNumber = 5;
-        TestFunction tf = new Schwefel();
+        int MAXFES = 10000 * NP;
+        int funcNumber = 27;
+        TestFunction tf = new Cec2017(dimension, funcNumber);
         util.random.Random generator = new util.random.UniformRandom();
         double f = 0.5, cr = 0.8;
         Net net;
@@ -835,6 +833,8 @@ public class DErand1bin implements Algorithm {
         double[] bestArray = new double[runs];
         PrintWriter pw;
 
+        System.out.println(new Date());
+        
         for (int k = 0; k < runs; k++) {
 
             de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
@@ -854,6 +854,7 @@ public class DErand1bin implements Algorithm {
 
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());
+            System.out.println(new Date());
             
            /**
             * NET manipulating

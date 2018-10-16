@@ -74,7 +74,7 @@ public class ShadeMain {
         
         for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
         
-            tf = new Cec2013(funcNumber);
+            tf = new Cec2013(dimension, funcNumber);
             bestArray = new double[runs];
             
             for (int k = 0; k < runs; k++) {
@@ -2849,7 +2849,7 @@ public class ShadeMain {
         
         for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
         
-            tf = new Cec2013(funcNumber);
+            tf = new Cec2013(dimension, funcNumber);
             bestArray = new double[runs];
             
             for (int k = 0; k < runs; k++) {

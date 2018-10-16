@@ -27,9 +27,9 @@ public class Cec2013 implements TestFunction {
 
     int nx, mx, func_num;
 
-    public Cec2013(int func_num) throws Exception {
+    public Cec2013(int nx, int func_num) throws Exception {
 
-        this.nx = 10;
+        this.nx = nx;
         this.mx = 1;
         this.func_num = func_num;
 

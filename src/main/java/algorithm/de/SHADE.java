@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.Cec2015;
+import model.tf.Cec2017;
 import model.tf.PupilCostFunction;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -333,8 +334,12 @@ public class SHADE implements Algorithm {
                     meanS_CR2 += (wS.get(s) / wSsum) * this.S_CR.get(s);
                 }
 
-                this.M_F[k] = (meanS_F1 / meanS_F2);
-                this.M_CR[k] = (meanS_CR1 / meanS_CR2);
+                if(meanS_F2 != 0) {
+                    this.M_F[k] = (meanS_F1 / meanS_F2);
+                }
+                if(meanS_CR2 != 0) {
+                    this.M_CR[k] = (meanS_CR1 / meanS_CR2);
+                }
 
                 k++;
                 if (k >= this.H) {
@@ -1000,7 +1005,7 @@ public class SHADE implements Algorithm {
         int NP = 100;
         int MAXFES = 100 * NP;
         int funcNumber = 3;
-        TestFunction tf = new Cec2015(dimension, funcNumber);
+        TestFunction tf = new Cec2017(dimension, funcNumber);
         int H = 10;
         util.random.Random generator;
 
