@@ -6,8 +6,10 @@ import algorithm.de.DIb_SHADE_analysis;
 import algorithm.de.DbL_SHADE_analysis;
 import algorithm.de.Db_SHADE_analysis;
 import algorithm.de.Db_jSO_analysis;
+import algorithm.de.EB_DISH_analysis;
 import algorithm.de.L_SHADE_analysis;
 import algorithm.de.SHADE_analysis;
+import algorithm.de.UDb_jSO_analysis;
 import algorithm.de.jSO_analysis;
 import algorithm.de.liteSHADE2_analysis;
 import algorithm.de.liteSHADE_analysis;
@@ -18,6 +20,7 @@ import java.util.stream.DoubleStream;
 import model.tf.Cec2013;
 import model.tf.Cec2014;
 import model.tf.Cec2015;
+import model.tf.Cec2017;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -1764,6 +1767,139 @@ public class ANALYSIS {
     }
     
     /**
+     * Main class for UDb_jSO algorithm and POPULATION DIVERSITY/CLUSTERING analysis
+     * 
+     * @param path
+     * @param H
+     * @param mfpath
+     * @throws Exception 
+     */
+    public static void UDBjSOCEC2015(String path, int H, String mfpath) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        UDb_jSO_analysis shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer, final_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        final_writer = new PrintWriter(home_dir + path + "final_res.csv", "UTF-8");
+        
+        res_writer.print("{");
+
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new UDb_jSO_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+                shade.run();
+
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+
+                    if (i != shade.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+                bestArray[k] = shade.getBest().fitness - tf.optimum();
+                
+                shade.writeMFhistory(home_dir + mfpath + "mf" + funcNumber + "-" + k + ".txt");
+                shade.writeMCRhistory(home_dir + mfpath + "mcr" + funcNumber + "-" + k + ".txt");
+                shade.writePopDiversityHistory(home_dir + mfpath + "PopDiv" + funcNumber + "-" + k + ".txt");
+                shade.writeClusteringHistory(home_dir + mfpath + "Cluster" + funcNumber + "-" + k + ".txt");
+
+            }
+            
+            for(int z = 0; z < bestArray.length; z++) {
+                final_writer.print(String.format(Locale.US, "%.10f", bestArray[z]));
+                
+                if(z != bestArray.length-1) {
+                    final_writer.print(',');
+                }
+                else {
+                    final_writer.println();
+                }
+            }
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+            System.out.println(tf.name());
+            System.out.println("=================================");
+            System.out.println("Best: " + best);
+            System.out.println("Worst: " + worst);
+            System.out.println("Median: " + median);
+            System.out.println("Mean: " + mean);
+            System.out.println("Std: " + std);
+            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        final_writer.close();
+        
+    }
+    
+    /**
      * Main class for Db_SHADE algorithm and POPULATION DIVERSITY/CLUSTERING analysis
      * 
      * @param path
@@ -1796,6 +1932,272 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new Db_jSO_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+                shade.run();
+
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+
+                    if (i != shade.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+                bestArray[k] = shade.getBest().fitness - tf.optimum();
+                
+                shade.writeMFhistory(home_dir + mfpath + "mf" + funcNumber + "-" + k + ".txt");
+                shade.writeMCRhistory(home_dir + mfpath + "mcr" + funcNumber + "-" + k + ".txt");
+                shade.writePopDiversityHistory(home_dir + mfpath + "PopDiv" + funcNumber + "-" + k + ".txt");
+                shade.writeClusteringHistory(home_dir + mfpath + "Cluster" + funcNumber + "-" + k + ".txt");
+
+            }
+            
+            for(int z = 0; z < bestArray.length; z++) {
+                final_writer.print(String.format(Locale.US, "%.10f", bestArray[z]));
+                
+                if(z != bestArray.length-1) {
+                    final_writer.print(',');
+                }
+                else {
+                    final_writer.println();
+                }
+            }
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+            System.out.println(tf.name());
+            System.out.println("=================================");
+            System.out.println("Best: " + best);
+            System.out.println("Worst: " + worst);
+            System.out.println("Median: " + median);
+            System.out.println("Mean: " + mean);
+            System.out.println("Std: " + std);
+            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        final_writer.close();
+        
+    }
+    
+    /**
+     * Main class for Db_SHADE algorithm and POPULATION DIVERSITY/CLUSTERING analysis
+     * 
+     * @param path
+     * @param H
+     * @param mfpath
+     * @throws Exception 
+     */
+    public static void DBjSOCEC2017(String path, int H, String mfpath) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 28;
+
+        Db_jSO_analysis shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer, final_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        final_writer = new PrintWriter(home_dir + path + "final_res.csv", "UTF-8");
+        
+        res_writer.print("{");
+
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2017(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new Db_jSO_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+                shade.run();
+
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+
+                    if (i != shade.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+                bestArray[k] = shade.getBest().fitness - tf.optimum();
+                
+                shade.writeMFhistory(home_dir + mfpath + "mf" + funcNumber + "-" + k + ".txt");
+                shade.writeMCRhistory(home_dir + mfpath + "mcr" + funcNumber + "-" + k + ".txt");
+                shade.writePopDiversityHistory(home_dir + mfpath + "PopDiv" + funcNumber + "-" + k + ".txt");
+                shade.writeClusteringHistory(home_dir + mfpath + "Cluster" + funcNumber + "-" + k + ".txt");
+
+            }
+            
+            for(int z = 0; z < bestArray.length; z++) {
+                final_writer.print(String.format(Locale.US, "%.10f", bestArray[z]));
+                
+                if(z != bestArray.length-1) {
+                    final_writer.print(',');
+                }
+                else {
+                    final_writer.println();
+                }
+            }
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+            System.out.println(tf.name());
+            System.out.println("=================================");
+            System.out.println("Best: " + best);
+            System.out.println("Worst: " + worst);
+            System.out.println("Median: " + median);
+            System.out.println("Mean: " + mean);
+            System.out.println("Std: " + std);
+            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        final_writer.close();
+        
+    }
+    
+    /**
+     * Main class for Db_SHADE algorithm and POPULATION DIVERSITY/CLUSTERING analysis
+     * 
+     * @param path
+     * @param H
+     * @param mfpath
+     * @throws Exception 
+     */
+    public static void EBDISHCEC2017(String path, int H, String mfpath) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 28;
+
+        EB_DISH_analysis shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer, final_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        final_writer = new PrintWriter(home_dir + path + "final_res.csv", "UTF-8");
+        
+        res_writer.print("{");
+
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2017(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new EB_DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
                 shade.run();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
@@ -2193,6 +2595,155 @@ public class ANALYSIS {
         String path;
         home_dir = "";
         
+        /**
+         * jSO settings
+         */
+        dimension = 10;
+        MAXFES = 10000 * dimension;
+        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        NPfinal = 4;
+        H = 5;
+        
+        System.out.println("\n\nTime: " + new Date() + " start UDISH " + dimension + "D\n\n");
+        
+        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-UDISH-" + dimension + "/";
+        
+        UDBjSOCEC2015(path, H, path);
+        
+        /**
+         * jSO settings
+         */
+        dimension = 30;
+        MAXFES = 10000 * dimension;
+        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        NPfinal = 4;
+        H = 5;
+        
+        System.out.println("\n\nTime: " + new Date() + " start UDISH " + dimension + "D\n\n");
+        
+        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-UDISH-" + dimension + "/";
+        
+        UDBjSOCEC2015(path, H, path);
+        
+        /**
+         * jSO settings
+         */
+        dimension = 50;
+        MAXFES = 10000 * dimension;
+        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        NPfinal = 4;
+        H = 5;
+        
+        System.out.println("\n\nTime: " + new Date() + " start UDISH " + dimension + "D\n\n");
+        
+        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-UDISH-" + dimension + "/";
+        
+        UDBjSOCEC2015(path, H, path);
+        
+        /**
+         * jSO settings
+         */
+        dimension = 100;
+        MAXFES = 10000 * dimension;
+        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        NPfinal = 4;
+        H = 5;
+        
+        System.out.println("\n\nTime: " + new Date() + " start UDISH " + dimension + "D\n\n");
+        
+        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-UDISH-" + dimension + "/";
+        
+        UDBjSOCEC2015(path, H, path);
+        
+        /*int H = 10;
+        int wDis, wImp;
+        String path;
+        home_dir = "";
+        */
+        /**
+         * jSO settings
+         */
+        /*dimension = 10;
+        MAXFES = 10000 * dimension;
+        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        NPfinal = 4;
+        H = 5;
+        
+        System.out.println("\n\nTime: " + new Date() + " start DISH " + dimension + "D\n\n");
+        
+        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-DISH-" + dimension + "/";
+        
+        DBjSOCEC2017(path, H, path);
+        
+        System.out.println("\n\nTime: " + new Date() + " start EB_DISH " + dimension + "D\n\n");
+        
+        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-EB_DISH-" + dimension + "/";
+        
+        EBDISHCEC2017(path, H, path);
+        */
+        /**
+         * jSO settings
+         */
+        /*dimension = 30;
+        MAXFES = 10000 * dimension;
+        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        NPfinal = 4;
+        H = 5;
+        
+        System.out.println("\n\nTime: " + new Date() + " start DISH " + dimension + "D\n\n");
+        
+        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-DISH-" + dimension + "/";
+        
+        DBjSOCEC2017(path, H, path);
+        
+        System.out.println("\n\nTime: " + new Date() + " start EB_DISH " + dimension + "D\n\n");
+        
+        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-EB_DISH-" + dimension + "/";
+        
+        EBDISHCEC2017(path, H, path);
+        */
+        /**
+         * jSO settings
+         */
+        /*dimension = 50;
+        MAXFES = 10000 * dimension;
+        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        NPfinal = 4;
+        H = 5;
+        
+        System.out.println("\n\nTime: " + new Date() + " start DISH " + dimension + "D\n\n");
+        
+        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-DISH-" + dimension + "/";
+        
+        DBjSOCEC2017(path, H, path);
+        
+        System.out.println("\n\nTime: " + new Date() + " start EB_DISH " + dimension + "D\n\n");
+        
+        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-EB_DISH-" + dimension + "/";
+        
+        EBDISHCEC2017(path, H, path);
+        */
+        /**
+         * jSO settings
+         */
+        /*dimension = 100;
+        MAXFES = 10000 * dimension;
+        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        NPfinal = 4;
+        H = 5;
+        
+        System.out.println("\n\nTime: " + new Date() + " start DISH " + dimension + "D\n\n");
+        
+        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-DISH-" + dimension + "/";
+        
+        DBjSOCEC2017(path, H, path);
+        
+        System.out.println("\n\nTime: " + new Date() + " start EB_DISH " + dimension + "D\n\n");
+        
+        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-EB_DISH-" + dimension + "/";
+        
+        EBDISHCEC2017(path, H, path);
+        */
 //        /**
 //         * SHADE settings
 //         */
@@ -2272,11 +2823,11 @@ public class ANALYSIS {
 //        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2014-DbL_SHADE-" + dimension + "/";
 //        
 //        DBlshadeCEC2014(path, H, path);
-        
+       
         /**
          * SHADE settings
          */
-        dimension = 50;
+/*        dimension = 50;
         MAXFES = 10000 * dimension;
         NP = 100;
         H = 10;
@@ -2292,11 +2843,11 @@ public class ANALYSIS {
         path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2014-Db_SHADE-" + dimension + "/";
         
         DBshadeCEC2014(path, H, path);
-        
+ */       
         /**
          * L-SHADE settings
          */
-        NPinit = 18 * dimension;
+  /*      NPinit = 18 * dimension;
         NPfinal = 4;
         H = 6;
         
@@ -2311,11 +2862,11 @@ public class ANALYSIS {
         path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2014-DbL_SHADE-" + dimension + "/";
         
         DBlshadeCEC2014(path, H, path);
-        
+  */      
         /**
          * SHADE settings
          */
-        dimension = 100;
+  /*      dimension = 100;
         MAXFES = 10000 * dimension;
         NP = 100;
         H = 10;
@@ -2325,11 +2876,11 @@ public class ANALYSIS {
         path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2014-Db_SHADE-" + dimension + "/";
         
         DBshadeCEC2014(path, H, path);
-        
+   */     
         /**
          * L-SHADE settings
          */
-        NPinit = 18 * dimension;
+   /*     NPinit = 18 * dimension;
         NPfinal = 4;
         H = 6;
         
@@ -2338,7 +2889,7 @@ public class ANALYSIS {
         path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2014-DbL_SHADE-" + dimension + "/";
         
         DBlshadeCEC2014(path, H, path);
-        
+    */    
 //        
 //        /**
 //         * jSO settings

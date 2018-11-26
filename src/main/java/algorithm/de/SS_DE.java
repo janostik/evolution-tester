@@ -560,6 +560,30 @@ public class SS_DE extends DErand1bin {
         
     }
     
+    public static void writeSelectedstatistics(int[] dims, int[] NPs, int iter, int runs) throws Exception {
+        
+        int dimension;
+        int NP;
+        TestFunction[] tfs;
+        
+        for(int dimiter = 0; dimiter < dims.length; dimiter++) {
+            
+            dimension = dims[dimiter];
+            
+            for(int npiter = 0; npiter < NPs.length; npiter++) {
+                
+                NP = NPs[npiter];
+                
+                tfs = new TestFunction[]{new Ackley(),new Dejong(), new Rastrigin(), new Rosenbrock(), new Schwefel()};
+                
+                writeStatisticsOfScore(tfs, dimension, NP, iter, runs);
+                
+            }
+            
+        }
+        
+    }
+    
     /**
      * 
      * @return 
@@ -614,9 +638,9 @@ public class SS_DE extends DErand1bin {
         runs = 51;        
 
         int[] NPs = {20,30,40,50,60,70,80,90,100};
-        int[] dims = {100};
+        int[] dims = {5,10,20};
  
-        writeCECstatistics(dims, NPs, iter, runs);
+        writeSelectedstatistics(dims, NPs, iter, runs);
         
         /**
          * Only selected functions
