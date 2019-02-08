@@ -390,14 +390,14 @@ public class Db_jSO_analysis extends SHADE_analysis {
         int minNP = 4;
         int MAXFES = 100 * dimension;
         int funcNumber = 3;
-        TestFunction tf = new Cec2017(dimension, funcNumber);
+        TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 5;
         long seed = 10304050L;
         util.random.Random generator = new util.random.UniformRandom();
 
         Db_jSO_analysis shade;
 
-        int runs = 1;
+        int runs = 2;
         double[] bestArray = new double[runs];
 
         for (int k = 0; k < runs; k++) {

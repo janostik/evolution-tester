@@ -1,9 +1,7 @@
 package algorithm.hybrid;
 
 
-import AP.algorithm.de.ap.AP_DEbest;
 import AP.model.tf.ap.regression.APdataset;
-import AP.util.APIndividualComparator;
 import algorithm.Algorithm;
 import algorithm.de.DErand1bin;
 import algorithm.de.ap.AP_ShaDE.AP_Individual;
@@ -32,6 +30,7 @@ import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import util.random.Random;
+
 
 /**
  *
