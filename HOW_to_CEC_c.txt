@@ -1,0 +1,1 @@
+x86_64-w64-mingw32-g++ -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" -shared -o CEC2019lib.dll util_CEC2019c.cpp
