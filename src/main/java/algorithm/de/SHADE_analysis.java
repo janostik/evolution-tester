@@ -22,6 +22,7 @@ import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
+import util.IndividualComparator;
 import util.OtherDistributionsUtil;
 
 /**
@@ -253,9 +254,7 @@ public class SHADE_analysis implements Algorithm {
                     Psize = 2;
                 }
 
-                pBestArray = new ArrayList<>();
-                pBestArray.addAll(this.P);
-                pBestArray = this.resize(pBestArray, Psize);
+                pBestArray = this.resize(this.P, Psize);
 
                 /**
                  * Parent selection
@@ -302,7 +301,7 @@ public class SHADE_analysis implements Algorithm {
                 /**
                  * Trial is better
                  */
-                if (trial.fitness < x.fitness) {
+                if (trial.fitness <= x.fitness) {
                     newPop.add(trial);
                     this.S_F.add(Fg);
                     this.S_CR.add(CRg);
@@ -736,15 +735,10 @@ public class SHADE_analysis implements Algorithm {
     protected List<Individual> resize(List<Individual> list, int size) {
 
         List<Individual> toRet = new ArrayList<>();
-        List<Individual> tmp = new ArrayList<>();
-        tmp.addAll(list);
-        int bestIndex;
-
-        for (int i = 0; i < size; i++) {
-            bestIndex = this.getIndexOfBestFromList(tmp);
-            toRet.add(tmp.get(bestIndex));
-            tmp.remove(bestIndex);
-        }
+        toRet.addAll(list);
+        
+        toRet.sort(new IndividualComparator());
+        toRet = toRet.subList(0, size);
 
         return toRet;
 
@@ -847,7 +841,7 @@ public class SHADE_analysis implements Algorithm {
      */
     protected boolean isBest(Individual ind) {
 
-        if (this.best == null || ind.fitness < this.best.fitness) {
+        if (this.best == null || ind.fitness <= this.best.fitness) {
             this.best = ind;
             return true;
         }

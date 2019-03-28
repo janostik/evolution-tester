@@ -19,11 +19,13 @@ public class CEC2019c {
         
         CEC2019c test = new CEC2019c();
         
-        test.init(4);
+        test.init(1);
         
-        double res;
+        double res = 0;
         
-        res = test.fitness(new double[]{100,0,0,0,0,0,0,0,0,0});
+        for(int i = 0; i < 1000000; i++) {
+            res = test.fitness(new double[]{100,0,0,0,0,0,0,0,0});
+        }
         
         System.out.println(res);
         

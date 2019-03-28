@@ -1,6 +1,7 @@
 
 import algorithm.de.CmDbL_SHADE;
 import algorithm.de.CmDb_SHADE;
+import algorithm.de.DISHv2_analysis;
 import algorithm.de.DIbL_SHADE_analysis;
 import algorithm.de.DIb_SHADE_analysis;
 import algorithm.de.DbL_SHADE_analysis;
@@ -1900,6 +1901,139 @@ public class ANALYSIS {
     }
     
     /**
+     * Main class for DISHv2 algorithm and POPULATION DIVERSITY/CLUSTERING analysis
+     * 
+     * @param path
+     * @param H
+     * @param mfpath
+     * @throws Exception 
+     */
+    public static void DISHv2CEC2015(String path, int H, String mfpath) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        DISHv2_analysis shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer, final_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        final_writer = new PrintWriter(home_dir + path + "final_res.csv", "UTF-8");
+        
+        res_writer.print("{");
+
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+        
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new DISHv2_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+                shade.run();
+
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < shade.getBestHistory().size(); i++) {
+
+                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
+
+                    if (i != shade.getBestHistory().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+                bestArray[k] = shade.getBest().fitness - tf.optimum();
+                
+                shade.writeMFhistory(home_dir + mfpath + "mf" + funcNumber + "-" + k + ".txt");
+                shade.writeMCRhistory(home_dir + mfpath + "mcr" + funcNumber + "-" + k + ".txt");
+                shade.writePopDiversityHistory(home_dir + mfpath + "PopDiv" + funcNumber + "-" + k + ".txt");
+                shade.writeClusteringHistory(home_dir + mfpath + "Cluster" + funcNumber + "-" + k + ".txt");
+
+            }
+            
+            for(int z = 0; z < bestArray.length; z++) {
+                final_writer.print(String.format(Locale.US, "%.10f", bestArray[z]));
+                
+                if(z != bestArray.length-1) {
+                    final_writer.print(',');
+                }
+                else {
+                    final_writer.println();
+                }
+            }
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+            System.out.println(tf.name());
+            System.out.println("=================================");
+            System.out.println("Best: " + best);
+            System.out.println("Worst: " + worst);
+            System.out.println("Median: " + median);
+            System.out.println("Mean: " + mean);
+            System.out.println("Std: " + std);
+            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        final_writer.close();
+        
+    }
+    
+    /**
      * Main class for Db_SHADE algorithm and POPULATION DIVERSITY/CLUSTERING analysis
      * 
      * @param path
@@ -2590,8 +2724,7 @@ public class ANALYSIS {
          * population diversity and clustering
          */
         
-        int H = 10;
-        int wDis, wImp;
+        int H;
         String path;
         home_dir = "";
         
@@ -2604,11 +2737,11 @@ public class ANALYSIS {
         NPfinal = 4;
         H = 5;
         
-        System.out.println("\n\nTime: " + new Date() + " start UDISH " + dimension + "D\n\n");
+        System.out.println("\n\nTime: " + new Date() + " start DISHv2 " + dimension + "D\n\n");
         
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-UDISH-" + dimension + "/";
+        path = "D:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DISHv2-" + dimension + "/";
         
-        UDBjSOCEC2015(path, H, path);
+        DISHv2CEC2015(path, H, path);
         
         /**
          * jSO settings
@@ -2619,11 +2752,11 @@ public class ANALYSIS {
         NPfinal = 4;
         H = 5;
         
-        System.out.println("\n\nTime: " + new Date() + " start UDISH " + dimension + "D\n\n");
+        System.out.println("\n\nTime: " + new Date() + " start DISHv2 " + dimension + "D\n\n");
         
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-UDISH-" + dimension + "/";
+        path = "D:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DISHv2-" + dimension + "/";
         
-        UDBjSOCEC2015(path, H, path);
+        DISHv2CEC2015(path, H, path);
         
         /**
          * jSO settings
@@ -2634,11 +2767,11 @@ public class ANALYSIS {
         NPfinal = 4;
         H = 5;
         
-        System.out.println("\n\nTime: " + new Date() + " start UDISH " + dimension + "D\n\n");
+        System.out.println("\n\nTime: " + new Date() + " start DISHv2 " + dimension + "D\n\n");
         
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-UDISH-" + dimension + "/";
+        path = "D:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DISHv2-" + dimension + "/";
         
-        UDBjSOCEC2015(path, H, path);
+        DISHv2CEC2015(path, H, path);
         
         /**
          * jSO settings
@@ -2649,562 +2782,11 @@ public class ANALYSIS {
         NPfinal = 4;
         H = 5;
         
-        System.out.println("\n\nTime: " + new Date() + " start UDISH " + dimension + "D\n\n");
+        System.out.println("\n\nTime: " + new Date() + " start DISHv2 " + dimension + "D\n\n");
         
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-UDISH-" + dimension + "/";
+        path = "D:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DISHv2-" + dimension + "/";
         
-        UDBjSOCEC2015(path, H, path);
-        
-        /*int H = 10;
-        int wDis, wImp;
-        String path;
-        home_dir = "";
-        */
-        /**
-         * jSO settings
-         */
-        /*dimension = 10;
-        MAXFES = 10000 * dimension;
-        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        NPfinal = 4;
-        H = 5;
-        
-        System.out.println("\n\nTime: " + new Date() + " start DISH " + dimension + "D\n\n");
-        
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-DISH-" + dimension + "/";
-        
-        DBjSOCEC2017(path, H, path);
-        
-        System.out.println("\n\nTime: " + new Date() + " start EB_DISH " + dimension + "D\n\n");
-        
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-EB_DISH-" + dimension + "/";
-        
-        EBDISHCEC2017(path, H, path);
-        */
-        /**
-         * jSO settings
-         */
-        /*dimension = 30;
-        MAXFES = 10000 * dimension;
-        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        NPfinal = 4;
-        H = 5;
-        
-        System.out.println("\n\nTime: " + new Date() + " start DISH " + dimension + "D\n\n");
-        
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-DISH-" + dimension + "/";
-        
-        DBjSOCEC2017(path, H, path);
-        
-        System.out.println("\n\nTime: " + new Date() + " start EB_DISH " + dimension + "D\n\n");
-        
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-EB_DISH-" + dimension + "/";
-        
-        EBDISHCEC2017(path, H, path);
-        */
-        /**
-         * jSO settings
-         */
-        /*dimension = 50;
-        MAXFES = 10000 * dimension;
-        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        NPfinal = 4;
-        H = 5;
-        
-        System.out.println("\n\nTime: " + new Date() + " start DISH " + dimension + "D\n\n");
-        
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-DISH-" + dimension + "/";
-        
-        DBjSOCEC2017(path, H, path);
-        
-        System.out.println("\n\nTime: " + new Date() + " start EB_DISH " + dimension + "D\n\n");
-        
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-EB_DISH-" + dimension + "/";
-        
-        EBDISHCEC2017(path, H, path);
-        */
-        /**
-         * jSO settings
-         */
-        /*dimension = 100;
-        MAXFES = 10000 * dimension;
-        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        NPfinal = 4;
-        H = 5;
-        
-        System.out.println("\n\nTime: " + new Date() + " start DISH " + dimension + "D\n\n");
-        
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-DISH-" + dimension + "/";
-        
-        DBjSOCEC2017(path, H, path);
-        
-        System.out.println("\n\nTime: " + new Date() + " start EB_DISH " + dimension + "D\n\n");
-        
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2017-EB_DISH-" + dimension + "/";
-        
-        EBDISHCEC2017(path, H, path);
-        */
-//        /**
-//         * SHADE settings
-//         */
-//        dimension = 10;
-//        MAXFES = 10000 * dimension;
-//        NP = 100;
-//        H = 10;
-//        
-//        System.out.println("\n\nCEC 2013 Time: " + new Date() + " start Db_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2013-Db_SHADE-" + dimension + "/";
-//        
-//        DBshadeCEC2013(path, H, path);
-//        
-//        System.out.println("\n\nCEC 2014 Time: " + new Date() + " start Db_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2014-Db_SHADE-" + dimension + "/";
-//        
-//        DBshadeCEC2014(path, H, path);
-//        
-//        /**
-//         * L-SHADE settings
-//         */
-//        NPinit = 18 * dimension;
-//        NPfinal = 4;
-//        H = 6;
-//        
-//        System.out.println("\n\nCEC 2013 Time: " + new Date() + " start DbL_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2013-DbL_SHADE-" + dimension + "/";
-//        
-//        DBlshadeCEC2013(path, H, path);
-//        
-//        System.out.println("\n\nCEC 2014 Time: " + new Date() + " start DbL_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2014-DbL_SHADE-" + dimension + "/";
-//        
-//        DBlshadeCEC2014(path, H, path);
-//        
-//        /**
-//         * SHADE settings
-//         */
-//        dimension = 30;
-//        MAXFES = 10000 * dimension;
-//        NP = 100;
-//        H = 10;
-//        
-//        System.out.println("\n\nCEC 2013 Time: " + new Date() + " start Db_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2013-Db_SHADE-" + dimension + "/";
-//        
-//        DBshadeCEC2013(path, H, path);
-//        
-//        System.out.println("\n\nCEC 2014 Time: " + new Date() + " start Db_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2014-Db_SHADE-" + dimension + "/";
-//        
-//        DBshadeCEC2014(path, H, path);
-//        
-//        /**
-//         * L-SHADE settings
-//         */
-//        dimension = 30;
-//        MAXFES = 10000 * dimension;
-//        NPinit = 18 * dimension;
-//        NPfinal = 4;
-//        H = 6;
-//        
-//        System.out.println("\n\nCEC 2013 Time: " + new Date() + " start DbL_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2013-DbL_SHADE-" + dimension + "/";
-//        
-//        DBlshadeCEC2013(path, H, path);
-//        
-//        System.out.println("\n\nCEC 2014 Time: " + new Date() + " start DbL_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2014-DbL_SHADE-" + dimension + "/";
-//        
-//        DBlshadeCEC2014(path, H, path);
-       
-        /**
-         * SHADE settings
-         */
-/*        dimension = 50;
-        MAXFES = 10000 * dimension;
-        NP = 100;
-        H = 10;
-        
-        System.out.println("\n\nCEC 2013 Time: " + new Date() + " start Db_SHADE " + dimension + "D\n\n");
-        
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2013-Db_SHADE-" + dimension + "/";
-        
-        DBshadeCEC2013(path, H, path);
-        
-        System.out.println("\n\nCEC 2014 Time: " + new Date() + " start Db_SHADE " + dimension + "D\n\n");
-        
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2014-Db_SHADE-" + dimension + "/";
-        
-        DBshadeCEC2014(path, H, path);
- */       
-        /**
-         * L-SHADE settings
-         */
-  /*      NPinit = 18 * dimension;
-        NPfinal = 4;
-        H = 6;
-        
-        System.out.println("\n\nCEC 2013 Time: " + new Date() + " start DbL_SHADE " + dimension + "D\n\n");
-        
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2013-DbL_SHADE-" + dimension + "/";
-        
-        DBlshadeCEC2013(path, H, path);
-        
-        System.out.println("\n\nCEC 2014 Time: " + new Date() + " start DbL_SHADE " + dimension + "D\n\n");
-        
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2014-DbL_SHADE-" + dimension + "/";
-        
-        DBlshadeCEC2014(path, H, path);
-  */      
-        /**
-         * SHADE settings
-         */
-  /*      dimension = 100;
-        MAXFES = 10000 * dimension;
-        NP = 100;
-        H = 10;
-        
-        System.out.println("\n\nCEC 2014 Time: " + new Date() + " start Db_SHADE " + dimension + "D\n\n");
-        
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2014-Db_SHADE-" + dimension + "/";
-        
-        DBshadeCEC2014(path, H, path);
-   */     
-        /**
-         * L-SHADE settings
-         */
-   /*     NPinit = 18 * dimension;
-        NPfinal = 4;
-        H = 6;
-        
-        System.out.println("\n\nCEC 2014 Time: " + new Date() + " start DbL_SHADE " + dimension + "D\n\n");
-        
-        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2014-DbL_SHADE-" + dimension + "/";
-        
-        DBlshadeCEC2014(path, H, path);
-    */    
-//        
-//        /**
-//         * jSO settings
-//         */
-//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-//        NPfinal = 4;
-//        H = 5;
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start jSO " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-jSO-" + dimension + "/";
-//        
-//        jSOCEC2015(path, H, path);
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start Db_jSO " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-Db_jSO-" + dimension + "/";
-//        
-//        DBjSOCEC2015(path, H, path);
-//        
-//        /**
-//         * L-SHADE settings
-//         */
-//        dimension = 30;
-//        MAXFES = 10000 * dimension;
-//        NPinit = 18 * dimension;
-//        NPfinal = 4;
-//        H = 6;
-//
-//        System.out.println("\n\nTime: " + new Date() + " start L_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-L_SHADE-" + dimension + "/";
-//        
-//        lshadeCEC2015(path, H, path);
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start DbL_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-DbL_SHADE-" + dimension + "/";
-//        
-//        DBlshadeCEC2015(path, H, path);
-//        
-//        /**
-//         * jSO settings
-//         */
-//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-//        NPfinal = 4;
-//        H = 5;
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start jSO " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-jSO-" + dimension + "/";
-//        
-//        jSOCEC2015(path, H, path);
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start Db_jSO " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-Db_jSO-" + dimension + "/";
-//        
-//        DBjSOCEC2015(path, H, path);
-//        
-//        /**
-//         * L-SHADE settings
-//         */
-//        dimension = 50;
-//        MAXFES = 10000 * dimension;
-//        NPinit = 18 * dimension;
-//        NPfinal = 4;
-//        H = 6;
-//
-//        System.out.println("\n\nTime: " + new Date() + " start L_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-L_SHADE-" + dimension + "/";
-//        
-//        lshadeCEC2015(path, H, path);
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start DbL_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-DbL_SHADE-" + dimension + "/";
-//        
-//        DBlshadeCEC2015(path, H, path);
-//        
-//        /**
-//         * jSO settings
-//         */
-//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-//        NPfinal = 4;
-//        H = 5;
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start jSO " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-jSO-" + dimension + "/";
-//        
-//        jSOCEC2015(path, H, path);
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start Db_jSO " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-Db_jSO-" + dimension + "/";
-//        
-//        DBjSOCEC2015(path, H, path);
-//        
-//        /**
-//         * L-SHADE settings
-//         */
-//        dimension = 100;
-//        MAXFES = 10000 * dimension;
-//        NPinit = 18 * dimension;
-//        NPfinal = 4;
-//        H = 6;
-//
-//        System.out.println("\n\nTime: " + new Date() + " start L_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-L_SHADE-" + dimension + "/";
-//        
-//        lshadeCEC2015(path, H, path);
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start DbL_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-DbL_SHADE-" + dimension + "/";
-//        
-//        DBlshadeCEC2015(path, H, path);
-//        
-//        /**
-//         * jSO settings
-//         */
-//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-//        NPfinal = 4;
-//        H = 5;
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start jSO " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-jSO-" + dimension + "/";
-//        
-//        jSOCEC2015(path, H, path);
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start Db_jSO " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\SWEVO\\CEC2015-Db_jSO-" + dimension + "/";
-//        
-//        DBjSOCEC2015(path, H, path);
-//        
-//        dimension = 30;
-//        MAXFES = 10000 * dimension;
-//
-//        System.out.println("\n\nTime: " + new Date() + " start liteSHADE2 " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-liteSHADE2-" + dimension + "/";
-//        
-//        liteShade2CEC2015(path, path);
-//        
-//        dimension = 50;
-//        MAXFES = 10000 * dimension;
-//
-//        System.out.println("\n\nTime: " + new Date() + " start liteSHADE2 " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-liteSHADE2-" + dimension + "/";
-//        
-//        liteShade2CEC2015(path, path);
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-SHADE-" + dimension + "/";
-//        
-//        shadeCEC2015(path, H, path);
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start L_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-L_SHADE-" + dimension + "/";
-//        
-//        lshadeCEC2015(path, H, path);
-//
-//        System.out.println("\n\nTime: " + new Date() + " start Db_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-Db_SHADE-" + dimension + "/";
-//        
-//        DBshadeCEC2015(path, H, path);
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start DbL_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DbL_SHADE-" + dimension + "/";
-//        
-//        DBlshadeCEC2015(path, H, path);
-//        
-//        /**
-//         * 1 1
-//         */
-//        
-//        dimension = 10;
-//        MAXFES = 10000 * dimension;
-//        wDis = 1;
-//        wImp = 1;
-//
-////        System.out.println("\n\nTime: " + new Date() + " start DIb_SHADE " + dimension + "D\n\n");
-////        
-////        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DIb" + wDis + "" + wImp + "_SHADE-" + dimension + "/";
-////        
-////        DIBshadeCEC2015(path, H, path, wDis, wImp);
-////        
-////        dimension = 30;
-////        MAXFES = 10000 * dimension;
-////        
-////        System.out.println("\n\nTime: " + new Date() + " start DIb_SHADE " + dimension + "D\n\n");
-////        
-////        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DIb" + wDis + "" + wImp + "_SHADE-" + dimension + "/";
-////        
-////        DIBshadeCEC2015(path, H, path, wDis, wImp);
-////        
-////        dimension = 10;
-////        MAXFES = 10000 * dimension;
-////        wDis = 1;
-////        wImp = 1;
-////
-////        System.out.println("\n\nTime: " + new Date() + " start DIbL_SHADE " + dimension + "D\n\n");
-////        
-////        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DIbL" + wDis + "" + wImp + "_SHADE-" + dimension + "/";
-////        
-////        DIBlshadeCEC2015(path, H, path, wDis, wImp);
-////        
-////        dimension = 30;
-////        MAXFES = 10000 * dimension;
-////        
-////        System.out.println("\n\nTime: " + new Date() + " start DIbL_SHADE " + dimension + "D\n\n");
-////        
-////        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DIbL" + wDis + "" + wImp + "_SHADE-" + dimension + "/";
-////        
-////        DIBlshadeCEC2015(path, H, path, wDis, wImp);
-//        
-//        /**
-//         * 3 1
-//         */
-//        
-//        dimension = 10;
-//        MAXFES = 10000 * dimension;
-//        wDis = 3;
-//        wImp = 1;
-//
-////        System.out.println("\n\nTime: " + new Date() + " start DIb_SHADE " + dimension + "D\n\n");
-////        
-////        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DIb" + wDis + "" + wImp + "_SHADE-" + dimension + "/";
-////        
-////        DIBshadeCEC2015(path, H, path, wDis, wImp);
-//        
-//        dimension = 30;
-//        MAXFES = 10000 * dimension;
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start DIb_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DIb" + wDis + "" + wImp + "_SHADE-" + dimension + "/";
-//        
-//        DIBshadeCEC2015(path, H, path, wDis, wImp);
-//        
-//        dimension = 10;
-//        MAXFES = 10000 * dimension;
-//        wDis = 3;
-//        wImp = 1;
-//
-////        System.out.println("\n\nTime: " + new Date() + " start DIbL_SHADE " + dimension + "D\n\n");
-////        
-////        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DIbL" + wDis + "" + wImp + "_SHADE-" + dimension + "/";
-////        
-////        DIBlshadeCEC2015(path, H, path, wDis, wImp);
-//        
-//        dimension = 30;
-//        MAXFES = 10000 * dimension;
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start DIbL_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DIbL" + wDis + "" + wImp + "_SHADE-" + dimension + "/";
-//        
-//        DIBlshadeCEC2015(path, H, path, wDis, wImp);
-//        
-//        /**
-//         * 1 3
-//         */
-//        
-//        dimension = 10;
-//        MAXFES = 10000 * dimension;
-//        wDis = 1;
-//        wImp = 3;
-//
-////        System.out.println("\n\nTime: " + new Date() + " start DIb_SHADE " + dimension + "D\n\n");
-////        
-////        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DIb" + wDis + "" + wImp + "_SHADE-" + dimension + "/";
-////        
-////        DIBshadeCEC2015(path, H, path, wDis, wImp);
-//        
-//        dimension = 30;
-//        MAXFES = 10000 * dimension;
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start DIb_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DIb" + wDis + "" + wImp + "_SHADE-" + dimension + "/";
-//        
-//        DIBshadeCEC2015(path, H, path, wDis, wImp);
-//        
-//        dimension = 10;
-//        MAXFES = 10000 * dimension;
-//        wDis = 1;
-//        wImp = 3;
-//
-////        System.out.println("\n\nTime: " + new Date() + " start DIbL_SHADE " + dimension + "D\n\n");
-////        
-////        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DIbL" + wDis + "" + wImp + "_SHADE-" + dimension + "/";
-////        
-////        DIBlshadeCEC2015(path, H, path, wDis, wImp);
-//        
-//        dimension = 30;
-//        MAXFES = 10000 * dimension;
-//        
-//        System.out.println("\n\nTime: " + new Date() + " start DIbL_SHADE " + dimension + "D\n\n");
-//        
-//        path = "E:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DIbL" + wDis + "" + wImp + "_SHADE-" + dimension + "/";
-//        
-//        DIBlshadeCEC2015(path, H, path, wDis, wImp);
-//        
-//        System.out.println("\n\nTime: " + new Date() + " END of EVERYTHING");
+        DISHv2CEC2015(path, H, path);
         
     }
     

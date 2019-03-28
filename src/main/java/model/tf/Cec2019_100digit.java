@@ -6,6 +6,7 @@ import model.Individual;
 import util.CEC2017c;
 import util.CEC2019c;
 import util.IndividualUtil;
+import util.RandomUtil;
 import util.random.Random;
 import util.random.UniformRandom;
 
@@ -140,24 +141,28 @@ public class Cec2019_100digit implements TestFunction {
         return "CEC2019-f" + this.func_num;
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         
         Cec2019_100digit test;
-        try {
-            test = new Cec2019_100digit(4);
-            double res = 0;
-
-            res = test.fitness(new double[]{0,0,0,0,0,0,0,0,0,0});
-            System.out.println(res);
-            
-            res = test.fitness(new double[]{0,0,0,0,0,0,0,0,0,0});
-            System.out.println(res);
-
-            
-        } catch (Exception ex) {
-            Logger.getLogger(Cec2019_100digit.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        double res = 0;
+        double[] arr;
         
+        for(int j = 1; j < 11; j++) {
+            
+            test = new Cec2019_100digit(j);
+            
+            for(int i = 0; i < 100000; i++) {
+                arr = new double[test.dim];
+                for(int a = 0; a < test.dim; a++) {
+                    arr[a] = RandomUtil.nextDouble(test.min(a), test.max(a));
+                }
+                res = test.fitness(arr);
+            }
+
+            System.out.println(res);
+            
+        }
+  
     }
 
 }

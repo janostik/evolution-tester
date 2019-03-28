@@ -92,7 +92,7 @@ public class CEC2019_100digit_Main {
      */
     public static int dimension = 10;
     public static int MAXFES = 10000 * dimension;
-    public static int runs = 50;
+    public static int runs = 50; //50
     public static int NPinit = (int) (25*Math.log(10)*Math.sqrt(10));
     public static int NPfinal = 4;
     public static int H = 5;
@@ -110,10 +110,10 @@ public class CEC2019_100digit_Main {
          * test
          */
         path = "CEC2019\\test\\";
-        func_num = 1;
-        dimension = 9;
-        MAXFES = 1000 * dimension;
-        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        func_num = 7;
+        dimension = 10;
+        MAXFES = 100000 * dimension;
+        NPinit = (int) (100*25*Math.log(dimension)*Math.sqrt(dimension));
         
         try {
             DISH_CEC2019(path, func_num);

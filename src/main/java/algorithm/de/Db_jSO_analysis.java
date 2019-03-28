@@ -2,13 +2,11 @@ package algorithm.de;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.tf.Ackley;
 import model.tf.Cec2015;
-import model.tf.Cec2017;
 import model.tf.TestFunction;
 import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import org.apache.commons.math3.ml.distance.ChebyshevDistance;
@@ -289,7 +287,7 @@ public class Db_jSO_analysis extends SHADE_analysis {
                 }
 
                 k++;
-                if (k >= this.H) {
+                if (k >= (this.H-1)) {
                     k = 0;
                 }
             }
@@ -386,9 +384,9 @@ public class Db_jSO_analysis extends SHADE_analysis {
     public static void main(String[] args) throws Exception {
         
         int dimension = 10;
-        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NP = (int) (10*25*Math.log(dimension)*Math.sqrt(dimension));
         int minNP = 4;
-        int MAXFES = 100 * dimension;
+        int MAXFES = 10000 * dimension;
         int funcNumber = 3;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 5;
@@ -397,48 +395,24 @@ public class Db_jSO_analysis extends SHADE_analysis {
 
         Db_jSO_analysis shade;
 
-        int runs = 2;
+        int runs = 10;
         double[] bestArray = new double[runs];
 
+        System.out.println("START: " + new Date());
+        
         for (int k = 0; k < runs; k++) {
 
             shade = new Db_jSO_analysis(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.run();
 
-//            PrintWriter writer;
-//
-//            try {
-//                writer = new PrintWriter("CEC2015-" + funcNumber + "-shade" + k + ".txt", "UTF-8");
-//
-//                writer.print("{");
-//
-//                for (int i = 0; i < shade.getBestHistory().size(); i++) {
-//
-//                    writer.print(String.format(Locale.US, "%.10f", shade.getBestHistory().get(i).fitness));
-//
-//                    if (i != shade.getBestHistory().size() - 1) {
-//                        writer.print(",");
-//                    }
-//
-//                }
-//
-//                writer.print("}");
-//
-//                writer.close();
-//
-//            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-//                Logger.getLogger(ShaDE.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());
             System.out.println(Arrays.toString(shade.getBest().vector));
-            
-//            for(Individual ind : shade.P){
-//                System.out.println("ID: " + ind.id + " - fitness: " + ind.fitness);
-//            }
+
         }
+        
+        System.out.println("END: " + new Date());
 
         System.out.println("=================================");
         System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());

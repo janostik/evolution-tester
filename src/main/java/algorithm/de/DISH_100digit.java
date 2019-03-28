@@ -3,18 +3,14 @@ package algorithm.de;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.DoubleStream;
 import model.Individual;
-import model.tf.Ackley;
 import model.tf.Cec2015;
-import model.tf.Cec2017;
 import model.tf.TestFunction;
-import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
-import org.apache.commons.math3.ml.distance.ChebyshevDistance;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
+import util.IndividualComparator;
 import util.OtherDistributionsUtil;
 import util.distance.EuclideanDistance;
 import util.random.Random;
@@ -47,14 +43,15 @@ public class DISH_100digit extends SHADE_analysis {
     protected boolean digitCheck(Individual ind) {
         
         double threshold = Math.pow(10, this.exponent);
+        double[] input;
         
         while((ind.fitness - this.f.optimum()) <= threshold) {
-            
-            double[] input = new double[]{this.FES, (ind.fitness - this.f.optimum())};
+
+            input = new double[]{this.FES, (ind.fitness - this.f.optimum())};
             this.res_history.add(input);
             this.exponent -= 1;
             threshold = Math.pow(10, this.exponent);
-            if(this.exponent == 10)
+            if(this.exponent == -10)
                 return true;
         }
         
@@ -133,41 +130,31 @@ public class DISH_100digit extends SHADE_analysis {
         /**
          * Generation iteration;
          */
-        int r, Psize, pbestIndex;
-        double Fg, CRg, Fw;
-        List<Individual> newPop, pBestArray;
-        double[] v, pbest, pr1, pr2, u;
+        /**
+         * Generation iteration;
+         */
+        int r, Psize, pbestIndex, memoryIndex, k = 0;
+        double Fg, CRg, Fw, Frand, CRrand, gg, pmin = 0.125, pmax = 0.25, p, wSsum, meanS_F1, meanS_F2, meanS_CR1, meanS_CR2;
+        Individual trial, x;
+        double[] v, pbest, pr1, pr2, u, wsList = new double[NP], SFlist = new double[NP], SCRlist = new double[NP];
         int[] rIndexes;
-        Individual trial, pbestInd;
-        Individual x;
-        List<Double> wS;
-        double wSsum, meanS_F1, meanS_F2, meanS_CR1, meanS_CR2;
-        int k = 0;
-        double pmin = 0.125, pmax = 0.25, p;
-        List<double[]> parents;
-        double gg;
+        double[][] parents;
+        List<Individual> newPop, pBestArray;
 
         EuclideanDistance euclid = new EuclideanDistance();
         
         while (true) {
 
             this.G++;
-            this.S_F = new ArrayList<>();
-            this.S_CR = new ArrayList<>();
-            wS = new ArrayList<>();
-
             newPop = new ArrayList<>();
             
+            memoryIndex = 0;
             p = ((pmax - pmin)/(double) this.MAXFES) * this.FES + pmin;
 
             for (int i = 0; i < this.NP; i++) {
 
                 x = this.P.get(i);
                 r = rndGenerator.nextInt(this.H);
-                if(r == this.H - 1) {
-                    this.M_F[r] = 0.9;
-                    this.M_CR[r] = 0.9;
-                }
                 Fg = OtherDistributionsUtil.cauchy(this.M_F[r], 0.1);
                 while (Fg <= 0) {
                     Fg = OtherDistributionsUtil.cauchy(this.M_F[r], 0.1);
@@ -181,7 +168,7 @@ public class DISH_100digit extends SHADE_analysis {
                 if (CRg > 1) {
                     CRg = 1;
                 }
-                if (CRg < 0) {
+                else if(CRg < 0) {
                     CRg = 0;
                 }
                 
@@ -213,28 +200,25 @@ public class DISH_100digit extends SHADE_analysis {
                     Psize = 2;
                 }
 
-                pBestArray = new ArrayList<>();
-                pBestArray.addAll(this.P);
-                pBestArray = this.resize(pBestArray, Psize);
+                pBestArray = this.resize(this.P, Psize);
 
                 /**
                  * Parent selection
                  */
-                pbestInd = this.getRandBestFromList(pBestArray, x.id);
-                pbestIndex = this.getPbestIndex(pbestInd);
-                pbest = pbestInd.vector.clone();
+                pbestIndex = this.getIndexOfRandBestFromList(pBestArray, x.id);
+                pbest = this.P.get(pbestIndex).vector.clone();
                 rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
                 pr1 = this.P.get(rIndexes[0]).vector.clone();
-                if (rIndexes[1] > this.NP - 1) {
+                if(rIndexes[1] > this.NP - 1) {
                     pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
-                } else {
+                }else {
                     pr2 = this.P.get(rIndexes[1]).vector.clone();
                 }
-                parents = new ArrayList<>();
-                parents.add(x.vector);
-                parents.add(pbest);
-                parents.add(pr1);
-                parents.add(pr2);
+                parents = new double[4][D];
+                parents[0] = x.vector;
+                parents[1] = pbest;
+                parents[2] = pr1;
+                parents[3] = pr2;
                 
                 if (gg < 0.2) {
                     Fw = 0.7 * Fg;
@@ -249,7 +233,7 @@ public class DISH_100digit extends SHADE_analysis {
                 /**
                  * Mutation
                  */               
-                v = mutation(parents, Fg, Fw);
+                v = mutationDISH(parents, Fg, Fw);
 
                 /**
                  * Crossover
@@ -270,12 +254,15 @@ public class DISH_100digit extends SHADE_analysis {
                 /**
                  * Trial is better
                  */
-                if (trial.fitness < x.fitness) {
+                if (trial.fitness <= x.fitness) {
                     newPop.add(trial);
-                    this.S_F.add(Fg);
-                    this.S_CR.add(CRg);
                     this.Aext.add(x);
-                    wS.add(euclid.getDistance(x.vector, trial.vector));
+
+                    SFlist[memoryIndex] = Fg;
+                    SCRlist[memoryIndex] = CRg;
+                    wsList[memoryIndex] = euclid.getDistance(x.vector, trial.vector);
+
+                    memoryIndex++;
                     
                 } else {
                     newPop.add(x);
@@ -304,23 +291,24 @@ public class DISH_100digit extends SHADE_analysis {
             }
 
             /**
-             * Memories update
+             * Memories update - new
              */
-            if (this.S_F.size() > 0) {
+            if(memoryIndex > 0) {
                 wSsum = 0;
-                for (Double num : wS) {
-                    wSsum += num;
+                for(int i = 0; i < memoryIndex; i++) {
+                    wSsum += wsList[i];
                 }
+
                 meanS_F1 = 0;
                 meanS_F2 = 0;
                 meanS_CR1 = 0;
                 meanS_CR2 = 0;
 
-                for (int s = 0; s < this.S_F.size(); s++) {
-                    meanS_F1 += (wS.get(s) / wSsum) * this.S_F.get(s) * this.S_F.get(s);
-                    meanS_F2 += (wS.get(s) / wSsum) * this.S_F.get(s);
-                    meanS_CR1 += (wS.get(s) / wSsum) * this.S_CR.get(s) * this.S_CR.get(s);
-                    meanS_CR2 += (wS.get(s) / wSsum) * this.S_CR.get(s);
+                for (int s = 0; s < memoryIndex; s++) {
+                    meanS_F1 += (wsList[s] / wSsum) * SFlist[s] * SFlist[s];
+                    meanS_F2 += (wsList[s] / wSsum) * SFlist[s];
+                    meanS_CR1 += (wsList[s] / wSsum) * SCRlist[s] * SCRlist[s];
+                    meanS_CR2 += (wsList[s] / wSsum) * SCRlist[s];
                 }
 
                 if(meanS_F2 != 0) {
@@ -331,7 +319,7 @@ public class DISH_100digit extends SHADE_analysis {
                 }
 
                 k++;
-                if (k >= this.H) {
+                if (k >= (this.H - 1)) {
                     k = 0;
                 }
             }
@@ -343,22 +331,31 @@ public class DISH_100digit extends SHADE_analysis {
             this.P.addAll(newPop);
             NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
             P = this.resizePop(P, NP);
-            
-            
-//            if(G % (this.MAXFES/this.maxPopSize/10) == 0) {
-//                System.out.println(((double) this.FES/(double) this.MAXFES)*100 + "%");
-//            }
-            
-//            this.M_Fhistory.add(this.M_F.clone());
-//            this.M_CRhistory.add(this.M_CR.clone());
 
         }
 
-//        System.out.println("100%");
         return this.best;
 
     }
 
+    /**
+     *
+     * @param list
+     * @param id
+     * @return
+     */
+    protected int getIndexOfRandBestFromList(List<Individual> list, String id) {
+        
+        int index = rndGenerator.nextInt(list.size());
+        
+        while(list.get(index).id.equals(id)) {
+            index = rndGenerator.nextInt(list.size());
+        }
+
+        return index;
+
+    }
+    
     public List<double[]> getRes_history() {
         return res_history;
     }
@@ -370,7 +367,7 @@ public class DISH_100digit extends SHADE_analysis {
      * @param Fw
      * @return 
      */
-    protected double[] mutation(List<double[]> parents, double F, double Fw){
+    protected double[] mutationDISH(double[][] parents, double F, double Fw){
         
         /**
          * Parents:
@@ -383,7 +380,7 @@ public class DISH_100digit extends SHADE_analysis {
         double[] v = new double[this.D];
         for (int j = 0; j < this.D; j++) {
 
-            v[j] = parents.get(0)[j] + Fw * (parents.get(1)[j] - parents.get(0)[j]) + F * (parents.get(2)[j] - parents.get(3)[j]);
+            v[j] = parents[0][j] + Fw * (parents[1][j] - parents[0][j]) + F * (parents[2][j] - parents[3][j]);
 
         }
         
@@ -404,15 +401,9 @@ public class DISH_100digit extends SHADE_analysis {
         }
         
         List<Individual> toRet = new ArrayList<>();
-        List<Individual> tmp = new ArrayList<>();
-        tmp.addAll(list);
-        Individual bestInd;
-
-        for (int i = 0; i < size; i++) {
-            bestInd = this.getBestFromList(tmp);
-            toRet.add(bestInd);
-            tmp.remove(bestInd);
-        }
+        toRet.addAll(list);
+        toRet.sort(new IndividualComparator());
+        toRet = toRet.subList(0, size);
 
         return toRet;
 

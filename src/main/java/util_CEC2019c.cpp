@@ -64,12 +64,15 @@ JNIEXPORT jdouble JNICALL Java_util_CEC2019c_fitness
     double res;
     double *f;
     double *x = env->GetDoubleArrayElements(arr,0);
+    env->DeleteLocalRef(arr);
     /*x=(double *)malloc(dimension*sizeof(double));*/
     f=(double *)malloc(sizeof(double));
 
     cec19_test_func(x, f, dimension,1,fun);
 
     res = f[0];
+
+    free(f);
 
     return res;
 
