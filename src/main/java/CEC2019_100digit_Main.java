@@ -26,11 +26,12 @@ public class CEC2019_100digit_Main {
      * 
      * @param path
      * @param func_num
+     * @param startIndex
      * @throws Exception 
      */
-    public static void DISH_CEC2019(String path, int func_num) throws Exception{
+    public static void DISH_CEC2019(String path, int func_num, int startIndex) throws Exception{
 
-        System.out.println("DISH - CEC2019 - " + func_num);
+        System.out.println("DISH - CEC2019 - " + func_num + " runs " + (startIndex) + " - " + (startIndex+(runs-1)));
         System.out.println(new Date());
         System.out.println("==============================");
         
@@ -43,9 +44,9 @@ public class CEC2019_100digit_Main {
         PrintWriter writer, res_writer;
         double best,worst,median,mean,std;
 
-        res_writer = new PrintWriter(home_dir + path + "results_" + func_num + ".txt", "UTF-8");
+//        res_writer = new PrintWriter(home_dir + path + "results_" + func_num + ".txt", "UTF-8");
         
-        res_writer.print("{");
+//        res_writer.print("{");
         
         tf = new Cec2019_100digit(func_num);
         for (int k = 0; k < runs; k++) {
@@ -53,9 +54,9 @@ public class CEC2019_100digit_Main {
                 dish = new DISH_100digit(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
                 dish.run();
                 
-                System.out.println(new Date() + " || " + (k+1) + ". run: " + String.format(Locale.US, "%.10f", dish.getBest().fitness - tf.optimum()));
+                System.out.println(new Date() + " || " + (k+startIndex) + ". run: " + String.format(Locale.US, "%.10f", dish.getBest().fitness - tf.optimum()));
 
-                writer = new PrintWriter(home_dir + path + func_num + "-" + k + "-100digit.txt", "UTF-8");
+                writer = new PrintWriter(home_dir + path + func_num + "-" + (k+startIndex) + "-100digit.txt", "UTF-8");
 
                 writer.print("{");
 
@@ -73,13 +74,13 @@ public class CEC2019_100digit_Main {
 
                 writer.close();
 
-                res_writer.print(String.format(Locale.US, "%.10f", dish.getBest().fitness - tf.optimum()));
+//                res_writer.print(String.format(Locale.US, "%.10f", dish.getBest().fitness - tf.optimum()));
 
             }
         
-        res_writer.print("}");
+//        res_writer.print("}");
  
-        res_writer.close();
+//        res_writer.close();
         
         System.out.println();
         System.out.println(new Date());
@@ -92,7 +93,7 @@ public class CEC2019_100digit_Main {
      */
     public static int dimension = 10;
     public static int MAXFES = 10000 * dimension;
-    public static int runs = 50; //50
+    public static int runs = 2; //50
     public static int NPinit = (int) (25*Math.log(10)*Math.sqrt(10));
     public static int NPfinal = 4;
     public static int H = 5;
@@ -110,13 +111,23 @@ public class CEC2019_100digit_Main {
          * test
          */
         path = "CEC2019\\test\\";
-        func_num = 7;
-        dimension = 10;
-        MAXFES = 100000 * dimension;
-        NPinit = (int) (100*25*Math.log(dimension)*Math.sqrt(dimension));
+        
         
         try {
-            DISH_CEC2019(path, func_num);
+            func_num = 7;
+            dimension = 10;
+            MAXFES = 2000000 * dimension;
+            NPinit = (int) (10*25*Math.log(dimension)*Math.sqrt(dimension));
+            for(int i = 0; i < 50/runs; i++) {
+                DISH_CEC2019(path, func_num, i*runs);
+            }
+            func_num = 8;
+            dimension = 10;
+            MAXFES = 2000000 * dimension;
+            NPinit = (int) (10*25*Math.log(dimension)*Math.sqrt(dimension));
+            for(int i = 0; i < 50/runs; i++) {
+                DISH_CEC2019(path, func_num, i*runs);
+            }
         } catch (Exception ex) {
             Logger.getLogger(CEC2019_100digit_Main.class.getName()).log(Level.SEVERE, null, ex);
         }

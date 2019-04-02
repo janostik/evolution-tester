@@ -532,7 +532,7 @@ public class DISHv2_analysis extends SHADE_analysis {
     public static void main(String[] args) throws Exception {
         
         int dimension = 10;
-        int NP = (int) (10*25*Math.log(dimension)*Math.sqrt(dimension));
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
         int minNP = 4;
         int MAXFES = 10000 * dimension;
         int funcNumber = 3;
