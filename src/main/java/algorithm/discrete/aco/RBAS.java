@@ -3,10 +3,12 @@ package algorithm.discrete.aco;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import model.dicsrete.Solution;
 import model.dicsrete.tf.DiscreteTestFunction;
 import model.dicsrete.tf.MinBin;
+import util.SolutionComparator;
 import util.random.UniformRandom;
 
 /**
@@ -114,13 +116,48 @@ public class RBAS implements algorithm.discrete.Algorithm {
         
         for (Solution sol : this.P) {
             
-            Q = 1/sol.fitness;
+            Q = 1/(this.sigma*sol.fitness);
             
             for(int i = 0; i < sol.vector.length; i++) {
                 this.tau.get(i)[sol.vector[i]] += Q;
             }
             
         }
+        
+    }
+    
+    protected void updateTauElite(List<Solution> list) {
+        
+        double Q;
+        
+        for (Solution sol : list) {
+            
+            Q = 1/(this.sigma2*sol.fitness);
+            
+            for(int i = 0; i < sol.vector.length; i++) {
+                this.tau.get(i)[sol.vector[i]] += Q;
+            }
+            
+        }
+        
+    }
+    
+    protected void updateTauBest(Solution sol) {
+        
+        double Q;
+
+        Q = 1/(this.sigma*sol.fitness);
+
+        for(int i = 0; i < sol.vector.length; i++) {
+            this.tau.get(i)[sol.vector[i]] += Q;
+        }
+
+        
+    }
+    
+    protected void sortPopulation() {
+
+        this.P.sort(new SolutionComparator());
         
     }
     
@@ -132,7 +169,7 @@ public class RBAS implements algorithm.discrete.Algorithm {
             
             sum = 0;
             for(int k = 0; k < this.tau.get(j).length; k++) {
-                sum += Math.pow(this.tau.get(j)[k], 2);
+                sum += Math.pow(this.tau.get(j)[k], this.alpha);
             }
 
             for(int k = 0; k < this.probabilityMatrix.get(j).length; k++) {
@@ -188,11 +225,15 @@ public class RBAS implements algorithm.discrete.Algorithm {
         /**
          * Update tau
          */
-        this.updateTau();
+        int eliteSize = NP/4;
+        this.sortPopulation();
+        
+        this.updateTauElite(this.P.subList(0, eliteSize));
+        this.updateTauBest(this.P.get(0));
         
         Solution x;
         List<Solution> newPop;
-        double max, prob, sum;
+        double max, prob;
         int arg = 0;
         
         /**
@@ -216,8 +257,7 @@ public class RBAS implements algorithm.discrete.Algorithm {
                 for(int d = 0; d < x.vector.length; d++) {
                     if(randGen.nextDouble() > this.q0) {
 
-                        sum = Arrays.stream(this.probabilityMatrix.get(d)).sum();
-                        prob = randGen.nextDouble(0, sum);
+                        prob = randGen.nextDouble();
                         
                         arg = 0;
                         prob -= this.probabilityMatrix.get(d)[arg];
@@ -242,6 +282,9 @@ public class RBAS implements algorithm.discrete.Algorithm {
                         
                     }
                     
+                    if(arg == this.probabilityMatrix.get(d).length) {
+                        arg -= 1;
+                    }
                     x.vector[d] = arg;
                 }
                 
@@ -258,7 +301,17 @@ public class RBAS implements algorithm.discrete.Algorithm {
             }
             
             this.P = newPop;
+            /**
+             * evaporation
+             */
             this.evaporateTau();
+            
+            /**
+             * deposit
+             */
+            this.sortPopulation();
+            this.updateTauElite(this.P.subList(0, eliteSize));
+            this.updateTauBest(this.P.get(0));
             
             if(this.checkFES()) {
                     break;
@@ -270,6 +323,7 @@ public class RBAS implements algorithm.discrete.Algorithm {
         
     }
 
+    @Override
     public Solution getBest() {
         
         return this.best;
@@ -297,7 +351,7 @@ public class RBAS implements algorithm.discrete.Algorithm {
     public static void main(String[] args) {
         
         int dim = 10;
-        int NP = 50;
+        int NP = 10;
         int MAXFES = 1000;
         double alpha = 0.2;
         double sigma = 0.68;
