@@ -83,7 +83,7 @@ public class DISH_100digit extends SHADE_analysis {
             this.P.add(ind);
             this.FES++;
             this.digitCheck(ind);
-            this.writeHistory();
+//            this.writeHistory();
         }
         
     }
@@ -221,12 +221,23 @@ public class DISH_100digit extends SHADE_analysis {
                 parents[3] = pr2;
                 
                 if (gg < 0.2) {
-                    Fw = 0.7 * Fg;
+                    /**
+                     * CHANGES
+                     * 
+                     * Fw = 0.7 * Fg;
+                     */
+                    Fw = 0.35 * Fg;
                 }
                 else if (gg < 0.4) {
-                    Fw = 0.8 * Fg;
+                    /**
+                     * Fw = 0.8 * Fg;
+                     */
+                    Fw = 0.4 * Fg;
                 }
                 else {
+                    /**
+                     * Fw = 1.2 * Fg;
+                     */
                     Fw = 1.2 * Fg;
                 }
                 
@@ -255,6 +266,7 @@ public class DISH_100digit extends SHADE_analysis {
                  * Trial is better
                  */
                 if (trial.fitness <= x.fitness) {
+
                     newPop.add(trial);
                     this.Aext.add(x);
 
@@ -269,8 +281,14 @@ public class DISH_100digit extends SHADE_analysis {
                 }
 
                 this.FES++;
-                this.isBest(trial);
-                this.writeHistory();
+                if(this.isBest(trial)) 
+                {
+                    /**
+                     * Added to see convergence
+                     */
+                    System.out.println(FES + " / " + MAXFES + " - fitness: " + trial.fitness + " diff: " + (x.fitness-trial.fitness)); 
+                };
+//                this.writeHistory();
                 /**
                  * 100 digit
                  */
@@ -329,7 +347,15 @@ public class DISH_100digit extends SHADE_analysis {
              */
             this.P = new ArrayList<>();
             this.P.addAll(newPop);
+            
+            /**
+             * New test
+             */
+//            NP = (int) Math.round(this.maxPopSize - ((double) this.FES/((double) this.MAXFES/2.0))*(this.maxPopSize - this.minPopSize));
             NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
+//            if(NP < 4) {
+//                NP = 4;
+//            }
             P = this.resizePop(P, NP);
 
         }

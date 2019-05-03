@@ -93,7 +93,7 @@ public class CEC2019_100digit_Main {
      */
     public static int dimension = 10;
     public static int MAXFES = 10000 * dimension;
-    public static int runs = 2; //50
+    public static int runs = 1; //50
     public static int NPinit = (int) (25*Math.log(10)*Math.sqrt(10));
     public static int NPfinal = 4;
     public static int H = 5;
@@ -114,20 +114,20 @@ public class CEC2019_100digit_Main {
         
         
         try {
-            func_num = 7;
+            func_num = 9;
             dimension = 10;
-            MAXFES = 2000000 * dimension;
+            MAXFES = 1000000 * dimension;
+            NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+            for(int i = 0; i < 50; i++) {
+                DISH_CEC2019(path, func_num, i);
+            }
+           /* func_num = 9;
+            dimension = 10;
+            MAXFES = 20000000 * dimension;
             NPinit = (int) (10*25*Math.log(dimension)*Math.sqrt(dimension));
             for(int i = 0; i < 50/runs; i++) {
                 DISH_CEC2019(path, func_num, i*runs);
-            }
-            func_num = 8;
-            dimension = 10;
-            MAXFES = 2000000 * dimension;
-            NPinit = (int) (10*25*Math.log(dimension)*Math.sqrt(dimension));
-            for(int i = 0; i < 50/runs; i++) {
-                DISH_CEC2019(path, func_num, i*runs);
-            }
+            }*/
         } catch (Exception ex) {
             Logger.getLogger(CEC2019_100digit_Main.class.getName()).log(Level.SEVERE, null, ex);
         }

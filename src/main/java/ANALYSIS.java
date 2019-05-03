@@ -2059,7 +2059,9 @@ public class ANALYSIS {
         res_writer.print("{");
 
         for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
-        
+
+            System.out.println("START: " + new Date());
+            
             tf = new Cec2015(dimension, funcNumber);
             bestArray = new double[runs];
             
@@ -2088,12 +2090,16 @@ public class ANALYSIS {
 
                 bestArray[k] = shade.getBest().fitness - tf.optimum();
                 
+                System.out.println("\n" + (k+1) + ". run - best OFV: " + (shade.getBest().fitness - tf.optimum()));
+                
                 shade.writeMFhistory(home_dir + mfpath + "mf" + funcNumber + "-" + k + ".txt");
                 shade.writeMCRhistory(home_dir + mfpath + "mcr" + funcNumber + "-" + k + ".txt");
                 shade.writePopDiversityHistory(home_dir + mfpath + "PopDiv" + funcNumber + "-" + k + ".txt");
                 shade.writeClusteringHistory(home_dir + mfpath + "Cluster" + funcNumber + "-" + k + ".txt");
 
             }
+            
+            System.out.println("END: " + new Date());
             
             for(int z = 0; z < bestArray.length; z++) {
                 final_writer.print(String.format(Locale.US, "%.10f", bestArray[z]));
@@ -2191,8 +2197,9 @@ public class ANALYSIS {
         
         res_writer.print("{");
 
-        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
         
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+            
             tf = new Cec2017(dimension, funcNumber);
             bestArray = new double[runs];
             
@@ -2728,65 +2735,75 @@ public class ANALYSIS {
         String path;
         home_dir = "";
         
-        /**
-         * jSO settings
-         */
         dimension = 10;
         MAXFES = 10000 * dimension;
         NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
         NPfinal = 4;
         H = 5;
         
-        System.out.println("\n\nTime: " + new Date() + " start DISHv2 " + dimension + "D\n\n");
+        path="C:\\Users\\wikki\\Documents\\bLUB";
         
-        path = "D:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DISHv2-" + dimension + "/";
+        DBjSOCEC2015(path, H, path);
         
-        DISHv2CEC2015(path, H, path);
-        
-        /**
-         * jSO settings
-         */
-        dimension = 30;
-        MAXFES = 10000 * dimension;
-        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        NPfinal = 4;
-        H = 5;
-        
-        System.out.println("\n\nTime: " + new Date() + " start DISHv2 " + dimension + "D\n\n");
-        
-        path = "D:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DISHv2-" + dimension + "/";
-        
-        DISHv2CEC2015(path, H, path);
-        
-        /**
-         * jSO settings
-         */
-        dimension = 50;
-        MAXFES = 10000 * dimension;
-        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        NPfinal = 4;
-        H = 5;
-        
-        System.out.println("\n\nTime: " + new Date() + " start DISHv2 " + dimension + "D\n\n");
-        
-        path = "D:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DISHv2-" + dimension + "/";
-        
-        DISHv2CEC2015(path, H, path);
-        
-        /**
-         * jSO settings
-         */
-        dimension = 100;
-        MAXFES = 10000 * dimension;
-        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        NPfinal = 4;
-        H = 5;
-        
-        System.out.println("\n\nTime: " + new Date() + " start DISHv2 " + dimension + "D\n\n");
-        
-        path = "D:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DISHv2-" + dimension + "/";
-        
-        DISHv2CEC2015(path, H, path);
+//        /**
+//         * jSO settings
+//         */
+//        dimension = 10;
+//        MAXFES = 10000 * dimension;
+//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+//        NPfinal = 4;
+//        H = 5;
+//        
+//        System.out.println("\n\nTime: " + new Date() + " start DISHv2 " + dimension + "D\n\n");
+//      
+//        path = "D:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DISHv2-" + dimension + "/";
+//        
+//        DISHv2CEC2015(path, H, path);
+//        
+//        /**
+//         * jSO settings
+//         */
+//        dimension = 30;
+//        MAXFES = 10000 * dimension;
+//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+//        NPfinal = 4;
+//        H = 5;
+//        
+//        System.out.println("\n\nTime: " + new Date() + " start DISHv2 " + dimension + "D\n\n");
+//        
+//        path = "D:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DISHv2-" + dimension + "/";
+//        
+//        DISHv2CEC2015(path, H, path);
+//        
+//        /**
+//         * jSO settings
+//         */
+//        dimension = 50;
+//        MAXFES = 10000 * dimension;
+//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+//        NPfinal = 4;
+//        H = 5;
+//        
+//        System.out.println("\n\nTime: " + new Date() + " start DISHv2 " + dimension + "D\n\n");
+//        
+//        path = "D:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DISHv2-" + dimension + "/";
+//        
+//        DISHv2CEC2015(path, H, path);
+//        
+//        /**
+//         * jSO settings
+//         */
+//        dimension = 100;
+//        MAXFES = 10000 * dimension;
+//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+//        NPfinal = 4;
+//        H = 5;
+//        
+//        System.out.println("\n\nTime: " + new Date() + " start DISHv2 " + dimension + "D\n\n");
+//        
+//        path = "D:\\results\\ANALYSIS\\CLUSTERING\\CEC2015-DISHv2-" + dimension + "/";
+//        
+//        DISHv2CEC2015(path, H, path);
         
     }
     

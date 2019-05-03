@@ -308,7 +308,7 @@ public class Db_jSO_analysis extends SHADE_analysis {
             this.Cluster_history.add(cl_res[0]);
             this.Noise_history.add(cl_res[1]);
             
-//            if(G % (this.MAXFES/this.maxPopSize/10) == 0) {
+//            if(G % (this.MAXFES/this.maxPopSize) == 0) {
 //                System.out.println(((double) this.FES/(double) this.MAXFES)*100 + "%");
 //            }
             
