@@ -22,8 +22,6 @@ public interface Algorithm {
             if (individual.fitness < best.fitness) best = individual;
         }
         return best;
-//        getPopulation().sort((o1, o2) -> Double.compare(o1.fitness, o2.fitness));
-//        return getPopulation().get(0);
     }
 
     String getName();
