@@ -3,11 +3,14 @@ package algorithm.discrete.aco;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.DoubleStream;
 import model.dicsrete.Solution;
 import model.dicsrete.tf.DiscreteTestFunction;
-import model.dicsrete.tf.MinBin;
+import model.dicsrete.tf.GearTrain;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+import org.apache.commons.math3.stat.descriptive.rank.Median;
 import util.SolutionComparator;
 import util.random.UniformRandom;
 
@@ -351,8 +354,8 @@ public class RBAS implements algorithm.discrete.Algorithm {
     public static void main(String[] args) {
         
         int dim = 10;
-        int NP = 10;
-        int MAXFES = 1000;
+        int NP = 20;
+        int MAXFES = 20000;
         double alpha = 0.2;
         double sigma = 0.68;
         double sigma2 = 0.1;
@@ -362,19 +365,29 @@ public class RBAS implements algorithm.discrete.Algorithm {
         
         Solution sol;
         
-        int runs = 10;
+        int runs = 30;
+        double[] bestArray = new double[runs];
         
         for(int i = 0; i < runs; i++) {
         
-            alg = new RBAS(new MinBin(dim), MAXFES, NP, alpha, sigma, sigma2, p, q0);
+            alg = new RBAS(new GearTrain(), MAXFES, NP, alpha, sigma, sigma2, p, q0);
 
             sol = alg.run();
+            bestArray[i] = sol.fitness;
             
             System.out.println(i + ". run");
             System.out.println(Arrays.toString(sol.vector));
             System.out.println(sol.fitness);
             System.out.println("==================");
         }
+        
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
         
     }
     
