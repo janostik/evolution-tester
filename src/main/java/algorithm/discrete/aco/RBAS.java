@@ -33,15 +33,15 @@ public class RBAS implements algorithm.discrete.Algorithm {
     protected double p;
     protected double q0;
     
-    private int[] dimensions;
-    private int FES;
-    private int MAXFES;
+    private final int[] dimensions;
+    private final int MAXFES;
     private Solution best;
     private List<Solution> bestHistory;
 
     /**
      * 
      * @param f
+     * @param MAXFES
      * @param NP
      * @param alpha
      * @param sigma
@@ -63,8 +63,8 @@ public class RBAS implements algorithm.discrete.Algorithm {
         
     }
 
-    private boolean checkFES() {
-        return this.FES >= this.MAXFES;
+    private boolean checkFES(int fes) {
+        return fes >= this.MAXFES;
     }
     
     /**
@@ -87,7 +87,7 @@ public class RBAS implements algorithm.discrete.Algorithm {
         
     }
     
-    protected void initializePopulation() {
+    protected int initializePopulation(int fes) {
         
         this.P = new ArrayList<>();
         
@@ -98,19 +98,21 @@ public class RBAS implements algorithm.discrete.Algorithm {
             
             vector = this.f.generateTrial();
             sol = new Solution(vector, this.f.fitness(vector));
+            sol.FES = fes+1;
             this.P.add(sol);
-            this.FES++;
+            fes += 1;
             if(this.best == null || sol.fitness <= this.best.fitness) {
                 this.best = sol;
+                this.bestHistory.add(sol);
             }
-            this.bestHistory.add(this.best);
             
-            if(this.checkFES()) {
-                return;
+            if(this.checkFES(fes)) {
+                return fes;
             }
             
         }
         
+        return fes;
     }
     
     protected void updateTau() {
@@ -211,17 +213,17 @@ public class RBAS implements algorithm.discrete.Algorithm {
     public Solution run() {
         
         UniformRandom randGen = new UniformRandom();
-        
+        int fes;
         /**
          * Initialize
          */
-        this.FES = 0;
+        fes = 0;
         this.best = null;
         this.bestHistory = new ArrayList<>();
         this.initializeTau();
-        this.initializePopulation();
+        fes = this.initializePopulation(fes);
         
-        if(this.checkFES()) {
+        if(this.checkFES(fes)) {
             return this.best;
         }
         
@@ -253,7 +255,10 @@ public class RBAS implements algorithm.discrete.Algorithm {
              */
             for(int i = 0; i < this.P.size(); i++) {
             
-                x = this.P.get(i);
+                x = new Solution();
+                x.id = this.P.get(i).id;
+                x.vector = this.P.get(i).vector.clone();
+
                 /**
                  * generate new trail
                  */
@@ -292,13 +297,15 @@ public class RBAS implements algorithm.discrete.Algorithm {
                 }
                 
                 x.fitness = this.f.fitness(x.vector);
+                x.FES = fes+1;
                 if(x.fitness <= this.best.fitness) {
                     this.best = x;
+                    this.bestHistory.add(x);
                 }
-                this.FES++;
+                fes += 1;
                 newPop.add(x);
                 
-                if(this.checkFES()) {
+                if(this.checkFES(fes)) {
                     break;
                 }
             }
@@ -316,9 +323,9 @@ public class RBAS implements algorithm.discrete.Algorithm {
             this.updateTauElite(this.P.subList(0, eliteSize));
             this.updateTauBest(this.P.get(0));
             
-            if(this.checkFES()) {
-                    break;
-                }
+            if(this.checkFES(fes)) {
+                break;
+            }
             
         }
 
@@ -346,6 +353,11 @@ public class RBAS implements algorithm.discrete.Algorithm {
     @Override
     public String getName() {
         return "RBAS";
+    }
+    
+    @Override
+    public List<Solution> getBestHistory() {
+        return this.bestHistory;
     }
     
     /**

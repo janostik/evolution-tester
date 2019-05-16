@@ -25,6 +25,8 @@ public interface Algorithm {
         }
         return best;
     }
+    
+    List<Solution> getBestHistory();
 
     String getName();
     

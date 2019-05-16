@@ -1,5 +1,6 @@
 
 import algorithm.de.Lfv_SHADE;
+import algorithm.discrete.aco.RBAS;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -10,6 +11,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.DoubleStream;
 import model.Individual;
+import model.dicsrete.Solution;
+import model.dicsrete.tf.DiscreteTestFunction;
+import model.dicsrete.tf.Spalovny_projektDiscrete;
 import model.tf.TestFunction;
 import model.tf.nwf.Spalovny_projekt;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -1626,6 +1630,117 @@ public class SpalovnyProjektMain {
     
     /**
      * 
+     * Main to solve spalovny in CR
+     * 
+     * @throws Exception 
+     */
+    public static void discreteOlmMain() throws Exception {
+
+        /**
+         * Olomoucky kraj
+         */
+        int[] use_prod = new int[]{93,94,95,96,97,98,99,100,101,102,103,104,105};
+        int[] use_inc = new int[]{7,8,21};
+        int dimension = use_prod.length + use_inc.length;
+        int MAXFES = maxfes; //100000 * NP;
+        DiscreteTestFunction tf = new Spalovny_projektDiscrete(use_inc, use_prod);
+
+        int NP = 1000;
+        double alpha = 0.2;
+        double sigma = 0.68;
+        double sigma2 = 0.1;
+        double p = 0.2;
+        double q0 = 0.5;
+        RBAS alg;
+        
+        alg = new RBAS(tf, MAXFES, NP, alpha, sigma, sigma2, p, q0);
+        
+        Solution sol;
+
+        int runs = 10;
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + alg.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+
+            alg = new RBAS(tf, MAXFES, NP, alpha, sigma, sigma2, p, q0);
+
+            alg.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = alg.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (alg.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(alg.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_projektDiscrete)tf).getOutput(alg.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            System.out.println("Best solution found in " + alg.getBestHistory().get(alg.getBestHistory().size()-1).FES + " CFE");
+            
+            /**
+             * History write
+             */
+            writeDiscreteResult(home_dir + "Olm\\res" + k + ".txt", alg.getBestHistory(), alg.getBest());
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
+    /**
+     * 
      * Main to solve spalovny in Olomoucky kraj
      * 
      * @throws Exception 
@@ -2085,6 +2200,112 @@ public class SpalovnyProjektMain {
     
     /**
      * 
+     * Main to solve spalovny in CR
+     * 
+     * @throws Exception 
+     */
+    public static void discreteCR_RBAS_Main() throws Exception {
+
+        int dimension = 206+40; //38
+        int MAXFES = maxfes; //100000 * NP;
+        DiscreteTestFunction tf = new Spalovny_projektDiscrete();
+
+        int NP = 1000;
+        double alpha = 0.2;
+        double sigma = 0.68;
+        double sigma2 = 0.1;
+        double p = 0.2;
+        double q0 = 0.5;
+        RBAS alg;
+        
+        alg = new RBAS(tf, MAXFES, NP, alpha, sigma, sigma2, p, q0);
+        
+        Solution sol;
+
+        int runs = 10;
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + alg.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+
+            alg = new RBAS(tf, MAXFES, NP, alpha, sigma, sigma2, p, q0);
+
+            alg.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = alg.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (alg.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(alg.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_projektDiscrete)tf).getOutput(alg.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            System.out.println("Best solution found in " + alg.getBestHistory().get(alg.getBestHistory().size()-1).FES + " CFE");
+            
+            /**
+             * History write
+             */
+            writeDiscreteResult(home_dir + "CR\\res" + k + ".txt", alg.getBestHistory(), alg.getBest());
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
+    /**
+     * 
      * @param path
      * @param history
      * @param best
@@ -2131,11 +2352,59 @@ public class SpalovnyProjektMain {
         
     }
     
+    /**
+     * 
+     * @param path
+     * @param history
+     * @param best
+     * @throws FileNotFoundException
+     * @throws UnsupportedEncodingException 
+     */
+    public static void writeDiscreteResult(String path, List<Solution> history, Solution best) throws FileNotFoundException, UnsupportedEncodingException {
+        
+        PrintWriter writer;
+        
+        writer = new PrintWriter(path, "UTF-8");
+        
+        writer.print("{");
+
+        writer.print("{" + best.FES +  "," + String.format(Locale.US, "%.10f", best.fitness) + ", {");
+        
+        for(int i = 0; i < best.vector.length; i++) {
+            
+            writer.print(best.vector[i]);
+            
+            if(i != best.vector.length - 1) {
+                writer.print(", ");
+            }
+            
+        }
+        
+        writer.print("}, ");
+        writer.print("{");
+
+        for (int i = 0; i < history.size(); i++) {
+
+            writer.print("{" + history.get(i).FES + "," + String.format(Locale.US, "%.10f", history.get(i).fitness) + "}");
+
+            if (i != history.size() - 1) {
+                writer.print(",");
+            }
+
+        }
+
+        writer.print("}");
+        writer.print("}");
+
+        writer.close();
+        
+    }
     
-    public static int maxfes = 1_000_000;
+    
+    public static int maxfes = 100_000_000;
     public static int runs = 10;
 //    public static String home_dir = "E:\\results\\Spalovny\\S PENALIZACI\\";
-    public static String home_dir = "E:\\results\\Spalovny\\";
+    public static String home_dir = "D:\\results\\Spalovny\\";
     
     /**
      * @param args the command line arguments
@@ -2151,11 +2420,11 @@ public class SpalovnyProjektMain {
 //
 //        zlinMain();        
 //        
-        System.out.println("------------------");
-        System.out.println("---------Olomouc---------");
-        System.out.println("------------------");
-
-        olmMain();
+//        System.out.println("------------------");
+//        System.out.println("---------Olomouc---------");
+//        System.out.println("------------------");
+//
+//        olmMain();
 //
 //        System.out.println("------------------");
 //        System.out.println("---------4kraje---------");
@@ -2261,6 +2530,23 @@ public class SpalovnyProjektMain {
 //        System.out.println("------------------");
 //        
 //        jmMain();
+//        
+        System.out.println("------------------");
+        System.out.println("---------Cela CR---------");
+        System.out.println("------------------");
+        
+        home_dir = "D:\\results\\Spalovny\\ACO\\";
+        
+        discreteCR_RBAS_Main();
+
+//        System.out.println("------------------");
+//        System.out.println("---------OLM---------");
+//        System.out.println("------------------");
+//        
+//        home_dir = "D:\\results\\Spalovny\\ACO\\";
+//        
+//        discreteOlmMain();
+        
         
     }
     

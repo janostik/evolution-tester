@@ -11,6 +11,7 @@ public class Solution {
     public double fitness;
     public int[] vector;
     public String id;
+    public int FES;
     
     public Solution() { 
     }
@@ -25,5 +26,5 @@ public class Solution {
         this.vector = vector;
         this.id = id;
     }
-    
+ 
 }

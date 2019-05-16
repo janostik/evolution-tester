@@ -60,7 +60,7 @@ public class GearTrain implements DiscreteTestFunction {
 
     @Override
     public int max(int dim) {
-        return 1;
+        return 49;
     }
 
     @Override
