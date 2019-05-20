@@ -46,6 +46,23 @@ public class IDISH_analysis extends SHADE_analysis {
     }
     
     /**
+     *
+     * @param ind
+     * @return
+     */
+    @Override
+    protected boolean isBest(Individual ind) {
+
+        if (this.best == null || ind.fitness < this.best.fitness) {
+            this.best = ind;
+            return true;
+        }
+
+        return false;
+
+    }
+    
+    /**
      * Creation of initial population.
      */
     @Override

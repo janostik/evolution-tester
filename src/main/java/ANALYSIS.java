@@ -2077,9 +2077,9 @@ public class ANALYSIS {
 
                 for (int i = 0; i < shade.getImp_hist().size(); i++) {
 
-                    writer.print("{" + shade.getImp_hist().get(i)[1] + "," + String.format(Locale.US, "%.10f", shade.getImp_hist().get(i)[1]) + "}");
+                    writer.print("{" + String.format(Locale.US, "%d", (int)shade.getImp_hist().get(i)[0]) + "," + String.format(Locale.US, "%.10f", shade.getImp_hist().get(i)[1]) + "}");
 
-                    if (i != shade.getBestHistory().size() - 1) {
+                    if (i != shade.getImp_hist().size() - 1) {
                         writer.print(",");
                     }
 
@@ -2091,7 +2091,7 @@ public class ANALYSIS {
 
                 bestArray[k] = shade.getBest().fitness - tf.optimum();
                 
-                System.out.println("\n" + (k+1) + ". run - best OFV: " + (shade.getBest().fitness - tf.optimum()));
+                System.out.println((k+1) + ". run FES: " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " OFV: " + (shade.getImp_hist().get(shade.getImp_hist().size()-1)[1] - tf.optimum()));
                 
                 shade.writeMFhistory(home_dir + mfpath + "mf" + funcNumber + "-" + k + ".txt");
                 shade.writeMCRhistory(home_dir + mfpath + "mcr" + funcNumber + "-" + k + ".txt");

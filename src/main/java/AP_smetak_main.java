@@ -1,10 +1,14 @@
 
 import algorithm.Algorithm;
 import algorithm.de.ap.AP_DISH;
+import algorithm.de.ap.AP_ann_DISH;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
 import model.tf.ap.APtf;
+import model.tf.ap.ann.APsmetak27A;
+import model.tf.ap.ann.APsmetak27B;
+import model.tf.ap.ann.APtfann;
 import model.tf.ap.regression.APdatasetTF;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -108,31 +112,190 @@ public class AP_smetak_main {
         
     }
     
+    public static void datasetAMain(String path) throws Exception {
+
+        int dimension = 150;
+        int NP = 1534;
+        int NPfinal = 4;
+        int H = 5;
+        int MAXFES = 90_000;
+
+        PrintWriter writer;
+        writer = new PrintWriter(path + "equation.txt", "UTF-8");
+        
+        String bestEq = "";
+        double bestEq_val = Double.MAX_VALUE;
+        
+        APtfann tf = new APsmetak27A();
+        /**
+         * Random generator for parent selection, F and CR selection
+         */
+        util.random.Random generator = new util.random.UniformRandom();
+        double min;
+//        APconst ap = new APconst();
+
+        Algorithm dish;
+
+        int runs = 10;
+        double[] bestArray = new double[runs];
+        int i, best;
+
+        for (int k = 0; k < runs; k++) {
+
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+            
+            dish = new AP_ann_DISH(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            dish.run();
+ 
+            bestArray[k] = dish.getBest().fitness - tf.optimum();
+            System.out.println(dish.getBest().fitness - tf.optimum());
+            
+            if(bestArray[k] <= bestEq_val) {
+                bestEq_val = bestArray[k];
+                bestEq = ((AP_ann_DISH.AP_Individual) dish.getBest()).equation;
+            }
+            
+            /**
+             * Final AP equation.
+             */
+
+            System.out.println("=================================");
+            System.out.println("Equation: \n" + ((AP_ann_DISH.AP_Individual) dish.getBest()).equation);
+            System.out.println("Vector: \n" + Arrays.toString(((AP_ann_DISH.AP_Individual) dish.getBest()).vector));
+            System.out.println("=================================");
+            
+            for(AP_ann_DISH.AP_Individual ind : ((AP_ann_DISH)dish).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+                if(ind.fitness == 0){
+                    System.out.println("Solution found in " + i + " CFE");
+                    break;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+
+            
+        }
+
+        writer.print(bestEq);
+        
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+
+        writer.close();
+        
+    }
+    
+    public static void datasetBMain(String path) throws Exception {
+
+        int dimension = 150;
+        int NP = 1534;
+        int NPfinal = 4;
+        int H = 5;
+        int MAXFES = 90_000;
+
+        PrintWriter writer;
+        writer = new PrintWriter(path + "equation.txt", "UTF-8");
+        
+        String bestEq = "";
+        double bestEq_val = Double.MAX_VALUE;
+        
+        APtfann tf = new APsmetak27B();
+        /**
+         * Random generator for parent selection, F and CR selection
+         */
+        util.random.Random generator = new util.random.UniformRandom();
+        double min;
+//        APconst ap = new APconst();
+
+        Algorithm dish;
+
+        int runs = 10;
+        double[] bestArray = new double[runs];
+        int i, best;
+
+        for (int k = 0; k < runs; k++) {
+
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+            
+            dish = new AP_ann_DISH(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            dish.run();
+ 
+            bestArray[k] = dish.getBest().fitness - tf.optimum();
+            System.out.println(dish.getBest().fitness - tf.optimum());
+            
+            if(bestArray[k] <= bestEq_val) {
+                bestEq_val = bestArray[k];
+                bestEq = ((AP_ann_DISH.AP_Individual) dish.getBest()).equation;
+            }
+            
+            /**
+             * Final AP equation.
+             */
+
+            System.out.println("=================================");
+            System.out.println("Equation: \n" + ((AP_ann_DISH.AP_Individual) dish.getBest()).equation);
+            System.out.println("Vector: \n" + Arrays.toString(((AP_ann_DISH.AP_Individual) dish.getBest()).vector));
+            System.out.println("=================================");
+            
+            for(AP_ann_DISH.AP_Individual ind : ((AP_ann_DISH)dish).getBestHistory()){
+                i++;
+                if(ind.fitness < min){
+                    min = ind.fitness;
+                    best = i;
+                }
+                if(ind.fitness == 0){
+                    System.out.println("Solution found in " + i + " CFE");
+                    break;
+                }
+            }
+            System.out.println("Best solution found in " + best + " CFE");
+
+            
+        }
+
+        writer.print(bestEq);
+        
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+
+        writer.close();
+        
+    }
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
-        
-        
-        double[][] dataset = null;
+
         String path = "";
         
-        dataset = dataset0;
-        path="C:\\Users\\wikki\\ownCloud\\PhD\\Predikce-Smetak\\newData\\results\\dataset_0\\";
-        datasetMain(dataset, path);
+        path="C:\\Users\\wikki\\ownCloud\\PhD\\Predikce-Smetak\\data 20_5_2019\\dataset_A\\";
+        datasetAMain(path);
         
-        dataset = dataset1;
-        path="C:\\Users\\wikki\\ownCloud\\PhD\\Predikce-Smetak\\newData\\results\\dataset_1\\";
-        datasetMain(dataset, path);
-        
-        dataset = dataset2;
-        path="C:\\Users\\wikki\\ownCloud\\PhD\\Predikce-Smetak\\newData\\results\\dataset_2\\";
-        datasetMain(dataset, path);
-        
-        dataset = dataset3;
-        path="C:\\Users\\wikki\\ownCloud\\PhD\\Predikce-Smetak\\newData\\results\\dataset_3\\";
-        datasetMain(dataset, path);
+        path="C:\\Users\\wikki\\ownCloud\\PhD\\Predikce-Smetak\\data 20_5_2019\\dataset_B\\";
+        datasetBMain(path);
+
         
     }
     

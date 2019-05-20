@@ -7,14 +7,14 @@ import java.util.List;
  *
  * @author adam
  */
-public class AP_ann_x10 implements AP_object{
+public class AP_ann_x24 implements AP_object{
     
     public double x;
 
-    public AP_ann_x10() {
+    public AP_ann_x24() {
     }
     
-    public AP_ann_x10(double x) {
+    public AP_ann_x24(double x) {
         this.x = x;
     }
     
@@ -30,7 +30,7 @@ public class AP_ann_x10 implements AP_object{
     
     @Override
     public String toString(){
-        return "x[[10]]";
+        return "x[[24]]";
     }
 
     @Override

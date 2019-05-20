@@ -30,7 +30,7 @@ public class AP_ann_x8 implements AP_object{
     
     @Override
     public String toString(){
-        return "x8";
+        return "x[[8]]";
     }
 
     @Override

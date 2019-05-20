@@ -8,11 +8,27 @@ import java.util.Queue;
 import model.ap.objects.AP_Const_static;
 import model.ap.objects.AP_Multiply;
 import model.ap.objects.AP_Plus;
-import model.ap.objects.AP_Sigmoid;
 import model.ap.objects.AP_Sub;
 import model.ap.objects.AP_ann_x1;
 import model.ap.objects.AP_ann_x10;
+import model.ap.objects.AP_ann_x11;
+import model.ap.objects.AP_ann_x12;
+import model.ap.objects.AP_ann_x13;
+import model.ap.objects.AP_ann_x14;
+import model.ap.objects.AP_ann_x15;
+import model.ap.objects.AP_ann_x16;
+import model.ap.objects.AP_ann_x17;
+import model.ap.objects.AP_ann_x18;
+import model.ap.objects.AP_ann_x19;
 import model.ap.objects.AP_ann_x2;
+import model.ap.objects.AP_ann_x20;
+import model.ap.objects.AP_ann_x21;
+import model.ap.objects.AP_ann_x22;
+import model.ap.objects.AP_ann_x23;
+import model.ap.objects.AP_ann_x24;
+import model.ap.objects.AP_ann_x25;
+import model.ap.objects.AP_ann_x26;
+import model.ap.objects.AP_ann_x27;
 import model.ap.objects.AP_ann_x3;
 import model.ap.objects.AP_ann_x4;
 import model.ap.objects.AP_ann_x5;
@@ -62,7 +78,7 @@ public class APANN {
 //        this.GFSall.add(new AP_Mod());
 //        this.GFSall.add(new AP_aTOb());
         
-        this.GFSall.add(new AP_Sigmoid());
+//        this.GFSall.add(new AP_Sigmoid());
 //        this.GFSall.add(new AP_Sin());
 //        this.GFSall.add(new AP_Cos());
 //        this.GFSall.add(new AP_Tan());
@@ -83,6 +99,24 @@ public class APANN {
         this.GFSall.add(new AP_ann_x8());
         this.GFSall.add(new AP_ann_x9());
         this.GFSall.add(new AP_ann_x10());
+        this.GFSall.add(new AP_ann_x11());
+        this.GFSall.add(new AP_ann_x12());
+        this.GFSall.add(new AP_ann_x13());
+        this.GFSall.add(new AP_ann_x14());
+        this.GFSall.add(new AP_ann_x15());
+        this.GFSall.add(new AP_ann_x16());
+        this.GFSall.add(new AP_ann_x17());
+        this.GFSall.add(new AP_ann_x18());
+        this.GFSall.add(new AP_ann_x19());
+        this.GFSall.add(new AP_ann_x20());
+        this.GFSall.add(new AP_ann_x21());
+        this.GFSall.add(new AP_ann_x22());
+        this.GFSall.add(new AP_ann_x23());
+        this.GFSall.add(new AP_ann_x24());
+        this.GFSall.add(new AP_ann_x25());
+        this.GFSall.add(new AP_ann_x26());
+        this.GFSall.add(new AP_ann_x27());
+
 
         this.GFSall.add(new AP_Const_static());
 //        this.GFSall.add(new AP_One());
@@ -124,7 +158,7 @@ public class APANN {
         int dim = vector.length;
         Integer[] discrete = new Integer[dim];
 
-        double min = -100, max = 100;
+        double min = -10, max = 10;
         
         double dindex, diff, delta;
         int  imax = this.GFSall.size() - 1, dis_index;
@@ -236,8 +270,59 @@ public class APANN {
                             else if(cur_object.getClass() == AP_ann_x9.class){
                                 xIndex = 8;
                             }
-                            else {
+                            else if(cur_object.getClass() == AP_ann_x10.class){
                                 xIndex = 9;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x11.class){
+                                xIndex = 10;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x12.class){
+                                xIndex = 11;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x13.class){
+                                xIndex = 12;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x14.class){
+                                xIndex = 13;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x15.class){
+                                xIndex = 14;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x16.class){
+                                xIndex = 15;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x17.class){
+                                xIndex = 16;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x18.class){
+                                xIndex = 17;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x19.class){
+                                xIndex = 18;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x20.class){
+                                xIndex = 19;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x21.class){
+                                xIndex = 20;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x22.class){
+                                xIndex = 21;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x23.class){
+                                xIndex = 22;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x24.class){
+                                xIndex = 23;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x25.class){
+                                xIndex = 24;
+                            }
+                            else if(cur_object.getClass() == AP_ann_x26.class){
+                                xIndex = 25;
+                            }
+                            else {
+                                xIndex = 26;
                             }
 
                             array.add(x[xIndex]);

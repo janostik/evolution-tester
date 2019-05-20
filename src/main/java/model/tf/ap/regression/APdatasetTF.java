@@ -47,7 +47,7 @@ public class APdatasetTF extends APtf {
 
     @Override
     public String name() {
-        return "AP_unviersal_dataset";
+        return "AP_universal_dataset";
     }
     
     public static void main(String[] args) throws Exception {
