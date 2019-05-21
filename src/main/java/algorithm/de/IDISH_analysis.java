@@ -13,7 +13,6 @@ import org.apache.commons.math3.ml.distance.ChebyshevDistance;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
-import util.IndividualComparator;
 import util.OtherDistributionsUtil;
 import util.distance.EuclideanDistance;
 import util.random.Random;
@@ -24,80 +23,17 @@ import util.random.Random;
  * 
  * Shortest distance -> largest weight
  * 
- * @author adam on 16/05/2019
+ * @author adam on 21/05/2019
  */
-public class IDISH_analysis extends SHADE_analysis {
+public class IDISH_analysis extends DISH_analysis {
 
-    protected final int minPopSize;
-    protected final int maxPopSize;
-    
-    protected List<double[]> imp_hist;
-    
     public IDISH_analysis(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
-        super(D, MAXFES, f, H, NP, rndGenerator);
-        this.minPopSize = minPopSize;
-        this.maxPopSize = NP;
-        this.imp_hist = new ArrayList<>();
+        super(D, MAXFES, f, H, NP, rndGenerator, minPopSize);
     }
- 
+
     @Override
     public String getName() {
         return "IDISH";
-    }
-    
-    /**
-     *
-     * @param ind
-     * @return
-     */
-    @Override
-    protected boolean isBest(Individual ind) {
-
-        if (this.best == null || ind.fitness < this.best.fitness) {
-            this.best = ind;
-            return true;
-        }
-
-        return false;
-
-    }
-    
-    /**
-     * Creation of initial population.
-     */
-    @Override
-    protected void initializePopulation(){
-        
-        /**
-         * Initial population
-         */
-        id = 0;
-        double[] features = new double[this.D];
-        this.P = new ArrayList<>();
-        Individual ind;
-
-        for (int i = 0; i < this.NP; i++) {
-            id = i;
-            features = this.f.generateTrial(this.D).clone();
-            ind = new Individual(String.valueOf(id), features, this.f.fitness(features));
-            this.P.add(ind);
-            this.FES++;
-            if(this.isBest(ind)) {
-                this.writeHistory();
-            }
-            
-        }
-        
-    }
-    
-    /**
-     *
-     */
-    @Override
-    protected void writeHistory() {
-        
-        this.imp_hist.add(new double[]{this.FES, this.best.fitness});
-
     }
     
     @Override
@@ -369,140 +305,6 @@ public class IDISH_analysis extends SHADE_analysis {
 
         return this.best;
 
-    }
-    
-    /**
-     *
-     * @param list
-     * @param id
-     * @return
-     */
-    protected int getIndexOfRandBestFromList(List<Individual> list, String id) {
-        
-        int index = rndGenerator.nextInt(list.size());
-        
-        while(list.get(index).id.equals(id)) {
-            index = rndGenerator.nextInt(list.size());
-        }
-
-        return index;
-
-    }
-    
-    /**
-     *
-     * @param parentArray
-     * @param F
-     * @return
-     */
-    protected double[] mutationRand1(double[][] parentArray, double F) {
-
-        double[] u = new double[D];
-        double[] a = parentArray[1];
-        double[] b = parentArray[2];
-        double[] c = parentArray[3];
-
-        for (int i = 0; i < D; i++) {
-
-            u[i] = a[i] + F * (b[i] - c[i]);
-
-        }
-
-        return u;
-
-    }
-    
-    /**
-     *
-     * List of parents for mutation x, a, b, c
-     *
-     * @param xIndex
-     * @return
-     */
-    protected double[][] getParents(int xIndex) {
-
-        int r1, r2, r3;
-
-        r1 = rndGenerator.nextInt(NP);
-        
-        while(r1 == xIndex){
-            r1 = rndGenerator.nextInt(NP);
-        }
-        
-        r2 = rndGenerator.nextInt(NP);
-
-        while (r2 == r1 || r2 == xIndex) {
-            r2 = rndGenerator.nextInt(NP);
-        }
-        
-        r3 = rndGenerator.nextInt(NP);
-
-        while (r3 == r2 || r3 == r1 || r3 == xIndex) {
-            r3 = rndGenerator.nextInt(NP);
-        }
-        
-        double[][] parrentArray = new double[4][D];
-
-        parrentArray[0] = P.get(xIndex).vector;
-        parrentArray[1] = P.get(r1).vector;
-        parrentArray[2] = P.get(r2).vector;
-        parrentArray[3] = P.get(r3).vector;
-
-        return parrentArray;
-
-    }
-    
-    /**
-     * 
-     * @param parents
-     * @param F
-     * @param Fw
-     * @return 
-     */
-    protected double[] mutationDISH(double[][] parents, double F, double Fw){
-        
-        /**
-         * Parents:
-         * x
-         * pbest
-         * pr1
-         * pr2
-         */
-        
-        double[] v = new double[this.D];
-        for (int j = 0; j < this.D; j++) {
-
-            v[j] = parents[0][j] + Fw * (parents[1][j] - parents[0][j]) + F * (parents[2][j] - parents[3][j]);
-
-        }
-        
-        return v;
-        
-    }
-    
-    /**
-     *
-     * @param list
-     * @param size
-     * @return
-     */
-    protected List<Individual> resizePop(List<Individual> list, int size) {
-
-        if(size == list.size()){
-            return list;
-        }
-        
-        List<Individual> toRet = new ArrayList<>();
-        toRet.addAll(list);
-        toRet.sort(new IndividualComparator());
-        toRet = toRet.subList(0, size);
-
-        return toRet;
-
-    }
-
-    public List<double[]> getImp_hist() {
-        return imp_hist;
     }
 
     /**
