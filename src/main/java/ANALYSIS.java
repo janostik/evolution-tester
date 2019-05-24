@@ -3161,9 +3161,9 @@ public class ANALYSIS {
         NPfinal = 4;
         H = 5;
         
-        path="CEC2015-DISH-" + dimension + "\\";
-        
-        DISHCEC2015(path, H, path);
+//        path="CEC2015-DISH-" + dimension + "\\";
+//        
+//        DISHCEC2015(path, H, path);
         
         dimension = 30;
         MAXFES = 10000 * dimension;

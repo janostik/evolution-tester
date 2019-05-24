@@ -31,7 +31,7 @@ public class CEC2015main {
     public static int dimension = 10;
     public static int MAXFES = 10000 * dimension;
     public static final int runs = 51;
-    public static final String home_dir = "E:\\results\\ROMAN_CHAOS\\30D\\";
+    public static final String home_dir = "D:\\results\\ROMAN_CHAOS\\30D\\";
     
     /**
      * PSO
@@ -1420,30 +1420,30 @@ public class CEC2015main {
          * DE rand/1/bin
          */
         chaosName = "Arnold/";
-//        chGenerator = new util.random.ArnoldCatRandom();
-//        path = "CDErand/"+chaosName;
-//        CDErand1bin_main(path, chGenerator);
-//        
-//        /**
-//         * DE best
-//         */
-//        chGenerator = new util.random.ArnoldCatRandom();
-//        path = "CDEbest/"+chaosName;
-//        CDEbest_main(path, chGenerator);
+        chGenerator = new util.random.ArnoldCatRandom();
+        path = "CDErand/"+chaosName;
+        CDErand1bin_main(path, chGenerator);
         
         /**
-         * jDE
+         * DE best
          */
         chGenerator = new util.random.ArnoldCatRandom();
-        path = "CjDE/"+chaosName;
-        CjDE_main(path, chGenerator);
+        path = "CDEbest/"+chaosName;
+        CDEbest_main(path, chGenerator);
+        
+//        /**
+//         * jDE
+//         */
+//        chGenerator = new util.random.ArnoldCatRandom();
+//        path = "CjDE/"+chaosName;
+//        CjDE_main(path, chGenerator);
         
         /**
          * SHADE
          */
-//        chGenerator = new util.random.ArnoldCatRandom();
-//        path = "CSHADE/"+chaosName;
-//        CSHADE_main(path, H, chGenerator);
+        chGenerator = new util.random.ArnoldCatRandom();
+        path = "CSHADE/"+chaosName;
+        CSHADE_main(path, H, chGenerator);
         
         /**
          * Burgers
@@ -1461,30 +1461,30 @@ public class CEC2015main {
          * DE rand/1/bin
          */
         chaosName = "Burgers/";
-//        chGenerator = new util.random.BurgersRandom();
-//        path = "CDErand/"+chaosName;
-//        CDErand1bin_main(path, chGenerator);
-//        
-//        /**
-//         * DE best
-//         */
-//        chGenerator = new util.random.BurgersRandom();
-//        path = "CDEbest/"+chaosName;
-//        CDEbest_main(path, chGenerator);
+        chGenerator = new util.random.BurgersRandom();
+        path = "CDErand/"+chaosName;
+        CDErand1bin_main(path, chGenerator);
         
         /**
-         * jDE
+         * DE best
          */
         chGenerator = new util.random.BurgersRandom();
-        path = "CjDE/"+chaosName;
-        CjDE_main(path, chGenerator);
+        path = "CDEbest/"+chaosName;
+        CDEbest_main(path, chGenerator);
+        
+//        /**
+//         * jDE
+//         */
+//        chGenerator = new util.random.BurgersRandom();
+//        path = "CjDE/"+chaosName;
+//        CjDE_main(path, chGenerator);
         
         /**
          * SHADE
          */
-//        chGenerator = new util.random.BurgersRandom();
-//        path = "CSHADE/"+chaosName;
-//        CSHADE_main(path, H, chGenerator);
+        chGenerator = new util.random.BurgersRandom();
+        path = "CSHADE/"+chaosName;
+        CSHADE_main(path, H, chGenerator);
         
         /**
          * DeLo
@@ -1502,30 +1502,30 @@ public class CEC2015main {
          * DE rand/1/bin
          */
         chaosName = "DeLo/";
-//        chGenerator = new util.random.DelayedLogisticRandom();
-//        path = "CDErand/"+chaosName;
-//        CDErand1bin_main(path, chGenerator);
-//        
-//        /**
-//         * DE best
-//         */
-//        chGenerator = new util.random.DelayedLogisticRandom();
-//        path = "CDEbest/"+chaosName;
-//        CDEbest_main(path, chGenerator);
+        chGenerator = new util.random.DelayedLogisticRandom();
+        path = "CDErand/"+chaosName;
+        CDErand1bin_main(path, chGenerator);
         
         /**
-         * jDE
+         * DE best
          */
         chGenerator = new util.random.DelayedLogisticRandom();
-        path = "CjDE/"+chaosName;
-        CjDE_main(path, chGenerator);
+        path = "CDEbest/"+chaosName;
+        CDEbest_main(path, chGenerator);
+        
+//        /**
+//         * jDE
+//         */
+//        chGenerator = new util.random.DelayedLogisticRandom();
+//        path = "CjDE/"+chaosName;
+//        CjDE_main(path, chGenerator);
         
         /**
          * SHADE
          */
-//        chGenerator = new util.random.DelayedLogisticRandom();
-//        path = "CSHADE/"+chaosName;
-//        CSHADE_main(path, H, chGenerator);
+        chGenerator = new util.random.DelayedLogisticRandom();
+        path = "CSHADE/"+chaosName;
+        CSHADE_main(path, H, chGenerator);
         
         /**
          * Dissipative
@@ -1543,30 +1543,30 @@ public class CEC2015main {
          * DE rand/1/bin
          */
         chaosName = "Dissipative/";
-//        chGenerator = new util.random.DissipativeRandom();
-//        path = "CDErand/"+chaosName;
-//        CDErand1bin_main(path, chGenerator);
-//        
-//        /**
-//         * DE best
-//         */
-//        chGenerator = new util.random.DissipativeRandom();
-//        path = "CDEbest/"+chaosName;
-//        CDEbest_main(path, chGenerator);
+        chGenerator = new util.random.DissipativeRandom();
+        path = "CDErand/"+chaosName;
+        CDErand1bin_main(path, chGenerator);
         
         /**
-         * jDE
+         * DE best
          */
         chGenerator = new util.random.DissipativeRandom();
-        path = "CjDE/"+chaosName;
-        CjDE_main(path, chGenerator);
+        path = "CDEbest/"+chaosName;
+        CDEbest_main(path, chGenerator);
+        
+//        /**
+//         * jDE
+//         */
+//        chGenerator = new util.random.DissipativeRandom();
+//        path = "CjDE/"+chaosName;
+//        CjDE_main(path, chGenerator);
         
         /**
          * SHADE
          */
-//        chGenerator = new util.random.DissipativeRandom();
-//        path = "CSHADE/"+chaosName;
-//        CSHADE_main(path, H, chGenerator);
+        chGenerator = new util.random.DissipativeRandom();
+        path = "CSHADE/"+chaosName;
+        CSHADE_main(path, H, chGenerator);
         
         /**
          * Henon
@@ -1584,30 +1584,30 @@ public class CEC2015main {
          * DE rand/1/bin
          */
         chaosName = "Henon/";
-//        chGenerator = new util.random.HenonRandom();
-//        path = "CDErand/"+chaosName;
-//        CDErand1bin_main(path, chGenerator);
-//        
-//        /**
-//         * DE best
-//         */
-//        chGenerator = new util.random.HenonRandom();
-//        path = "CDEbest/"+chaosName;
-//        CDEbest_main(path, chGenerator);
+        chGenerator = new util.random.HenonRandom();
+        path = "CDErand/"+chaosName;
+        CDErand1bin_main(path, chGenerator);
         
         /**
-         * jDE
+         * DE best
          */
         chGenerator = new util.random.HenonRandom();
-        path = "CjDE/"+chaosName;
-        CjDE_main(path, chGenerator);
+        path = "CDEbest/"+chaosName;
+        CDEbest_main(path, chGenerator);
+        
+//        /**
+//         * jDE
+//         */
+//        chGenerator = new util.random.HenonRandom();
+//        path = "CjDE/"+chaosName;
+//        CjDE_main(path, chGenerator);
         
         /**
          * SHADE
          */
-//        chGenerator = new util.random.HenonRandom();
-//        path = "CSHADE/"+chaosName;
-//        CSHADE_main(path, H, chGenerator);
+        chGenerator = new util.random.HenonRandom();
+        path = "CSHADE/"+chaosName;
+        CSHADE_main(path, H, chGenerator);
         
         /**
          * Ikeda
@@ -1625,30 +1625,30 @@ public class CEC2015main {
          * DE rand/1/bin
          */
         chaosName = "Ikeda/";
-//        chGenerator = new util.random.IkedaRandom();
-//        path = "CDErand/"+chaosName;
-//        CDErand1bin_main(path, chGenerator);
-//        
-//        /**
-//         * DE best
-//         */
-//        chGenerator = new util.random.IkedaRandom();
-//        path = "CDEbest/"+chaosName;
-//        CDEbest_main(path, chGenerator);
+        chGenerator = new util.random.IkedaRandom();
+        path = "CDErand/"+chaosName;
+        CDErand1bin_main(path, chGenerator);
         
         /**
-         * jDE
+         * DE best
          */
         chGenerator = new util.random.IkedaRandom();
-        path = "CjDE/"+chaosName;
-        CjDE_main(path, chGenerator);
+        path = "CDEbest/"+chaosName;
+        CDEbest_main(path, chGenerator);
+        
+//        /**
+//         * jDE
+//         */
+//        chGenerator = new util.random.IkedaRandom();
+//        path = "CjDE/"+chaosName;
+//        CjDE_main(path, chGenerator);
         
         /**
          * SHADE
          */
-//        chGenerator = new util.random.IkedaRandom();
-//        path = "CSHADE/"+chaosName;
-//        CSHADE_main(path, H, chGenerator);
+        chGenerator = new util.random.IkedaRandom();
+        path = "CSHADE/"+chaosName;
+        CSHADE_main(path, H, chGenerator);
         
         /**
          * Lozi
@@ -1666,30 +1666,30 @@ public class CEC2015main {
          * DE rand/1/bin
          */
         chaosName = "Lozi/";
-//        chGenerator = new util.random.LoziRandom();
-//        path = "CDErand/"+chaosName;
-//        CDErand1bin_main(path, chGenerator);
-//        
-//        /**
-//         * DE best
-//         */
-//        chGenerator = new util.random.LoziRandom();
-//        path = "CDEbest/"+chaosName;
-//        CDEbest_main(path, chGenerator);
+        chGenerator = new util.random.LoziRandom();
+        path = "CDErand/"+chaosName;
+        CDErand1bin_main(path, chGenerator);
         
         /**
-         * jDE
+         * DE best
          */
         chGenerator = new util.random.LoziRandom();
-        path = "CjDE/"+chaosName;
-        CjDE_main(path, chGenerator);
+        path = "CDEbest/"+chaosName;
+        CDEbest_main(path, chGenerator);
+        
+//        /**
+//         * jDE
+//         */
+//        chGenerator = new util.random.LoziRandom();
+//        path = "CjDE/"+chaosName;
+//        CjDE_main(path, chGenerator);
         
         /**
          * SHADE
          */
-//        chGenerator = new util.random.LoziRandom();
-//        path = "CSHADE/"+chaosName;
-//        CSHADE_main(path, H, chGenerator);
+        chGenerator = new util.random.LoziRandom();
+        path = "CSHADE/"+chaosName;
+        CSHADE_main(path, H, chGenerator);
         
         /**
          * Sinai
@@ -1707,30 +1707,30 @@ public class CEC2015main {
          * DE rand/1/bin
          */
         chaosName = "Sinai/";
-//        chGenerator = new util.random.SinaiRandom();
-//        path = "CDErand/"+chaosName;
-//        CDErand1bin_main(path, chGenerator);
-//        
-//        /**
-//         * DE best
-//         */
-//        chGenerator = new util.random.SinaiRandom();
-//        path = "CDEbest/"+chaosName;
-//        CDEbest_main(path, chGenerator);
+        chGenerator = new util.random.SinaiRandom();
+        path = "CDErand/"+chaosName;
+        CDErand1bin_main(path, chGenerator);
         
         /**
-         * jDE
+         * DE best
          */
         chGenerator = new util.random.SinaiRandom();
-        path = "CjDE/"+chaosName;
-        CjDE_main(path, chGenerator);
+        path = "CDEbest/"+chaosName;
+        CDEbest_main(path, chGenerator);
+        
+//        /**
+//         * jDE
+//         */
+//        chGenerator = new util.random.SinaiRandom();
+//        path = "CjDE/"+chaosName;
+//        CjDE_main(path, chGenerator);
         
         /**
          * SHADE
          */
-//        chGenerator = new util.random.SinaiRandom();
-//        path = "CSHADE/"+chaosName;
-//        CSHADE_main(path, H, chGenerator);
+        chGenerator = new util.random.SinaiRandom();
+        path = "CSHADE/"+chaosName;
+        CSHADE_main(path, H, chGenerator);
         
         /**
          * Tinkerbell
@@ -1748,30 +1748,30 @@ public class CEC2015main {
          * DE rand/1/bin
          */
         chaosName = "Tinkerbell/";
-//        chGenerator = new util.random.TinkerbellRandom();
-//        path = "CDErand/"+chaosName;
-//        CDErand1bin_main(path, chGenerator);
-//        
-//        /**
-//         * DE best
-//         */
-//        chGenerator = new util.random.TinkerbellRandom();
-//        path = "CDEbest/"+chaosName;
-//        CDEbest_main(path, chGenerator);
+        chGenerator = new util.random.TinkerbellRandom();
+        path = "CDErand/"+chaosName;
+        CDErand1bin_main(path, chGenerator);
         
         /**
-         * jDE
+         * DE best
          */
         chGenerator = new util.random.TinkerbellRandom();
-        path = "CjDE/"+chaosName;
-        CjDE_main(path, chGenerator);
+        path = "CDEbest/"+chaosName;
+        CDEbest_main(path, chGenerator);
+        
+//        /**
+//         * jDE
+//         */
+//        chGenerator = new util.random.TinkerbellRandom();
+//        path = "CjDE/"+chaosName;
+//        CjDE_main(path, chGenerator);
         
         /**
          * SHADE
          */
-//        chGenerator = new util.random.TinkerbellRandom();
-//        path = "CSHADE/"+chaosName;
-//        CSHADE_main(path, H, chGenerator);
+        chGenerator = new util.random.TinkerbellRandom();
+        path = "CSHADE/"+chaosName;
+        CSHADE_main(path, H, chGenerator);
     }
     
 }
