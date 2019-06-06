@@ -114,10 +114,11 @@ public class CEC2019_100digit_Main {
         
         
         try {
-            func_num = 9;
+            func_num = 8;
             dimension = 10;
-            MAXFES = 1000000 * dimension;
-            NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+            MAXFES = 5*10^8;
+//            NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+            NPinit = 2000;
             for(int i = 0; i < 50; i++) {
                 DISH_CEC2019(path, func_num, i);
             }

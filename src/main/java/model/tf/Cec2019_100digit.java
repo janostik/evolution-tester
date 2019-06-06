@@ -151,10 +151,11 @@ public class Cec2019_100digit implements TestFunction {
             
             test = new Cec2019_100digit(j);
             
-            for(int i = 0; i < 100000; i++) {
+            for(int i = 0; i < 10; i++) {
                 arr = new double[test.dim];
                 for(int a = 0; a < test.dim; a++) {
-                    arr[a] = RandomUtil.nextDouble(test.min(a), test.max(a));
+//                    arr[a] = RandomUtil.nextDouble(test.min(a), test.max(a));
+                    arr[a] = a;
                 }
                 res = test.fitness(arr);
             }
