@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.tf.Cec2015;
 import model.tf.Cec2019_100digit;
+import model.tf.Cec2019_100digit_manual;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -48,7 +49,7 @@ public class CEC2019_100digit_Main {
         
 //        res_writer.print("{");
         
-        tf = new Cec2019_100digit(func_num);
+        tf = new Cec2019_100digit_manual(func_num);
         for (int k = 0; k < runs; k++) {
 
                 dish = new DISH_100digit(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
@@ -116,7 +117,7 @@ public class CEC2019_100digit_Main {
         try {
             func_num = 8;
             dimension = 10;
-            MAXFES = 5*10^8;
+            MAXFES = (int)(5 * Math.pow(10, 8));
 //            NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
             NPinit = 2000;
             for(int i = 0; i < 50; i++) {
