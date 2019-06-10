@@ -18,8 +18,6 @@ import java.util.logging.Logger;
 import model.Individual;
 import model.tf.Cec2015;
 import model.tf.TestFunction;
-import util.Dijsktra;
-import util.Dijsktra.Vertex;
 import util.IndividualUtil;
 import util.random.Random;
 import util.random.UniformRandom;
@@ -62,9 +60,14 @@ public class Spalovny_combined implements TestFunction {
     double overused_penalty = 100_000_000;
     double path_penalty = 5;
     
+    
     int[] use_incinerator_indexes;
     int[] use_producent_indexes;
     int[] locations;
+    
+    int[] indexes;
+    int[] bestIndexes;
+    int repeats = 50;
     
     public Spalovny_combined() {
 
@@ -219,6 +222,19 @@ public class Spalovny_combined implements TestFunction {
         return "Projekt_Spaloven_CR";
     }
     
+    public static int[] RandomizeArray(int[] array){
+        Random rgen = new UniformRandom();  // Random number generator			
+
+        for (int i=0; i<array.length; i++) {
+            int randomPosition = rgen.nextInt(array.length);
+            int temp = array[i];
+            array[i] = array[randomPosition];
+            array[randomPosition] = temp;
+        }
+
+        return array;
+    }
+    
     /**
      * Method evaluates the quality of a solution
      * 
@@ -227,6 +243,29 @@ public class Spalovny_combined implements TestFunction {
      */
     @Override
     public double fitness(double[] vector) {
+    
+        double bestFit = -1, fit;
+        
+        for(int i = 0; i < repeats; i++) {
+            
+            fit = this.fitnessSingle(vector);
+            if(bestFit == -1 || fit < bestFit) {
+                bestIndexes = indexes.clone();
+                bestFit = fit;
+            }
+            
+        }
+        
+        return bestFit;
+    }
+    
+    /**
+     * Method evaluates the quality of a solution
+     * 
+     * @param vector
+     * @return 
+     */
+    public double fitnessSingle(double[] vector) {
         
         if(vector.length != this.facility_count) {
             return Math.pow(10, 30);
@@ -263,6 +302,13 @@ public class Spalovny_combined implements TestFunction {
             garbage_sum[i] = 0;
         }
         
+        indexes = new int[this.use_producent_indexes.length];
+        for(int i = 0; i < indexes.length; i++) {
+            indexes[i]=i;
+        }
+        
+        indexes = RandomizeArray(indexes);
+        
         for(int i = 0; i < this.use_producent_indexes.length; i++) {
             
             dist_min = -1;
@@ -271,9 +317,9 @@ public class Spalovny_combined implements TestFunction {
                 
                 if(facility_existence[j] == 1) {
                     
-                    dist = adjM[this.locations[j]][this.use_producent_indexes[i]];
+                    dist = adjM[this.locations[j]][this.use_producent_indexes[indexes[i]]];
                     if(dist_min == -1 || dist < dist_min) {
-                        if((garbage_sum[j] + garbage_production[this.use_producent_indexes[i]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
+                        if((garbage_sum[j] + garbage_production[this.use_producent_indexes[indexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
                             dist_min = dist;
                             facility_index = j;
                         }
@@ -282,12 +328,12 @@ public class Spalovny_combined implements TestFunction {
                 }
                 
             }
-            facility_nodes.get(facility_index).add(this.use_producent_indexes[i]);
+            facility_nodes.get(facility_index).add(this.use_producent_indexes[indexes[i]]);
             
-            fitness += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[i]]);
-            transport_cost += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[i]]);
+            fitness += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[indexes[i]]]);
+            transport_cost += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[indexes[i]]]);
             
-            garbage_sum[facility_index] += garbage_production[this.use_producent_indexes[i]];
+            garbage_sum[facility_index] += garbage_production[this.use_producent_indexes[indexes[i]]];
 
         }
 
@@ -444,9 +490,9 @@ public class Spalovny_combined implements TestFunction {
                 
                 if(facility_existence[j] == 1) {
                     
-                    dist = adjM[this.locations[j]][this.use_producent_indexes[i]];
+                    dist = adjM[this.locations[j]][this.use_producent_indexes[bestIndexes[i]]];
                     if(dist_min == -1 || dist < dist_min) {
-                        if((garbage_sum[j] + garbage_production[this.use_producent_indexes[i]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
+                        if((garbage_sum[j] + garbage_production[this.use_producent_indexes[bestIndexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
                             dist_min = dist;
                             facility_index = j;
                         }
@@ -455,12 +501,12 @@ public class Spalovny_combined implements TestFunction {
                 }
                 
             }
-            facility_nodes.get(facility_index).add(this.use_producent_indexes[i]);
+            facility_nodes.get(facility_index).add(this.use_producent_indexes[bestIndexes[i]]);
             
-            fitness += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[i]]);
-            transport_cost += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[i]]);
+            fitness += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[bestIndexes[i]]]);
+            transport_cost += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[bestIndexes[i]]]);
             
-            garbage_sum[facility_index] += garbage_production[this.use_producent_indexes[i]];
+            garbage_sum[facility_index] += garbage_production[this.use_producent_indexes[bestIndexes[i]]];
 
         }
         
@@ -766,53 +812,53 @@ public class Spalovny_combined implements TestFunction {
 //         */
 //
 //        vector = new double[]{0.3332495444495729, 0.24799515455819343, 0.9930261613867932, 0.26212518256840583, 0.13082361147332777, 0.17264729388305397, 0.22198293899101132, 0.3788297121860339, 0.6993004671839866, 0.7066847481445501, 0.4257487466104589, 0.683425129455388, 0.2547842317967062, 0.5609278718820192, 0.507220650861908, 0.17190394445868254, 0.018637921309324054, 0.06051942739182551, 0.2974817878734888, 0.31941072364821804, 0.21005263652187223, 0.37530978699714496, 0.7767221664468154, 0.23989857804291137, 0.1263581415714091, 0.9925608547936686, 0.08384781656226392, 0.10189493565221364, 0.29789228537681733, 0.1123233790053339, 0.08570741620396727, 0.2941664738944584, 0.2410789635356959, 0.03190757036160097, 0.27348826609820126, 0.3668045722698486, 0.03392932559723723, 0.14461923292667767, 0.24650086506439117, 0.1156769289367793, 0.20193755533046837, 0.2417799639992061, 0.2317880183401998, 0.3141896218649632, 0.3195884794094606, 0.2317052667154409, 0.22682639731514465, 0.781162673623498, 0.22852106392872534, 0.24433623959499634, 0.24055940681973337, 0.4920482996959569, 0.7938188051938365, 0.23826090589412519, 0.23766058567818799, 0.23021935552046358, 0.4786921536192007, 0.4932350974635597, 0.16628604251129397, 0.17932945117460064, 0.6139474549479553, 0.21441435317977564, 0.18270704425424672, 0.5043649963414785, 0.5768806416925931, 0.16975582151313487, 0.9383782298562673, 0.8851367696699938, 0.17456167133502715, 0.15338824105374502, 0.19868837183975713, 0.642630667549757, 0.16519498140674704, 0.6390433136240791, 0.13186773474308072, 0.5201139529245797, 0.5186932466278198, 0.6346631185062014, 0.5833916426807366, 0.5680912979099458, 0.25614733554380126, 0.28942535368406086, 0.34656375723144095, 0.49081291716268555, 0.33645026154585667, 0.5736249411024725, 0.4726021388411927, 0.20084524882431887, 0.45085624118697126, 0.8963203299568174, 0.889286389773581, 0.46088488598439986, 0.13363310754512742, 0.473259588045639, 0.1662210063133358, 0.36656200162562685, 0.45141763295587184, 0.36967412834634167, 0.36601269681446424, 0.4537819057010741, 0.470574101493692, 0.26249231177445936, 0.2982578129235713, 0.3359285106277433, 0.3641713245099515, 0.5851648188062558, 0.37138944868078316, 0.459321060417385, 0.35672710698984655, 0.3415190364907785, 0.3305811343709624, 0.891556228201916, 0.21233732876605269, 0.8247547855962065, 0.7058736969700985, 0.18576210665721782, 0.7068032803474289, 0.8948889234698321, 0.5310697888039592, 0.9464446847618975, 0.955677627412878, 0.814884286904088, 0.7335710647932538, 0.19918631374873977, 0.9443806327149837, 0.7097174796473329, 0.22065397756315996, 0.9690644814830635, 0.9571232414013708, 0.19183086203488112, 0.8762996558220327, 0.7070043461033555, 0.9766061787043342, 0.2073128603913368, 0.20056629858839847, 0.746264598828981, 0.9484807613810673, 0.9554499171832967, 0.21621997192855275, 0.8074305798720943, 0.9674645725519324, 0.025200094291233488, 0.8826266612599811, 0.35873127746821737, 0.5259226760097677, 0.5976895860753071, 0.1359311105131668, 0.581028929868675, 0.3684282547790941, 0.23784748587854887, 0.19444711154222438, 0.8969320048170274, 0.2595210921854054, 0.201045058345538, 0.3490179595594898, 0.13203022386593688, 0.3501280097457674, 0.2086610413746547, 0.45873824416338405, 0.5929129391929507, 0.26838079025568606, 0.7997482604954596, 0.7811090710014681, 0.4838940189040957, 0.7815707482108063, 0.2331591956015571, 0.2954795749442588, 0.48738775602611484, 0.0891659335494602, 0.13625867722227122, 0.2527856750169917, 0.29110661727795417, 0.2541526463206112, 0.2990535170991971, 0.49983226335718295, 0.48618136828847625, 0.24251709681432226, 0.7883122469572026, 0.27545500206446627, 0.31978770691435443, 0.4845867978223716, 0.32305363288966027, 0.7856911961071906, 0.0848603890580629, 0.7914837850339307, 0.34392525703255983, 0.29659717949179604, 0.2727596131294159, 0.2931284068291042, 0.24033771233760354, 0.36996889352873363, 0.2879408248624152, 0.2605264621134541, 0.2461391199722759, 0.5954821547266238, 0.3370520069496148, 0.3188505204105163, 0.3271595562647397, 0.48496911812743215, 0.33836406230613963, 0.23208068491218148, 0.22887509101539058, 0.341890475010174, 0.061540276880838435, 0.36088582025548327, 0.31827565057256424, 0.2962719890951183, 0.3980331850505344, 0.26016691947554926, 0.28011994100378224, 0.27606207231035446, 0.3902565459133437, 0.29630642124282985, 0.2982846849607834, 0.37106736840334, 0.10607395140321502, 0.46171074216674735, 0.28592157812632624, 0.5884830092237184, 0.26044913664980957, 0.31748185046204985, 0.13140366062439013, 0.029003706976774235, 0.3200334456696997, 0.5298462500466514, 0.5787091938743251, 0.2663352242422957, 0.6435246031757805, 0.3406224360039823, 0.6427498178438685, 0.1630142434381924, 0.6329928746943212, 0.5852803777696844, 0.2188512445747034, 0.5159641230416666, 0.878275758778251, 0.8789869501795234, 0.17529006957657667, 0.7141894129779629, 0.51691527409064, 0.16243926851104812, 0.509578986846113, 0.9778828710707667, 0.9375213669982809, 0.21505983492242997, 0.034030378048296006};
-        
-        /**
-         * Pro CR
-         */
+//        
+//        /**
+//         * Pro CR
+//         */
 //        Spalovny_projekt sp = new Spalovny_projekt();
         
         /**
          * Pro subset
          */
         Spalovny_combined sp = new Spalovny_combined();
-
-
-        System.out.println(sp.fitness(vector));
         
-        Map<String, List> map = sp.getOutput(vector);
-            
-        System.out.println("=================================");
-        String line;
-
-        if(map == null) {
-            return;
-        }
+        for(int i = 0; i < 10; i++)
+            System.out.println(sp.fitness(vector));
         
-        if(map != null){
-            for(Map.Entry<String,List> entry : map.entrySet()){
-                line = "";
-                System.out.print(entry.getKey() + " = ");
-                line += "{";
-//                System.out.print("{");
-                for(int pup = 0; pup < entry.getValue().size(); pup++){
-//                    System.out.print(entry.getValue().get(pup));
-                    line += entry.getValue().get(pup);
-                    if(pup != entry.getValue().size()-1){
-//                       System.out.print(","); 
-                       line += ",";
-                    }
-                }
-//                System.out.println("}");
-                line += "};";
-                line = line.replace("[", "{");
-                line = line.replace("]", "}");
-                System.out.println(line);
-
-            }
-        }
-
-        System.out.println("=================================");
+//        Map<String, List> map = sp.getOutput(vector);
+//            
+//        System.out.println("=================================");
+//        String line;
+//
+//        if(map == null) {
+//            return;
+//        }
+//        
+//        if(map != null){
+//            for(Map.Entry<String,List> entry : map.entrySet()){
+//                line = "";
+//                System.out.print(entry.getKey() + " = ");
+//                line += "{";
+////                System.out.print("{");
+//                for(int pup = 0; pup < entry.getValue().size(); pup++){
+////                    System.out.print(entry.getValue().get(pup));
+//                    line += entry.getValue().get(pup);
+//                    if(pup != entry.getValue().size()-1){
+////                       System.out.print(","); 
+//                       line += ",";
+//                    }
+//                }
+////                System.out.println("}");
+//                line += "};";
+//                line = line.replace("[", "{");
+//                line = line.replace("]", "}");
+//                System.out.println(line);
+//
+//            }
+//        }
+//
+//        System.out.println("=================================");
         
     }
     

@@ -3177,8 +3177,7 @@ public class SpalovnyProjektMain {
         
 //        discreteOlmMain();
 //        celaCRMain();
-//        combinedDevetMain();
-       combinedTriMain();
+        combinedDevetMain();
         
     }
     
