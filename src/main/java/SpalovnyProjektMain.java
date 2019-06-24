@@ -1047,20 +1047,14 @@ public class SpalovnyProjektMain {
         System.out.println("=================================");
         
     }
-    
-    /**
-     * 
-     * Main to solve spalovny in Olomoucky kraj
-     * 
-     * @throws Exception 
-     */
-    public static void combinedDevetMain() throws Exception {
+
+    public static void combinedJedenMain() throws Exception {
         
         /**
-         * 4 kraje
+         * 1 kraj
          */
-        int[] use_prod = new int[]{136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
-        int[] use_inc = new int[]{4,5,31,14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+        int[] use_prod = new int[]{93,94,95,96,97,98,99,100,101,102,103,104,105};
+        int[] use_inc = new int[]{7,8,21};
         int dimension = use_inc.length;
 
         int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
@@ -1150,7 +1144,7 @@ public class SpalovnyProjektMain {
             /**
              * History write
              */
-            writeCombinedResult(home_dir + "9kraju\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            writeCombinedResult(home_dir + "1kraj\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
             
         }
 
@@ -1164,19 +1158,13 @@ public class SpalovnyProjektMain {
         
     }
     
-    /**
-     * 
-     * Main to solve spalovny in Olomoucky kraj
-     * 
-     * @throws Exception 
-     */
-    public static void combinedCtyriMain() throws Exception {
+    public static void combinedJedenAMain() throws Exception {
         
         /**
-         * 4 kraje
+         * 1A kraj
          */
-        int[] use_prod = new int[]{71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
-        int[] use_inc = new int[]{27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+        int[] use_prod = new int[]{193,194,195,196,197,198,199,200,201,202,203,204,205};
+        int[] use_inc = new int[]{16,17,20,28,29,33};
         int dimension = use_inc.length;
 
         int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
@@ -1266,7 +1254,7 @@ public class SpalovnyProjektMain {
             /**
              * History write
              */
-            writeCombinedResult(home_dir + "4kraje\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            writeCombinedResult(home_dir + "1Akraj\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
             
         }
 
@@ -1280,12 +1268,116 @@ public class SpalovnyProjektMain {
         
     }
     
-    /**
-     * 
-     * Main to solve spalovny in Olomoucky kraj
-     * 
-     * @throws Exception 
-     */
+    public static void combinedDvaMain() throws Exception {
+        
+        /**
+         * 2 kraje
+         */
+        int[] use_prod = new int[]{18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        int[] use_inc = new int[]{1,6,34,16,17,20,28,29,33};
+        int dimension = use_inc.length;
+
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NPfinal = 4;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_combined(use_inc, use_prod);
+        int H = 5;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        DISH_analysis shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_combined)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+//            for(Individual ind : ((DISH_analysis)shade).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
+//            }
+            System.out.println("Best solution found in " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " CFE");
+            
+            /**
+             * History write
+             */
+            writeCombinedResult(home_dir + "2kraje\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
     public static void combinedTriMain() throws Exception {
         
         /**
@@ -1396,6 +1488,1216 @@ public class SpalovnyProjektMain {
         
     }
     
+    public static void combinedCtyriMain() throws Exception {
+        
+        /**
+         * 4 kraje
+         */
+        int[] use_prod = new int[]{71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        int[] use_inc = new int[]{27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+        int dimension = use_inc.length;
+
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NPfinal = 4;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_combined(use_inc, use_prod);
+        int H = 5;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        DISH_analysis shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_combined)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+//            for(Individual ind : ((DISH_analysis)shade).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
+//            }
+            System.out.println("Best solution found in " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " CFE");
+            
+            /**
+             * History write
+             */
+            writeCombinedResult(home_dir + "4kraje\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
+    public static void combinedPetMain() throws Exception {
+        
+        /**
+         * 5 kraju
+         */
+        int[] use_prod = new int[]{106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        int[] use_inc = new int[]{10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+        int dimension = use_inc.length;
+
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NPfinal = 4;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_combined(use_inc, use_prod);
+        int H = 5;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        DISH_analysis shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_combined)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+//            for(Individual ind : ((DISH_analysis)shade).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
+//            }
+            System.out.println("Best solution found in " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " CFE");
+            
+            /**
+             * History write
+             */
+            writeCombinedResult(home_dir + "5kraju\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
+    public static void combinedSestMain() throws Exception {
+        
+        /**
+         * 6 kraju
+         */
+        int[] use_prod = new int[]{178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        int[] use_inc = new int[]{12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+        int dimension = use_inc.length;
+
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NPfinal = 4;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_combined(use_inc, use_prod);
+        int H = 5;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        DISH_analysis shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_combined)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+//            for(Individual ind : ((DISH_analysis)shade).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
+//            }
+            System.out.println("Best solution found in " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " CFE");
+            
+            /**
+             * History write
+             */
+            writeCombinedResult(home_dir + "6kraju\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
+    public static void combinedSedmMain() throws Exception {
+        
+        /**
+         * 7 kraju
+         */
+        int[] use_prod = new int[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        int[] use_inc = new int[]{9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+        int dimension = use_inc.length;
+
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NPfinal = 4;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_combined(use_inc, use_prod);
+        int H = 5;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        DISH_analysis shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_combined)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+//            for(Individual ind : ((DISH_analysis)shade).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
+//            }
+            System.out.println("Best solution found in " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " CFE");
+            
+            /**
+             * History write
+             */
+            writeCombinedResult(home_dir + "7kraju\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
+    public static void combinedOsmMain() throws Exception {
+        
+        /**
+         * 8 kraju
+         */
+        int[] use_prod = new int[]{46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        int[] use_inc = new int[]{14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+        int dimension = use_inc.length;
+
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NPfinal = 4;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_combined(use_inc, use_prod);
+        int H = 5;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        DISH_analysis shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_combined)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+//            for(Individual ind : ((DISH_analysis)shade).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
+//            }
+            System.out.println("Best solution found in " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " CFE");
+            
+            /**
+             * History write
+             */
+            writeCombinedResult(home_dir + "8kraju\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+
+    public static void combinedDevetMain() throws Exception {
+        
+        /**
+         * 4 kraje
+         */
+        int[] use_prod = new int[]{136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        int[] use_inc = new int[]{4,5,31,14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+        int dimension = use_inc.length;
+
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NPfinal = 4;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_combined(use_inc, use_prod);
+        int H = 5;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        DISH_analysis shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_combined)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+//            for(Individual ind : ((DISH_analysis)shade).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
+//            }
+            System.out.println("Best solution found in " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " CFE");
+            
+            /**
+             * History write
+             */
+            writeCombinedResult(home_dir + "9kraju\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
+    public static void combinedDesetMain() throws Exception {
+        
+        /**
+         * 10 kraju - vsechny ceske
+         */
+        int[] use_prod = new int[]{0,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        int[] use_inc = new int[]{0,4,5,31,14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+        int dimension = use_inc.length;
+
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NPfinal = 4;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_combined(use_inc, use_prod);
+        int H = 5;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        DISH_analysis shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_combined)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+//            for(Individual ind : ((DISH_analysis)shade).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
+//            }
+            System.out.println("Best solution found in " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " CFE");
+            
+            /**
+             * History write
+             */
+            writeCombinedResult(home_dir + "10kraju\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
+    public static void combinedDesetAMain() throws Exception {
+        
+        /**
+         * 10 kraju - vsechny ceske
+         */
+        int[] use_prod = new int[]{178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,39,40,41,42,43,44,45,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,0};
+        int[] use_inc = new int[]{12,23,25,10,14,18,2,11,13,26,15,22,24,4,5,31,9,19,3,30,0};
+        int dimension = use_inc.length;
+
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NPfinal = 4;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_combined(use_inc, use_prod);
+        int H = 5;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        DISH_analysis shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_combined)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+//            for(Individual ind : ((DISH_analysis)shade).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
+//            }
+            System.out.println("Best solution found in " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " CFE");
+            
+            /**
+             * History write
+             */
+            writeCombinedResult(home_dir + "10Akraju\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
+    public static void combinedJedenactMain() throws Exception {
+        
+        /**
+         * 11 kraju
+         */
+        int[] use_prod = new int[]{0,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205,61,62,63,64,65,66,67,68,69,70};
+        int[] use_inc = new int[]{0,4,5,31,14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33,2};
+        int dimension = use_inc.length;
+
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NPfinal = 4;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_combined(use_inc, use_prod);
+        int H = 5;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        DISH_analysis shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_combined)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+//            for(Individual ind : ((DISH_analysis)shade).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
+//            }
+            System.out.println("Best solution found in " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " CFE");
+            
+            /**
+             * History write
+             */
+            writeCombinedResult(home_dir + "11kraju\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+    
+    public static void combinedDvanactMain() throws Exception {
+        
+        /**
+         * 12 kraju
+         */
+        int[] use_prod = new int[]{0,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205,61,62,63,64,65,66,67,68,69,70,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135};
+        int[] use_inc = new int[]{0,4,5,31,14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33,2,3,30};
+        int dimension = use_inc.length;
+
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NPfinal = 4;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_combined(use_inc, use_prod);
+        int H = 5;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        DISH_analysis shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_combined)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+//            for(Individual ind : ((DISH_analysis)shade).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
+//            }
+            System.out.println("Best solution found in " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " CFE");
+            
+            /**
+             * History write
+             */
+            writeCombinedResult(home_dir + "12kraju\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+
+    public static void combinedTrinactMain() throws Exception {
+        
+        /**
+         * 13 kraju
+         */
+        int[] use_prod = new int[]{0,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205,61,62,63,64,65,66,67,68,69,70,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177};
+        int[] use_inc = new int[]{0,4,5,31,14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33,2,3,30,11,13,26};
+        int dimension = use_inc.length;
+
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NPfinal = 4;
+        int MAXFES = maxfes;
+        TestFunction tf = new Spalovny_combined(use_inc, use_prod);
+        int H = 5;
+        util.random.Random generator = new util.random.UniformRandom();
+
+        DISH_analysis shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        for (int k = 0; k < runs; k++) {
+            
+            generator = new util.random.UniformRandom();
+            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_combined)tf).getOutput(shade.getBest().vector);
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+            
+//            for(Individual ind : ((DISH_analysis)shade).getBestHistory()){
+//                i++;
+//                if(ind.fitness < min){
+//                    min = ind.fitness;
+//                    best = i;
+//                }
+//            }
+            System.out.println("Best solution found in " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " CFE");
+            
+            /**
+             * History write
+             */
+            writeCombinedResult(home_dir + "13kraju\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            
+        }
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("=================================");
+        
+    }
+
     /**
      * 
      * Main to solve spalovny in JM+Olm+Zlin+Moravskoslezsky
@@ -3031,7 +4333,7 @@ public class SpalovnyProjektMain {
     }
     
     
-    public static int maxfes = 20_000;
+    public static int maxfes = 100_000;
     public static int runs = 10;
 //    public static String home_dir = "E:\\results\\Spalovny\\S PENALIZACI\\";
     public static String home_dir = "D:\\results\\Spalovny\\";
@@ -3168,16 +4470,18 @@ public class SpalovnyProjektMain {
 //        home_dir = "D:\\results\\Spalovny\\ACO\\";
 //        
 //        discreteCR_RBAS_Main();
-
-        System.out.println("------------------");
-        System.out.println("---------9---------");
-        System.out.println("------------------");
+//
+//        System.out.println("------------------");
+//        System.out.println("---------9---------");
+//        System.out.println("------------------");
         
         home_dir = "D:\\results\\Spalovny\\COMBINED_APPROACH\\";
         
+        combinedJedenAMain();
+        
 //        discreteOlmMain();
 //        celaCRMain();
-        combinedDevetMain();
+//        combinedDevetMain();
         
     }
     
