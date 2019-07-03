@@ -4477,7 +4477,7 @@ public class SpalovnyProjektMain {
         
         home_dir = "D:\\results\\Spalovny\\COMBINED_APPROACH\\";
         
-        combinedJedenAMain();
+        celaCRMain();
         
 //        discreteOlmMain();
 //        celaCRMain();

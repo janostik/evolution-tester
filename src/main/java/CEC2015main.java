@@ -1365,7 +1365,7 @@ public class CEC2015main {
         
         String path, chaosName;
         util.random.Random chGenerator;
-        dimension = 30;
+        dimension = 50;
         MAXFES = 10000 * dimension;
 
         /**
@@ -1385,18 +1385,18 @@ public class CEC2015main {
 //         */
 //        path = "DErand/";
 //        DErand1bin_main(path);
-        
-        /**
-         * DE best
-         */
-        path = "DEbest/";
-        DEbest_main(path);
 //        
 //        /**
-//         * jDE
+//         * DE best
 //         */
-//        path = "jDE/";
-//        jDE_main(path);
+//        path = "DEbest/";
+//        DEbest_main(path);
+//        
+        /**
+         * jDE
+         */
+        path = "jDE/";
+        jDE_main(path);
 //        
 //        /**
 //         * SHADE
@@ -1408,18 +1408,18 @@ public class CEC2015main {
 //         * Arnold
 //         */
 //        
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("Arnold cat chaos");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("Arnold cat chaos");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
 //        
 //        /**
 //         * DE rand/1/bin
 //         */
-//        chaosName = "Arnold/";
+        chaosName = "Arnold/";
 //        chGenerator = new util.random.ArnoldCatRandom();
 //        path = "CDErand/"+chaosName;
 //        CDErand1bin_main(path, chGenerator);
@@ -1431,12 +1431,12 @@ public class CEC2015main {
 //        path = "CDEbest/"+chaosName;
 //        CDEbest_main(path, chGenerator);
 //        
-//        /**
-//         * jDE
-//         */
-//        chGenerator = new util.random.ArnoldCatRandom();
-//        path = "CjDE/"+chaosName;
-//        CjDE_main(path, chGenerator);
+        /**
+         * jDE
+         */
+        chGenerator = new util.random.ArnoldCatRandom();
+        path = "CjDE/"+chaosName;
+        CjDE_main(path, chGenerator);
 //        
 //        /**
 //         * SHADE
@@ -1449,18 +1449,18 @@ public class CEC2015main {
 //         * Burgers
 //         */
 //        
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("Burgers chaos");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("Burgers chaos");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
 //        
 //        /**
 //         * DE rand/1/bin
 //         */
-//        chaosName = "Burgers/";
+        chaosName = "Burgers/";
 //        chGenerator = new util.random.BurgersRandom();
 //        path = "CDErand/"+chaosName;
 //        CDErand1bin_main(path, chGenerator);
@@ -1472,12 +1472,12 @@ public class CEC2015main {
 //        path = "CDEbest/"+chaosName;
 //        CDEbest_main(path, chGenerator);
 //        
-//        /**
-//         * jDE
-//         */
-//        chGenerator = new util.random.BurgersRandom();
-//        path = "CjDE/"+chaosName;
-//        CjDE_main(path, chGenerator);
+        /**
+         * jDE
+         */
+        chGenerator = new util.random.BurgersRandom();
+        path = "CjDE/"+chaosName;
+        CjDE_main(path, chGenerator);
 //        
 //        /**
 //         * SHADE
@@ -1490,18 +1490,18 @@ public class CEC2015main {
 //         * DeLo
 //         */
 //        
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("Delayed Logistic chaos");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("Delayed Logistic chaos");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
 //        
 //        /**
 //         * DE rand/1/bin
 //         */
-//        chaosName = "DeLo/";
+        chaosName = "DeLo/";
 //        chGenerator = new util.random.DelayedLogisticRandom();
 //        path = "CDErand/"+chaosName;
 //        CDErand1bin_main(path, chGenerator);
@@ -1513,12 +1513,12 @@ public class CEC2015main {
 //        path = "CDEbest/"+chaosName;
 //        CDEbest_main(path, chGenerator);
 //        
-//        /**
-//         * jDE
-//         */
-//        chGenerator = new util.random.DelayedLogisticRandom();
-//        path = "CjDE/"+chaosName;
-//        CjDE_main(path, chGenerator);
+        /**
+         * jDE
+         */
+        chGenerator = new util.random.DelayedLogisticRandom();
+        path = "CjDE/"+chaosName;
+        CjDE_main(path, chGenerator);
 //        
 //        /**
 //         * SHADE
@@ -1531,18 +1531,18 @@ public class CEC2015main {
 //         * Dissipative
 //         */
 //        
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("Dissipative chaos");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("Dissipative chaos");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
 //        
 //        /**
 //         * DE rand/1/bin
 //         */
-//        chaosName = "Dissipative/";
+        chaosName = "Dissipative/";
 //        chGenerator = new util.random.DissipativeRandom();
 //        path = "CDErand/"+chaosName;
 //        CDErand1bin_main(path, chGenerator);
@@ -1554,12 +1554,12 @@ public class CEC2015main {
 //        path = "CDEbest/"+chaosName;
 //        CDEbest_main(path, chGenerator);
 //        
-//        /**
-//         * jDE
-//         */
-//        chGenerator = new util.random.DissipativeRandom();
-//        path = "CjDE/"+chaosName;
-//        CjDE_main(path, chGenerator);
+        /**
+         * jDE
+         */
+        chGenerator = new util.random.DissipativeRandom();
+        path = "CjDE/"+chaosName;
+        CjDE_main(path, chGenerator);
 //        
 //        /**
 //         * SHADE
@@ -1572,18 +1572,18 @@ public class CEC2015main {
 //         * Henon
 //         */
 //        
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("Henon chaos");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("Henon chaos");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
 //        
 //        /**
 //         * DE rand/1/bin
 //         */
-//        chaosName = "Henon/";
+        chaosName = "Henon/";
 //        chGenerator = new util.random.HenonRandom();
 //        path = "CDErand/"+chaosName;
 //        CDErand1bin_main(path, chGenerator);
@@ -1595,12 +1595,12 @@ public class CEC2015main {
 //        path = "CDEbest/"+chaosName;
 //        CDEbest_main(path, chGenerator);
 //        
-//        /**
-//         * jDE
-//         */
-//        chGenerator = new util.random.HenonRandom();
-//        path = "CjDE/"+chaosName;
-//        CjDE_main(path, chGenerator);
+        /**
+         * jDE
+         */
+        chGenerator = new util.random.HenonRandom();
+        path = "CjDE/"+chaosName;
+        CjDE_main(path, chGenerator);
 //        
 //        /**
 //         * SHADE
@@ -1613,18 +1613,18 @@ public class CEC2015main {
 //         * Ikeda
 //         */
 //        
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("Ikeda chaos");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("Ikeda chaos");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
 //        
 //        /**
 //         * DE rand/1/bin
 //         */
-//        chaosName = "Ikeda/";
+        chaosName = "Ikeda/";
 //        chGenerator = new util.random.IkedaRandom();
 //        path = "CDErand/"+chaosName;
 //        CDErand1bin_main(path, chGenerator);
@@ -1636,12 +1636,12 @@ public class CEC2015main {
 //        path = "CDEbest/"+chaosName;
 //        CDEbest_main(path, chGenerator);
 //        
-//        /**
-//         * jDE
-//         */
-//        chGenerator = new util.random.IkedaRandom();
-//        path = "CjDE/"+chaosName;
-//        CjDE_main(path, chGenerator);
+        /**
+         * jDE
+         */
+        chGenerator = new util.random.IkedaRandom();
+        path = "CjDE/"+chaosName;
+        CjDE_main(path, chGenerator);
 //        
 //        /**
 //         * SHADE
@@ -1654,18 +1654,18 @@ public class CEC2015main {
 //         * Lozi
 //         */
 //        
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("Lozi chaos");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("Lozi chaos");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
 //        
 //        /**
 //         * DE rand/1/bin
 //         */
-//        chaosName = "Lozi/";
+        chaosName = "Lozi/";
 //        chGenerator = new util.random.LoziRandom();
 //        path = "CDErand/"+chaosName;
 //        CDErand1bin_main(path, chGenerator);
@@ -1677,12 +1677,12 @@ public class CEC2015main {
 //        path = "CDEbest/"+chaosName;
 //        CDEbest_main(path, chGenerator);
 //        
-//        /**
-//         * jDE
-//         */
-//        chGenerator = new util.random.LoziRandom();
-//        path = "CjDE/"+chaosName;
-//        CjDE_main(path, chGenerator);
+        /**
+         * jDE
+         */
+        chGenerator = new util.random.LoziRandom();
+        path = "CjDE/"+chaosName;
+        CjDE_main(path, chGenerator);
 //        
 //        /**
 //         * SHADE
@@ -1695,18 +1695,18 @@ public class CEC2015main {
 //         * Sinai
 //         */
 //        
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("Sinai chaos");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("Sinai chaos");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
 //        
 //        /**
 //         * DE rand/1/bin
 //         */
-//        chaosName = "Sinai/";
+        chaosName = "Sinai/";
 //        chGenerator = new util.random.SinaiRandom();
 //        path = "CDErand/"+chaosName;
 //        CDErand1bin_main(path, chGenerator);
@@ -1718,12 +1718,12 @@ public class CEC2015main {
 //        path = "CDEbest/"+chaosName;
 //        CDEbest_main(path, chGenerator);
 //        
-//        /**
-//         * jDE
-//         */
-//        chGenerator = new util.random.SinaiRandom();
-//        path = "CjDE/"+chaosName;
-//        CjDE_main(path, chGenerator);
+        /**
+         * jDE
+         */
+        chGenerator = new util.random.SinaiRandom();
+        path = "CjDE/"+chaosName;
+        CjDE_main(path, chGenerator);
 //        
 //        /**
 //         * SHADE
@@ -1736,18 +1736,18 @@ public class CEC2015main {
 //         * Tinkerbell
 //         */
 //        
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("Tinkerbell chaos");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
-//        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("Tinkerbell chaos");
+        System.out.println("=================================");
+        System.out.println("=================================");
+        System.out.println("=================================");
 //        
 //        /**
 //         * DE rand/1/bin
 //         */
-//        chaosName = "Tinkerbell/";
+        chaosName = "Tinkerbell/";
 //        chGenerator = new util.random.TinkerbellRandom();
 //        path = "CDErand/"+chaosName;
 //        CDErand1bin_main(path, chGenerator);
@@ -1759,12 +1759,12 @@ public class CEC2015main {
 //        path = "CDEbest/"+chaosName;
 //        CDEbest_main(path, chGenerator);
 //        
-//        /**
-//         * jDE
-//         */
-//        chGenerator = new util.random.TinkerbellRandom();
-//        path = "CjDE/"+chaosName;
-//        CjDE_main(path, chGenerator);
+        /**
+         * jDE
+         */
+        chGenerator = new util.random.TinkerbellRandom();
+        path = "CjDE/"+chaosName;
+        CjDE_main(path, chGenerator);
 //        
 //        /**
 //         * SHADE
