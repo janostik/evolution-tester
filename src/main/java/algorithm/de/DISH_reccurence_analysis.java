@@ -1,9 +1,15 @@
 package algorithm.de;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.Cec2015;
@@ -24,23 +30,31 @@ import util.random.Random;
  * 
  * @author adam on 21/05/2019
  */
-public class DISH_analysis extends SHADE_analysis {
+public class DISH_reccurence_analysis extends SHADE_analysis {
 
     protected final int minPopSize;
     protected final int maxPopSize;
     
     protected List<double[]> imp_hist;
+    protected String export_path;
+    protected PrintWriter writer;
     
-    public DISH_analysis(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
+    public DISH_reccurence_analysis(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize, String exportPath) {
         super(D, MAXFES, f, H, NP, rndGenerator);
         this.minPopSize = minPopSize;
         this.maxPopSize = NP;
         this.imp_hist = new ArrayList<>();
+        this.export_path = exportPath;
+        try {
+            writer = new PrintWriter(this.export_path, "UTF-8");
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            Logger.getLogger(DISH_reccurence_analysis.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
  
     @Override
     public String getName() {
-        return "DISH";
+        return "DISH_reccurence";
     }
     
     /**
@@ -101,6 +115,8 @@ public class DISH_analysis extends SHADE_analysis {
     @Override
     public Individual run() {
 
+        writer.print("{");
+        
         /**
          * Initialization
          */
@@ -125,6 +141,11 @@ public class DISH_analysis extends SHADE_analysis {
          * Initial population
          */
         initializePopulation();
+        try {
+            this.exportPop();
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            Logger.getLogger(DISH_reccurence_analysis.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         this.M_F = new double[this.H];
         this.M_CR = new double[this.H];
@@ -139,18 +160,18 @@ public class DISH_analysis extends SHADE_analysis {
             }
         }
         
-        this.M_Fhistory.add(this.M_F.clone());
-        this.M_CRhistory.add(this.M_CR.clone());
+//        this.M_Fhistory.add(this.M_F.clone());
+//        this.M_CRhistory.add(this.M_CR.clone());
         
         /**
          * Diversity and clustering
          */
-        int[] cl_res;
-        DBSCANClusterer clusterer = new DBSCANClusterer(this.cl_eps, this.cl_minPts, this.cl_distance);
-        this.P_div_history.add(this.calculateDiversity(this.P));
-        cl_res = this.clusteringViaDBSCAN(P, clusterer);
-        this.Cluster_history.add(cl_res[0]);
-        this.Noise_history.add(cl_res[1]);
+//        int[] cl_res;
+//        DBSCANClusterer clusterer = new DBSCANClusterer(this.cl_eps, this.cl_minPts, this.cl_distance);
+//        this.P_div_history.add(this.calculateDiversity(this.P));
+//        cl_res = this.clusteringViaDBSCAN(P, clusterer);
+//        this.Cluster_history.add(cl_res[0]);
+//        this.Noise_history.add(cl_res[1]);
 
         /**
          * Generation iteration;
@@ -352,18 +373,28 @@ public class DISH_analysis extends SHADE_analysis {
             NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
             P = this.resizePop(P, NP);
             
+            try {
+                writer.print(",");
+                this.exportPop();
+            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+                Logger.getLogger(DISH_reccurence_analysis.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
             /**
              * Diversity and clustering
              */
-            this.P_div_history.add(this.calculateDiversity(this.P));
-            cl_res = this.clusteringViaDBSCAN(P, clusterer);
-            this.Cluster_history.add(cl_res[0]);
-            this.Noise_history.add(cl_res[1]);
-            
-            this.M_Fhistory.add(this.M_F.clone());
-            this.M_CRhistory.add(this.M_CR.clone());
+//            this.P_div_history.add(this.calculateDiversity(this.P));
+//            cl_res = this.clusteringViaDBSCAN(P, clusterer);
+//            this.Cluster_history.add(cl_res[0]);
+//            this.Noise_history.add(cl_res[1]);
+//            
+//            this.M_Fhistory.add(this.M_F.clone());
+//            this.M_CRhistory.add(this.M_CR.clone());
 
         }
+        
+        writer.print("}");
+        writer.close();
 
         return this.best;
 
@@ -503,23 +534,54 @@ public class DISH_analysis extends SHADE_analysis {
         return imp_hist;
     }
 
+    protected void exportPop() throws FileNotFoundException, UnsupportedEncodingException {
+        
+        Individual ind;
+
+        writer.print("{");
+        
+        for(int i = 0; i < this.P.size(); i++) {
+            
+            ind = this.P.get(i);
+            
+            writer.print("{");
+            
+            for(int d = 0; d < ind.vector.length; d++) {
+                writer.print(String.format(Locale.US, "%.10f", ind.vector[d]));
+                if(d != ind.vector.length-1)
+                    writer.print(",");
+            }
+
+            writer.print("}");
+            
+            if(i != this.P.size()-1) {
+                writer.print(",");
+            }
+            
+        }
+        
+        writer.print("}");
+        
+    }
+    
     /**
      * @param args the command line arguments
      * @throws java.lang.Exception
      */
     public static void main(String[] args) throws Exception {
         
-        int dimension = 10;
-        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        int minNP = 4;
-        int MAXFES = 100000 * dimension;
-        int funcNumber = 8;
+        int dimension = 30;
+        int NP = 20;//(int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int minNP = 20;
+        int MAXFES = 10000;//10000 * dimension;
+        int funcNumber = 1;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 5;
         long seed = 10304050L;
         util.random.Random generator = new util.random.UniformRandom();
+        String path = "D:\\results\\RECCURENCE_PLOT\\DISH\\";
 
-        DISH_analysis shade;
+        DISH_reccurence_analysis shade;
 
         int runs = 10;
         double[] bestArray = new double[runs];
@@ -528,7 +590,7 @@ public class DISH_analysis extends SHADE_analysis {
         
         for (int k = 0; k < runs; k++) {
 
-            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, minNP);
+            shade = new DISH_reccurence_analysis(dimension, MAXFES, tf, H, NP, generator, minNP, path + "rec_" + k + ".txt");
 
             shade.run();
 
