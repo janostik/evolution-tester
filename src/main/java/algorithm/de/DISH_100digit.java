@@ -221,23 +221,12 @@ public class DISH_100digit extends SHADE_analysis {
                 parents[3] = pr2;
                 
                 if (gg < 0.2) {
-                    /**
-                     * CHANGES
-                     * 
-                     * Fw = 0.7 * Fg;
-                     */
-                    Fw = 0.35 * Fg;
+                    Fw = 0.7 * Fg;
                 }
                 else if (gg < 0.4) {
-                    /**
-                     * Fw = 0.8 * Fg;
-                     */
-                    Fw = 0.4 * Fg;
+                    Fw = 0.8 * Fg;
                 }
                 else {
-                    /**
-                     * Fw = 1.2 * Fg;
-                     */
                     Fw = 1.2 * Fg;
                 }
                 

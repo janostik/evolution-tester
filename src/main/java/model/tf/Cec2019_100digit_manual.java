@@ -11,7 +11,6 @@ import java.util.Locale;
 import java.util.Scanner;
 import model.Individual;
 import util.IndividualUtil;
-import util.RandomUtil;
 import util.random.Random;
 import util.random.UniformRandom;
 

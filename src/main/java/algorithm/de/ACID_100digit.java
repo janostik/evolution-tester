@@ -22,15 +22,18 @@ import util.random.Random;
 
 /**
  *
- * DISH based algorithm with super duper mega updates
+ * 
+ * ACID - Adaptive differential evolution with Clustering and Inverse problem solving for maintaining population Diversity
+ * 
+ * 
  * - Population clustering: Cluster emerges, it exploits and the rest of the pop. is solving inverse problem
  * - Exploiting clusters: Use of the best/1/bin strategy
  * - Population decrease: Converged cluster is killed
  * - Tabu zones: Areas around previously converged clusters are prohibited in search
  * 
- * @author wikki on 29/07/2019
+ * @author wikki on 30/07/2019
  */
-public class future_DISH extends DISH_analysis {
+public class ACID_100digit extends DISH_analysis {
 
     /**
      * 0 - no cluster -> classic convergence
@@ -43,7 +46,13 @@ public class future_DISH extends DISH_analysis {
     protected double resolution;
     protected List<double[]> tabu;
     
-    public future_DISH(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize, double eps, int minPts, DistanceMeasure distance_measure, double resolution) {
+    /**
+     * 100 digit
+     */
+    protected int exponent;
+    protected List<double[]> res_history;
+    
+    public ACID_100digit(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize, double eps, int minPts, DistanceMeasure distance_measure, double resolution) {
         super(D, MAXFES, f, H, NP, rndGenerator, minPopSize);
         
         this.cl_eps = eps;
@@ -51,11 +60,59 @@ public class future_DISH extends DISH_analysis {
         this.cl_distance = distance_measure;
         this.resolution = resolution;
         
+        this.res_history = new ArrayList<>();
+        
     }
 
     @Override
     public String getName() {
-        return "future_DISH";
+        return "ACID_100digit";
+    }
+    
+    protected boolean digitCheck(Individual ind) {
+        
+        double threshold = Math.pow(10, this.exponent);
+        double[] input;
+        
+        while((ind.fitness - this.f.optimum()) <= threshold) {
+
+            input = new double[]{this.FES, (ind.fitness - this.f.optimum())};
+            this.res_history.add(input);
+            this.exponent -= 1;
+            threshold = Math.pow(10, this.exponent);
+            if(this.exponent == -10)
+                return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Creation of initial population.
+     */
+    @Override
+    protected void initializePopulation(){
+        
+        /**
+         * Initial population
+         */
+        id = 0;
+        double[] features;
+        this.P = new ArrayList<>();
+        Individual ind;
+
+        for (int i = 0; i < this.NP; i++) {
+            id = i;
+            features = this.f.generateTrial(this.D).clone();
+            ind = new Individual(String.valueOf(id), features, this.f.fitness(features));
+            this.P.add(ind);
+            this.FES++;
+            if(this.isBest(ind)) {
+                this.writeHistory();
+            }
+            this.digitCheck(ind);
+        }
+        
     }
     
     @Override
@@ -70,6 +127,11 @@ public class future_DISH extends DISH_analysis {
         this.G = 0;
         this.Aext = new ArrayList<>();
         this.best = null;
+        
+        /**
+         * 100 digit
+         */
+        this.exponent = 0;
         
 //        this.bestHistory = new ArrayList<>();
 //        this.M_Fhistory = new ArrayList<>();
@@ -147,7 +209,6 @@ public class future_DISH extends DISH_analysis {
                     newPop = new ArrayList<>();
 
                     memoryIndex = 0;
-
                     p = ((pmax - pmin)/(double) this.MAXFES) * this.FES + pmin;
 
                     for (int i = 0; i < this.P.size(); i++) {
@@ -264,7 +325,6 @@ public class future_DISH extends DISH_analysis {
 
                             SFlist[memoryIndex] = Fg;
                             SCRlist[memoryIndex] = CRg;
-
                             wsList[memoryIndex] = euclid.getDistance(x.vector, trial.vector);
 
                             memoryIndex++;
@@ -275,8 +335,19 @@ public class future_DISH extends DISH_analysis {
 
                         this.FES++;
                         if(this.isBest(trial)) {
+                            /**
+                             * Added to see convergence
+                             */
+//                            System.out.println(FES + " / " + MAXFES + " - fitness: " + trial.fitness + " diff: " + (x.fitness-trial.fitness));
                             this.writeHistory();
                         }
+                        /**
+                         * 100 digit
+                         */
+                        if (this.digitCheck(trial)) {
+                            return best;
+                        }
+                        
                         if (this.FES >= this.MAXFES) {
                             break endless;
                         }
@@ -330,7 +401,6 @@ public class future_DISH extends DISH_analysis {
                     this.converging_clusters = this.searchForClusters(newPop, clusterer);
                     if(this.converging_clusters == null) {
 //                        this.regime = 0; 
-//                        System.out.println("Regime changed from 0 to 0");
                         this.P.addAll(newPop);
                     }
                     else {
@@ -405,11 +475,22 @@ public class future_DISH extends DISH_analysis {
 
                                     this.FES++;
                                     if(this.isBest(trial)) {
+                                        /**
+                                         * Added to see convergence
+                                         */
+//                                        System.out.println(FES + " / " + MAXFES + " - fitness: " + trial.fitness + " diff: " + (cl_x.fitness-trial.fitness));
                                         this.writeHistory();
                                     }
+                                    /**
+                                     * 100 digit
+                                     */
+                                    if (this.digitCheck(trial)) {
+                                        return best;
+                                    }
+
                                     if (this.FES >= this.MAXFES) {
                                         break endless;
-                                    }                                   
+                                    }                                
                                 }  
 
                                 cluster = new ArrayList<>();
@@ -577,10 +658,23 @@ public class future_DISH extends DISH_analysis {
 
                         this.FES++;
                         if(this.isBest(trial)) {
+                            /**
+                             * Added to see convergence
+                             */
+//                            System.out.println(FES + " / " + MAXFES + " - fitness: " + trial.fitness + " diff: " + (x.fitness-trial.fitness));
+                            
                             this.writeHistory();
                             this.regime = 0;
                             System.out.println("Regime changed from 1 to 0");
                         }
+                        
+                        /**
+                         * 100 digit
+                         */
+                        if (this.digitCheck(trial)) {
+                            return best;
+                        }
+                        
                         if (this.FES >= this.MAXFES) {
                             break endless;
                         }
@@ -688,8 +782,20 @@ public class future_DISH extends DISH_analysis {
 
                                     this.FES++;
                                     if(this.isBest(trial)) {
+                                        /**
+                                         * Added to see convergence
+                                         */
+//                                        System.out.println(FES + " / " + MAXFES + " - fitness: " + trial.fitness + " diff: " + (cl_x.fitness-trial.fitness));
                                         this.writeHistory();
                                     }
+                                    
+                                    /**
+                                     * 100 digit
+                                     */
+                                    if (this.digitCheck(trial)) {
+                                        return best;
+                                    }
+                                    
                                     if (this.FES >= this.MAXFES) {
                                         break endless;
                                     }                                   
@@ -775,11 +881,23 @@ public class future_DISH extends DISH_analysis {
 
                                     this.FES++;
                                     if(this.isBest(trial)) {
+                                        /**
+                                         * Added to see convergence
+                                         */
+//                                        System.out.println(FES + " / " + MAXFES + " - fitness: " + trial.fitness + " diff: " + (cl_x.fitness-trial.fitness));
                                         this.writeHistory();
                                     }
+                                    
+                                    /**
+                                     * 100 digit
+                                     */
+                                    if (this.digitCheck(trial)) {
+                                        return best;
+                                    }
+                                    
                                     if (this.FES >= this.MAXFES) {
                                         break endless;
-                                    }                                   
+                                    }                                    
                                 }  
 
                                 cluster = new ArrayList<>();
@@ -861,11 +979,23 @@ public class future_DISH extends DISH_analysis {
 
                                     this.FES++;
                                     if(this.isBest(trial)) {
+                                        /**
+                                         * Added to see convergence
+                                         */
+//                                        System.out.println(FES + " / " + MAXFES + " - fitness: " + trial.fitness + " diff: " + (cl_x.fitness-trial.fitness));
                                         this.writeHistory();
                                     }
+                                    
+                                    /**
+                                     * 100 digit
+                                     */
+                                    if (this.digitCheck(trial)) {
+                                        return best;
+                                    }
+                                    
                                     if (this.FES >= this.MAXFES) {
                                         break endless;
-                                    }                                   
+                                    }                                  
                                 }  
 
                                 cluster = new ArrayList<>();
@@ -917,6 +1047,10 @@ public class future_DISH extends DISH_analysis {
         this.writeHistory();
         return this.best;
 
+    }
+    
+    public List<double[]> getRes_history() {
+        return res_history;
     }
     
     /**
@@ -1142,7 +1276,7 @@ public class future_DISH extends DISH_analysis {
         double eps = Math.abs((tf.max(0)-tf.min(0)))/100.0;
         double resolution = Math.pow(10, -8);
 
-        future_DISH shade;
+        ACID_100digit shade;
 
         int runs = 10;
         double[] bestArray = new double[runs];
@@ -1151,7 +1285,7 @@ public class future_DISH extends DISH_analysis {
         
         for (int k = 0; k < runs; k++) {
 
-            shade = new future_DISH(dimension, MAXFES, tf, H, NP, generator, minNP, eps, 3, new ChebyshevDistance(), resolution);
+            shade = new ACID_100digit(dimension, MAXFES, tf, H, NP, generator, minNP, eps, 3, new ChebyshevDistance(), resolution);
 
             shade.run();
 

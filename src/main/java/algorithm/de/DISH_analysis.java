@@ -511,9 +511,9 @@ public class DISH_analysis extends SHADE_analysis {
         
         int dimension = 10;
         int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        int minNP = 4;
-        int MAXFES = 100000 * dimension;
-        int funcNumber = 8;
+        int minNP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int MAXFES = 10000 * dimension;
+        int funcNumber = 6;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 5;
         long seed = 10304050L;
