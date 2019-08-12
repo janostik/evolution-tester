@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.Cec2015;
+import model.tf.CuttingStock1D;
 import model.tf.TestFunction;
 import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import org.apache.commons.math3.ml.distance.ChebyshevDistance;
@@ -503,18 +505,46 @@ public class DISH_analysis extends SHADE_analysis {
         return imp_hist;
     }
 
+    protected String getNiceVector(double[] vector) {
+        
+        String out = "";
+        out += "{";
+        
+        for(int i = 0; i < vector.length; i++) {
+            out += String.format(Locale.US, "%.4f", vector[i]);
+            if(i != vector.length-1)
+                out +=", ";
+        }
+        
+        out += "}";
+        
+        return out;
+    }
+    
     /**
      * @param args the command line arguments
      * @throws java.lang.Exception
      */
     public static void main(String[] args) throws Exception {
         
-        int dimension = 10;
-        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        int minNP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        int MAXFES = 10000 * dimension;
+//        int dimension = 10;
+//        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+//        int minNP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int dimension = 100;
+        int NP = 200;
+        int minNP = 4;
+        int MAXFES = 1000 * dimension;
         int funcNumber = 6;
-        TestFunction tf = new Cec2015(dimension, funcNumber);
+//        TestFunction tf = new Cec2015(dimension, funcNumber);
+
+        int[][] order;
+        int[] stock = new int[]{5840};
+        int cut_through = 4;
+        order = new int[][]{{3665,2},{2660,4},{2650,12},{2625,4},{2615,4},{2425,2},{2405,10},{2395,6},{2385,8},{2295,16},{2290,4},{2045,4},{1925,2},{1680,2},{765,2},{595,2},{565,2}};
+        
+        TestFunction tf = new CuttingStock1D(order, stock, cut_through);
+//        TestFunction tf = new CuttingStock1D();
+        
         int H = 5;
         long seed = 10304050L;
         util.random.Random generator = new util.random.UniformRandom();
@@ -534,7 +564,8 @@ public class DISH_analysis extends SHADE_analysis {
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());
-            System.out.println(Arrays.toString(shade.getBest().vector));
+            System.out.println(shade.getNiceVector(shade.getBest().vector));
+            System.out.println("Best solution found in: " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0]);
 
         }
 

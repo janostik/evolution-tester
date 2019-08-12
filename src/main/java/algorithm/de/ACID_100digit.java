@@ -1032,7 +1032,7 @@ public class ACID_100digit extends DISH_analysis {
                     }
                     else {
                         this.regime = 3;
-                        System.out.println("Regime changed from 2 to 3");
+                        System.out.println("Regime changed from 1 to 3");
                         PD = null;
                     }
                 }
@@ -1231,7 +1231,7 @@ public class ACID_100digit extends DISH_analysis {
      */
     protected List<List<Individual>> searchForClusters(List<Individual> population, DBSCANClusterer clusterer) {
         
-        if(population.size() < this.cl_minPts) {
+        if(population.size() < this.cl_minPts+1) {
             return null;
         }
         
@@ -1244,6 +1244,9 @@ public class ACID_100digit extends DISH_analysis {
         List<List<Individual>> cls = new ArrayList<>();
         
         for(Cluster<Individual> cluster : clusters) {
+            if(cluster.getPoints().size() < this.cl_minPts+1) {
+                continue;
+            }
             for(Individual ind : cluster.getPoints()) {
                 if(ind.fitness == this.best.fitness) {
                     cls.add(cluster.getPoints());

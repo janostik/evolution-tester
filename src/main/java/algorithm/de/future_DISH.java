@@ -1097,7 +1097,7 @@ public class future_DISH extends DISH_analysis {
      */
     protected List<List<Individual>> searchForClusters(List<Individual> population, DBSCANClusterer clusterer) {
         
-        if(population.size() < this.cl_minPts) {
+        if(population.size() < this.cl_minPts+1) {
             return null;
         }
         
@@ -1110,6 +1110,9 @@ public class future_DISH extends DISH_analysis {
         List<List<Individual>> cls = new ArrayList<>();
         
         for(Cluster<Individual> cluster : clusters) {
+            if(cluster.getPoints().size() < this.cl_minPts+1) {
+                continue;
+            }
             for(Individual ind : cluster.getPoints()) {
                 if(ind.fitness == this.best.fitness) {
                     cls.add(cluster.getPoints());
@@ -1151,7 +1154,7 @@ public class future_DISH extends DISH_analysis {
         
         for (int k = 0; k < runs; k++) {
 
-            shade = new future_DISH(dimension, MAXFES, tf, H, NP, generator, minNP, eps, 3, new ChebyshevDistance(), resolution);
+            shade = new future_DISH(dimension, MAXFES, tf, H, NP, generator, minNP, eps, 4, new ChebyshevDistance(), resolution);
 
             shade.run();
 
