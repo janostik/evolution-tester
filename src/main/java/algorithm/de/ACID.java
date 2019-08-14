@@ -22,7 +22,8 @@ import util.random.Random;
 
 /**
  *
- * DISH based algorithm with super duper mega updates
+ * ACID - Adaptive differential evolution with Clustering and Inverse problem solving for maintaining population Diversity
+ * 
  * - Population clustering: Cluster emerges, it exploits and the rest of the pop. is solving inverse problem
  * - Exploiting clusters: Use of the best/1/bin strategy
  * - Population decrease: Converged cluster is killed
@@ -30,7 +31,7 @@ import util.random.Random;
  * 
  * @author wikki on 29/07/2019
  */
-public class future_DISH extends DISH_analysis {
+public class ACID extends DISH_analysis {
 
     /**
      * 0 - no cluster -> classic convergence
@@ -43,7 +44,7 @@ public class future_DISH extends DISH_analysis {
     protected double resolution;
     protected List<double[]> tabu;
     
-    public future_DISH(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize, double eps, int minPts, DistanceMeasure distance_measure, double resolution) {
+    public ACID(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize, double eps, int minPts, DistanceMeasure distance_measure, double resolution) {
         super(D, MAXFES, f, H, NP, rndGenerator, minPopSize);
         
         this.cl_eps = eps;
@@ -55,7 +56,7 @@ public class future_DISH extends DISH_analysis {
 
     @Override
     public String getName() {
-        return "future_DISH";
+        return "ACID";
     }
     
     @Override
@@ -330,7 +331,6 @@ public class future_DISH extends DISH_analysis {
                     this.converging_clusters = this.searchForClusters(newPop, clusterer);
                     if(this.converging_clusters == null) {
 //                        this.regime = 0; 
-//                        System.out.println("Regime changed from 0 to 0");
                         this.P.addAll(newPop);
                     }
                     else {
@@ -902,7 +902,7 @@ public class future_DISH extends DISH_analysis {
                     }
                     else {
                         this.regime = 3;
-                        System.out.println("Regime changed from 2 to 3");
+                        System.out.println("Regime changed from 1 to 3");
                         PD = null;
                     }
                 }
@@ -1142,10 +1142,12 @@ public class future_DISH extends DISH_analysis {
         int H = 5;
         long seed = 10304050L;
         util.random.Random generator = new util.random.UniformRandom();
-        double eps = Math.abs((tf.max(0)-tf.min(0)))/100.0;
+        
+        double eps = Math.sqrt(dimension * (Math.abs((tf.max(0)-tf.min(0)))/100.0));
+        
         double resolution = Math.pow(10, -8);
 
-        future_DISH shade;
+        ACID shade;
 
         int runs = 10;
         double[] bestArray = new double[runs];
@@ -1154,7 +1156,7 @@ public class future_DISH extends DISH_analysis {
         
         for (int k = 0; k < runs; k++) {
 
-            shade = new future_DISH(dimension, MAXFES, tf, H, NP, generator, minNP, eps, 4, new ChebyshevDistance(), resolution);
+            shade = new ACID(dimension, MAXFES, tf, H, NP, generator, minNP, eps, 3, new org.apache.commons.math3.ml.distance.EuclideanDistance(), resolution);
 
             shade.run();
 
