@@ -1143,7 +1143,7 @@ public class ACID extends DISH_analysis {
         long seed = 10304050L;
         util.random.Random generator = new util.random.UniformRandom();
         
-        double eps = Math.sqrt(dimension * (Math.abs((tf.max(0)-tf.min(0)))/100.0));
+        double eps = Math.sqrt(dimension * (Math.pow((tf.max(0)-tf.min(0)),2)/100.0));
         
         double resolution = Math.pow(10, -8);
 

@@ -2349,7 +2349,7 @@ public class ANALYSIS {
             System.out.println("START: " + new Date());
             
             tf = new Cec2015(dimension, funcNumber);
-            eps = Math.sqrt(dimension * (Math.abs((tf.max(0)-tf.min(0)))/100.0));
+            eps = Math.sqrt(dimension * (Math.pow((tf.max(0)-tf.min(0)),2)/100.0));
             bestArray = new double[runs];
             
             for (int k = 0; k < runs; k++) {
