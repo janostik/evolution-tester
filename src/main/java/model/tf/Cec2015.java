@@ -5,6 +5,8 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Individual;
 import util.IndividualUtil;
 import util.random.Random;
@@ -1592,5 +1594,25 @@ public class Cec2015 implements TestFunction {
         public String name() {
             return "CEC2015-f" + this.func_num;
         }
+        
+        public static void main(String[] args) {
+        
+        Cec2015 test;
+        try {
+            test = new Cec2015(10, 6);
+            double res = 0;
+
+            res = test.fitness(new double[]{-10,-10,-10,-10,-10,-10,-10,-10,-10,-10});
+            System.out.println(res);
+            
+            res = test.fitness(new double[]{0,0,0,0,0,0,0,0,0,0});
+            System.out.println(res);
+
+            
+        } catch (Exception ex) {
+            Logger.getLogger(Cec2015.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
     
 }

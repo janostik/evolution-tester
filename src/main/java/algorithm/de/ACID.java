@@ -133,6 +133,7 @@ public class ACID extends DISH_analysis {
         double cl_CR = 0.8;
         List<Individual> cl_newPop, cl_pop;
         Double PD = null;
+        Individual[] parrentArray;
 
         EuclideanDistance euclid = new EuclideanDistance();
         
@@ -341,7 +342,6 @@ public class ACID extends DISH_analysis {
                             System.out.println("Regime changed from 0 to 2");
                         }
                         else {
-                            this.regime = 1;
                             System.out.println("Regime changed from 0 to 1");
                             this.P.addAll(newPop);
                         }
@@ -448,98 +448,101 @@ public class ACID extends DISH_analysis {
                     this.G++;
                     newPop = new ArrayList<>();
 
-                    memoryIndex = 0;
+//                    memoryIndex = 0;
 
-                    p = ((pmax - pmin)/(double) this.MAXFES) * this.FES + pmin;
+//                    p = ((pmax - pmin)/(double) this.MAXFES) * this.FES + pmin;
 
                     for (int i = 0; i < this.P.size(); i++) {
 
-                        x = this.P.get(i);
-                        r = rndGenerator.nextInt(this.H);
-                        Fg = OtherDistributionsUtil.cauchy(this.M_F[r], 0.1);
-                        while (Fg <= 0) {
-                            Fg = OtherDistributionsUtil.cauchy(this.M_F[r], 0.1);
-                        }
-                        if(Fg > 1) {
-                            Fg = 1;
-                        }
+//                        x = this.P.get(i);
+//                        r = rndGenerator.nextInt(this.H);
+//                        Fg = OtherDistributionsUtil.cauchy(this.M_F[r], 0.1);
+//                        while (Fg <= 0) {
+//                            Fg = OtherDistributionsUtil.cauchy(this.M_F[r], 0.1);
+//                        }
+//                        if(Fg > 1) {
+//                            Fg = 1;
+//                        }
+//
+//
+//                        CRg = OtherDistributionsUtil.normal(this.M_CR[r], 0.1);
+//                        if(CRg > 1) {
+//                            CRg = 1;
+//                        }
+//                        else if(CRg < 0) {
+//                            CRg = 0;
+//                        }
+//
+//                        /**
+//                         * new in jSO
+//                         */
+//                        gg = (double) this.FES / (double) this.MAXFES;
+//                        if(gg < 0.25) {
+//
+//                            if(CRg < 0.7) {
+//                                CRg = 0.7;
+//                            }
+//
+//                        }
+//                        else if(gg < 0.5) {
+//
+//                            if(CRg < 0.6) {
+//                                CRg = 0.6;
+//                            }
+//
+//                        }
+//
+//                        if(gg < 0.6 && Fg > 0.7) {
+//                            Fg = 0.7;
+//                        }
+//
+//                        Psize = (int) (rndGenerator.nextDouble(p, 0.2) * this.P.size());
+//                        if(Psize < 2) {
+//                            Psize = 2;
+//                        }
+//
+//                        pBestArray = this.resizeInverse(this.P, Psize);
+//
+//                        /**
+//                         * Parent selection
+//                         */
+//                        pbestIndex = this.getIndexOfRandBestFromList(pBestArray, x.id);
+//                        pbest = this.P.get(pbestIndex).vector.clone();
+//                        rIndexes = this.genRandIndexes(i, this.P.size(), this.P.size() + this.Aext.size(), pbestIndex);
+//                        pr1 = this.P.get(rIndexes[0]).vector.clone();
+//                        if(rIndexes[1] > this.P.size() - 1) {
+//                            pr2 = this.Aext.get(rIndexes[1] - this.P.size()).vector.clone();
+//                        }else {
+//                            pr2 = this.P.get(rIndexes[1]).vector.clone();
+//                        }
+//                        parents = new double[4][D];
+//                        parents[0] = x.vector;
+//                        parents[1] = pbest;
+//                        parents[2] = pr1;
+//                        parents[3] = pr2;
+//
+//                        if(gg < 0.2) {
+//                            Fw = 0.7 * Fg;
+//                        }
+//                        else if(gg < 0.4) {
+//                            Fw = 0.8 * Fg;
+//                        }
+//                        else {
+//                            Fw = 1.2 * Fg;
+//                        }
 
-
-                        CRg = OtherDistributionsUtil.normal(this.M_CR[r], 0.1);
-                        if(CRg > 1) {
-                            CRg = 1;
-                        }
-                        else if(CRg < 0) {
-                            CRg = 0;
-                        }
-
-                        /**
-                         * new in jSO
-                         */
-                        gg = (double) this.FES / (double) this.MAXFES;
-                        if(gg < 0.25) {
-
-                            if(CRg < 0.7) {
-                                CRg = 0.7;
-                            }
-
-                        }
-                        else if(gg < 0.5) {
-
-                            if(CRg < 0.6) {
-                                CRg = 0.6;
-                            }
-
-                        }
-
-                        if(gg < 0.6 && Fg > 0.7) {
-                            Fg = 0.7;
-                        }
-
-                        Psize = (int) (rndGenerator.nextDouble(p, 0.2) * this.P.size());
-                        if(Psize < 2) {
-                            Psize = 2;
-                        }
-
-                        pBestArray = this.resizeInverse(this.P, Psize);
-
-                        /**
-                         * Parent selection
-                         */
-                        pbestIndex = this.getIndexOfRandBestFromList(pBestArray, x.id);
-                        pbest = this.P.get(pbestIndex).vector.clone();
-                        rIndexes = this.genRandIndexes(i, this.P.size(), this.P.size() + this.Aext.size(), pbestIndex);
-                        pr1 = this.P.get(rIndexes[0]).vector.clone();
-                        if(rIndexes[1] > this.P.size() - 1) {
-                            pr2 = this.Aext.get(rIndexes[1] - this.P.size()).vector.clone();
-                        }else {
-                            pr2 = this.P.get(rIndexes[1]).vector.clone();
-                        }
-                        parents = new double[4][D];
-                        parents[0] = x.vector;
-                        parents[1] = pbest;
-                        parents[2] = pr1;
-                        parents[3] = pr2;
-
-                        if(gg < 0.2) {
-                            Fw = 0.7 * Fg;
-                        }
-                        else if(gg < 0.4) {
-                            Fw = 0.8 * Fg;
-                        }
-                        else {
-                            Fw = 1.2 * Fg;
-                        }
+                        parrentArray = getParentsDErand(i);
+                        x = parrentArray[0];
 
                         /**
                          * Mutation
                          */               
-                        v = mutationDISH(parents, Fg, Fw);
+                        v = mutationDErand(parrentArray, cl_F);
 
                         /**
                          * Crossover
                          */
-                        u = crossover(CRg, v, x.vector);
+                        u = crossover(cl_CR, v, x.vector);
 
                         /**
                          * Constrain check
@@ -562,14 +565,14 @@ public class ACID extends DISH_analysis {
                          */
                         if(trial.fitness >= x.fitness) {
                             newPop.add(trial);
-                            this.Aext.add(x);
+//                            this.Aext.add(x);
 
-                            SFlist[memoryIndex] = Fg;
-                            SCRlist[memoryIndex] = CRg;
+//                            SFlist[memoryIndex] = Fg;
+//                            SCRlist[memoryIndex] = CRg;
 
-                            wsList[memoryIndex] = euclid.getDistance(x.vector, trial.vector);
+//                            wsList[memoryIndex] = euclid.getDistance(x.vector, trial.vector);
 
-                            memoryIndex++;
+//                            memoryIndex++;
 
                         }else {
                             newPop.add(x);
@@ -593,39 +596,39 @@ public class ACID extends DISH_analysis {
                         break endless;
                     }
 
-                    /**
-                     * Memories update
-                     */
-                    if(memoryIndex > 0) {
-                        wSsum = 0;
-                        for(int i = 0; i < memoryIndex; i++) {
-                            wSsum += wsList[i];
-                        }
-
-                        meanS_F1 = 0;
-                        meanS_F2 = 0;
-                        meanS_CR1 = 0;
-                        meanS_CR2 = 0;
-
-                        for (int s = 0; s < memoryIndex; s++) {
-                            meanS_F1 += (wsList[s] / wSsum) * SFlist[s] * SFlist[s];
-                            meanS_F2 += (wsList[s] / wSsum) * SFlist[s];
-                            meanS_CR1 += (wsList[s] / wSsum) * SCRlist[s] * SCRlist[s];
-                            meanS_CR2 += (wsList[s] / wSsum) * SCRlist[s];
-                        }
-
-                        if(meanS_F2 != 0) {
-                            this.M_F[k] = ((meanS_F1 / meanS_F2) + this.M_F[k])/2;
-                        }
-                        if(meanS_CR2 != 0) {
-                            this.M_CR[k] = ((meanS_CR1 / meanS_CR2) + this.M_CR[k])/2;
-                        }
-
-                        k++;
-                        if (k >= (this.H - 1)) {
-                            k = 0;
-                        }
-                    }
+//                    /**
+//                     * Memories update
+//                     */
+//                    if(memoryIndex > 0) {
+//                        wSsum = 0;
+//                        for(int i = 0; i < memoryIndex; i++) {
+//                            wSsum += wsList[i];
+//                        }
+//
+//                        meanS_F1 = 0;
+//                        meanS_F2 = 0;
+//                        meanS_CR1 = 0;
+//                        meanS_CR2 = 0;
+//
+//                        for (int s = 0; s < memoryIndex; s++) {
+//                            meanS_F1 += (wsList[s] / wSsum) * SFlist[s] * SFlist[s];
+//                            meanS_F2 += (wsList[s] / wSsum) * SFlist[s];
+//                            meanS_CR1 += (wsList[s] / wSsum) * SCRlist[s] * SCRlist[s];
+//                            meanS_CR2 += (wsList[s] / wSsum) * SCRlist[s];
+//                        }
+//
+//                        if(meanS_F2 != 0) {
+//                            this.M_F[k] = ((meanS_F1 / meanS_F2) + this.M_F[k])/2;
+//                        }
+//                        if(meanS_CR2 != 0) {
+//                            this.M_CR[k] = ((meanS_CR1 / meanS_CR2) + this.M_CR[k])/2;
+//                        }
+//
+//                        k++;
+//                        if (k >= (this.H - 1)) {
+//                            k = 0;
+//                        }
+//                    }
                     
                     this.P = new ArrayList<>();
                     this.P.addAll(newPop);
@@ -921,6 +924,69 @@ public class ACID extends DISH_analysis {
     
     /**
      *
+     * @param parentArray
+     * @param F
+     * @return
+     */
+    protected double[] mutationDErand(Individual[] parentArray, double F) {
+
+        double[] u = new double[D];
+        double[] a = parentArray[1].vector;
+        double[] b = parentArray[2].vector;
+        double[] c = parentArray[3].vector;
+
+        for (int i = 0; i < D; i++) {
+
+            u[i] = a[i] + F * (b[i] - c[i]);
+
+        }
+
+        return u;
+
+    }
+    
+    /**
+     *
+     * List of parents for mutation x, a, b, c
+     *
+     * @param xIndex
+     * @return
+     */
+    protected Individual[] getParentsDErand(int xIndex) {
+
+        int r1, r2, r3;
+
+        r1 = rndGenerator.nextInt(this.P.size());
+        
+        while(r1 == xIndex){
+            r1 = rndGenerator.nextInt(this.P.size());
+        }
+        
+        r2 = rndGenerator.nextInt(this.P.size());
+
+        while (r2 == r1 || r2 == xIndex) {
+            r2 = rndGenerator.nextInt(this.P.size());
+        }
+        
+        r3 = rndGenerator.nextInt(this.P.size());
+
+        while (r3 == r2 || r3 == r1 || r3 == xIndex) {
+            r3 = rndGenerator.nextInt(this.P.size());
+        }
+        
+        Individual[] parrentArray = new Individual[4];
+
+        parrentArray[0] = P.get(xIndex);
+        parrentArray[1] = P.get(r1);
+        parrentArray[2] = P.get(r2);
+        parrentArray[3] = P.get(r3);
+
+        return parrentArray;
+
+    }
+    
+    /**
+     *
      * @param list
      * @param size
      * @return
@@ -1137,7 +1203,7 @@ public class ACID extends DISH_analysis {
         int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
         int minNP = 4;
         int MAXFES = 10000 * dimension;
-        int funcNumber = 6;
+        int funcNumber = 4;
         TestFunction tf = new Cec2015(dimension, funcNumber);
         int H = 5;
         long seed = 10304050L;
@@ -1149,7 +1215,7 @@ public class ACID extends DISH_analysis {
 
         ACID shade;
 
-        int runs = 10;
+        int runs = 2;
         double[] bestArray = new double[runs];
 
         System.out.println("START: " + new Date());
@@ -1161,8 +1227,10 @@ public class ACID extends DISH_analysis {
             shade.run();
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
-            System.out.println(shade.getBest().fitness - tf.optimum());
-            System.out.println(Arrays.toString(shade.getBest().vector));
+//            System.out.println(shade.getBest().fitness - tf.optimum());
+//            System.out.println(Arrays.toString(shade.getBest().vector));
+            
+            System.out.println((k+1) + ". run FES: " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " OFV: " + (shade.getImp_hist().get(shade.getImp_hist().size()-1)[1] - tf.optimum()));
 
         }
 
