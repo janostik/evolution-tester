@@ -26,12 +26,12 @@ import util.random.UniformRandom;
  *
  * Heuristic solves only number and location of facilities
  * 
- * Garbage is collected to the nearest incinerator
- * Capacity of incinerator is given by the sum of garbage - nearest lower and higher options are compared and more suitable one is used./
+ * Garbage is collected to the incinerator randomly selected with probability based on its distance to the producent
+ * Capacity of incinerator is given by the sum of garbage - nearest lower and higher options are compared and more suitable one is used.
  * 
- * @author wiki on 07/06/2019
+ * @author wiki on 20/11/2019
  */
-public class Spalovny_combined implements TestFunction {
+public class Spalovny_combinedProb implements TestFunction {
 
     double[][] adjM;
     double[] garbage_production;
@@ -69,10 +69,13 @@ public class Spalovny_combined implements TestFunction {
     int[] bestIndexes;
     int repeats = 50;
     
+    double[] distanceRandoms;
+    double[] bestDistanceRandoms;
+    
     double best_fitness;
     Map<String, List> best_map;
     
-    public Spalovny_combined() {
+    public Spalovny_combinedProb() {
 
         this.best_fitness = -1;
         
@@ -136,9 +139,9 @@ public class Spalovny_combined implements TestFunction {
 		}
 
 	} catch (FileNotFoundException e) {
-            Logger.getLogger(Spalovny_combined.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(Spalovny_combinedProb.class.getName()).log(Level.SEVERE, null, e);
 	} catch (IOException e) {
-            Logger.getLogger(Spalovny_combined.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(Spalovny_combinedProb.class.getName()).log(Level.SEVERE, null, e);
 	} finally {
 		if (br != null) {
 			try {
@@ -151,7 +154,7 @@ public class Spalovny_combined implements TestFunction {
         
     }
     
-    public Spalovny_combined(int[] use_inc, int[] use_prod) {
+    public Spalovny_combinedProb(int[] use_inc, int[] use_prod) {
 
         this.best_fitness = -1;
         
@@ -209,9 +212,9 @@ public class Spalovny_combined implements TestFunction {
 		}
 
 	} catch (FileNotFoundException e) {
-            Logger.getLogger(Spalovny_combined.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(Spalovny_combinedProb.class.getName()).log(Level.SEVERE, null, e);
 	} catch (IOException e) {
-            Logger.getLogger(Spalovny_combined.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(Spalovny_combinedProb.class.getName()).log(Level.SEVERE, null, e);
 	} finally {
 		if (br != null) {
 			try {
@@ -226,7 +229,7 @@ public class Spalovny_combined implements TestFunction {
 
     @Override
     public String name() {
-        return "Projekt_Spaloven_CR";
+        return "Projekt_Spaloven_CR_combined_prob";
     }
     
     public static int[] RandomizeArray(int[] array){
@@ -258,6 +261,7 @@ public class Spalovny_combined implements TestFunction {
             fit = this.fitnessSingle(vector);
             if(fit <= bestFit) {
                 bestIndexes = indexes.clone();
+                bestDistanceRandoms = distanceRandoms.clone();
                 bestFit = fit;
                 if(this.best_fitness == -1 || bestFit <= this.best_fitness) {
                     this.best_map = this.getOutput(vector);
@@ -269,11 +273,11 @@ public class Spalovny_combined implements TestFunction {
         
         return bestFit;
     }
-    
+
     public Map<String, List> getBest_map() {
         return best_map;
     }
-    
+
     /**
      * Method evaluates the quality of a solution
      * 
@@ -330,6 +334,7 @@ public class Spalovny_combined implements TestFunction {
         }
         
         indexes = new int[this.use_producent_indexes.length];
+        distanceRandoms = new double[this.use_producent_indexes.length];
         for(int i = 0; i < indexes.length; i++) {
             indexes[i]=i;
         }
@@ -340,21 +345,45 @@ public class Spalovny_combined implements TestFunction {
             
             dist_min = -1;
             facility_index = 0;
+            
+            double distance_sum = 0;
+            double[] distances = new double[this.facility_count];
+            
             for(int j = 0; j < this.facility_count; j++) {
                 
                 if(facility_existence[j] == 1) {
                     
+                    /**
+                     * TODO change to probability selection
+                     * 
+                     */
                     dist = adjM[this.locations[j]][this.use_producent_indexes[indexes[i]]];
-                    if(dist_min == -1 || dist < dist_min) {
-                        if((garbage_sum[j] + garbage_production[this.use_producent_indexes[indexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
-                            dist_min = dist;
-                            facility_index = j;
-                        }
+                    if((garbage_sum[j] + garbage_production[this.use_producent_indexes[indexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
+                        dist_min = dist;
+                        distances[j] = dist+1;
+                        distance_sum += dist+1;
                     }
-                    
+
                 }
                 
             }
+            
+            Random rgen = new UniformRandom();
+            double value = rgen.nextDouble(0, distance_sum);
+            distanceRandoms[i] = value;
+            facility_index = this.facility_count-1;
+            
+            for(int j = 0; j < this.facility_count; j++) {
+                if(value - distances[j] <= 0) {
+                    facility_index = j;
+                    dist_min = distances[j]-1;
+                    break;
+                }
+                else {
+                    value -= distances[j];
+                }
+            }
+            
             facility_nodes.get(facility_index).add(this.use_producent_indexes[indexes[i]]);
             
             fitness += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[indexes[i]]]);
@@ -514,20 +543,40 @@ public class Spalovny_combined implements TestFunction {
             
             dist_min = -1;
             facility_index = 0;
+            
+            double distance_sum = 0;
+            double[] distances = new double[this.facility_count];
+            
             for(int j = 0; j < this.facility_count; j++) {
                 
                 if(facility_existence[j] == 1) {
                     
-                    dist = adjM[this.locations[j]][this.use_producent_indexes[bestIndexes[i]]];
-                    if(dist_min == -1 || dist < dist_min) {
-                        if((garbage_sum[j] + garbage_production[this.use_producent_indexes[bestIndexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
-                            dist_min = dist;
-                            facility_index = j;
-                        }
+                    /**
+                     * TODO change to probability selection
+                     */
+                    dist = adjM[this.locations[j]][this.use_producent_indexes[indexes[i]]];
+                    if((garbage_sum[j] + garbage_production[this.use_producent_indexes[indexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
+                        dist_min = dist;
+                        distances[j] = dist+1;
+                        distance_sum += dist+1;
                     }
-                    
+
                 }
                 
+            }
+            
+            double value = bestDistanceRandoms[i];
+            facility_index = this.facility_count-1;
+            
+            for(int j = 0; j < this.facility_count; j++) {
+                if(value - distances[j] <= 0) {
+                    facility_index = j;
+                    dist_min = distances[j]-1;
+                    break;
+                }
+                else {
+                    value -= distances[j];
+                }
             }
             facility_nodes.get(facility_index).add(this.use_producent_indexes[bestIndexes[i]]);
             
@@ -653,13 +702,13 @@ public class Spalovny_combined implements TestFunction {
             map.put("span[[" + (i+1) + "]]", paths);
             
         }
-
+        
         separate_costs.add(transport_cost/25.3294);
         separate_costs.add(capacity_cost/25.3294);
         separate_costs.add(fitness/25.3294);
 
         map.put("Transport/Capacity/All", separate_costs);
-        
+
         return map;
     }  
 
@@ -708,70 +757,54 @@ public class Spalovny_combined implements TestFunction {
     public static void main(String[] args) {
         
         double[] vector;
+
+        int[] use_prod = new int[]{93,94,95,96,97,98,99,100,101,102,103,104,105};
+        int[] use_inc = new int[]{7,8,21};
+        vector = new double[]{0.1, 0.6140815626872104, 0.1};
         
-        long milis = 10000;
+        /**
+         * Pro subset
+         */
+        Spalovny_combinedProb sp = new Spalovny_combinedProb(use_inc, use_prod);
         
-        long hours = (((milis / 1000) / 60) / 60);
-        milis = milis - hours*60*60*1000;
-        long minutes = ((milis / 1000) / 60);
-        milis = milis - minutes*60*1000;
-        long seconds = milis/1000;
+        for(int i = 0; i < 10; i++) {
+            System.out.println(sp.fitness(vector));
         
-        System.out.printf("%2d:%2d:%2d",hours,minutes,seconds);
-        
-//        /**
-//         * BEZ PENALIZACE
-//         */
-//        
-//        /**
-//         * Olomoucky kraj
-//         */
-//        int[] use_prod = new int[]{93,94,95,96,97,98,99,100,101,102,103,104,105};
-//        int[] use_inc = new int[]{7,8,21};
-//        vector = new double[]{0.1, 0.6140815626872104, 0.1};
-//        
-//        /**
-//         * Pro subset
-//         */
-//        Spalovny_combined sp = new Spalovny_combined(use_inc, use_prod);
-//        
-//        for(int i = 0; i < 10; i++) {
-//            System.out.println(sp.fitness(vector));
-//        
-//            Map<String, List> map = sp.getOutput(vector);
-//
-//            System.out.println("=================================");
-//            String line;
-//
-//            if(map == null) {
-//                continue;
-//            }
-//
-//            if(map != null){
-//                for(Map.Entry<String,List> entry : map.entrySet()){
-//                    line = "";
-//                    System.out.print(entry.getKey() + " = ");
-//                    line += "{";
-//    //                System.out.print("{");
-//                    for(int pup = 0; pup < entry.getValue().size(); pup++){
-//    //                    System.out.print(entry.getValue().get(pup));
-//                        line += entry.getValue().get(pup);
-//                        if(pup != entry.getValue().size()-1){
-//    //                       System.out.print(","); 
-//                           line += ",";
-//                        }
-//                    }
-//    //                System.out.println("}");
-//                    line += "};";
-//                    line = line.replace("[", "{");
-//                    line = line.replace("]", "}");
-//                    System.out.println(line);
-//
-//                }
-//            }
-//
-//            System.out.println("=================================");
-//        }
+            Map<String, List> map = sp.getBest_map();
+
+            System.out.println("=================================");
+            String line;
+
+            if(map == null) {
+                continue;
+            }
+
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+
+            System.out.println("=================================");
+
+        }
     }
     
 }

@@ -3,6 +3,7 @@ import algorithm.de.ACID;
 import algorithm.de.CmDbL_SHADE;
 import algorithm.de.CmDb_SHADE;
 import algorithm.de.DISH_PRT_analysis;
+import algorithm.de.DISH_adaptive_mask;
 import algorithm.de.DISH_analysis;
 import algorithm.de.DISH_mask_test;
 import algorithm.de.DISHv2_analysis;
@@ -2607,6 +2608,145 @@ public class ANALYSIS {
      * @param mfpath
      * @throws Exception 
      */
+    public static void DISHadaptiveMaskCEC2015(String path, int H, String mfpath) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        DISH_adaptive_mask shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer, final_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        final_writer = new PrintWriter(home_dir + path + "final_res.csv", "UTF-8");
+        
+        res_writer.print("{");
+
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+
+            System.out.println("START: " + new Date());
+            
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new DISH_adaptive_mask(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+                shade.run();
+
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+
+                writer.print("{");
+
+                for (int i = 0; i < shade.getImp_hist().size(); i++) {
+
+                    writer.print("{" + String.format(Locale.US, "%d", (int)shade.getImp_hist().get(i)[0]) + "," + String.format(Locale.US, "%.10f", shade.getImp_hist().get(i)[1]) + "}");
+
+                    if (i != shade.getImp_hist().size() - 1) {
+                        writer.print(",");
+                    }
+
+                }
+
+                writer.print("}");
+
+                writer.close();
+
+                bestArray[k] = shade.getBest().fitness - tf.optimum();
+                
+                System.out.println((k+1) + ". run FES: " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " OFV: " + (shade.getImp_hist().get(shade.getImp_hist().size()-1)[1] - tf.optimum()));
+
+                /**
+                 * Mask writing to files
+                 */
+                shade.printMaskHistory(home_dir + path, funcNumber, k);
+                
+            }
+            
+            System.out.println("END: " + new Date());
+            
+            for(int z = 0; z < bestArray.length; z++) {
+                final_writer.print(String.format(Locale.US, "%.10f", bestArray[z]));
+                
+                if(z != bestArray.length-1) {
+                    final_writer.print(',');
+                }
+                else {
+                    final_writer.println();
+                }
+            }
+            
+            best = DoubleStream.of(bestArray).min().getAsDouble();
+            worst = DoubleStream.of(bestArray).max().getAsDouble();
+            median = new Median().evaluate(bestArray);
+            mean = new Mean().evaluate(bestArray);
+            std = new StandardDeviation().evaluate(bestArray);
+
+            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+            
+            sol_writer.print("{");
+            sol_writer.print(funcNumber);
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", best));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", worst));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", median));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", mean));
+            sol_writer.print(",");
+            sol_writer.print(String.format(Locale.US, "%.10f", std));
+            sol_writer.print("}");
+            
+            sol_writer.close();
+
+            System.out.println(tf.name());
+            System.out.println("=================================");
+            System.out.println("Best: " + best);
+            System.out.println("Worst: " + worst);
+            System.out.println("Median: " + median);
+            System.out.println("Mean: " + mean);
+            System.out.println("Std: " + std);
+            System.out.println("=================================");
+            
+            res_writer.print("{");
+            res_writer.print(funcNumber);
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", best));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", worst));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", median));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", mean));
+            res_writer.print(",");
+            res_writer.print(String.format(Locale.US, "%.10f", std));
+            res_writer.print("}");
+        
+            if(funcNumber < maxFuncNum){
+               res_writer.print(",");
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        final_writer.close();
+        
+    }
+    
+    /**
+     * Main class for DISH algorithm with mask analysis
+     * 
+     * @param path
+     * @param H
+     * @param mfpath
+     * @throws Exception 
+     */
     public static void DISHmaskCEC2015(String path, int H, String mfpath) throws Exception{
 
         TestFunction tf;
@@ -3585,9 +3725,9 @@ public class ANALYSIS {
         NPfinal = 4;
         H = 5;
         
-        path="CEC2015-DISHmask-" + dimension + "\\";
+        path="CEC2015-DISH-adaptive-mask-" + dimension + "\\";
         
-        DISHmaskCEC2015(path, H, path);
+        DISHadaptiveMaskCEC2015(path, H, path);
 //        
 //        dimension = 30;
 //        MAXFES = 10000 * dimension;

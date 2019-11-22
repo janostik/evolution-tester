@@ -26,12 +26,13 @@ import util.random.UniformRandom;
  *
  * Heuristic solves only number and location of facilities
  * 
- * Garbage is collected to the nearest incinerator
- * Capacity of incinerator is given by the sum of garbage - nearest lower and higher options are compared and more suitable one is used./
+ * Garbage is collected to the nearest incinerator with sufficient current capacity.
+ * If there is no incinerator with sufficient capacity, garbage is taken to the nearest one, which can acommodate the garbage after increasing its capacity.
+ * Capacity of incinerator is given by the sum of garbage - nearest lower and higher options are compared and more suitable one is used.
  * 
- * @author wiki on 07/06/2019
+ * @author wiki on 21/11/2019
  */
-public class Spalovny_combined implements TestFunction {
+public class Spalovny_combinedSmall implements TestFunction {
 
     double[][] adjM;
     double[] garbage_production;
@@ -72,7 +73,7 @@ public class Spalovny_combined implements TestFunction {
     double best_fitness;
     Map<String, List> best_map;
     
-    public Spalovny_combined() {
+    public Spalovny_combinedSmall() {
 
         this.best_fitness = -1;
         
@@ -136,9 +137,9 @@ public class Spalovny_combined implements TestFunction {
 		}
 
 	} catch (FileNotFoundException e) {
-            Logger.getLogger(Spalovny_combined.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(Spalovny_combinedSmall.class.getName()).log(Level.SEVERE, null, e);
 	} catch (IOException e) {
-            Logger.getLogger(Spalovny_combined.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(Spalovny_combinedSmall.class.getName()).log(Level.SEVERE, null, e);
 	} finally {
 		if (br != null) {
 			try {
@@ -151,7 +152,7 @@ public class Spalovny_combined implements TestFunction {
         
     }
     
-    public Spalovny_combined(int[] use_inc, int[] use_prod) {
+    public Spalovny_combinedSmall(int[] use_inc, int[] use_prod) {
 
         this.best_fitness = -1;
         
@@ -209,9 +210,9 @@ public class Spalovny_combined implements TestFunction {
 		}
 
 	} catch (FileNotFoundException e) {
-            Logger.getLogger(Spalovny_combined.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(Spalovny_combinedSmall.class.getName()).log(Level.SEVERE, null, e);
 	} catch (IOException e) {
-            Logger.getLogger(Spalovny_combined.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(Spalovny_combinedSmall.class.getName()).log(Level.SEVERE, null, e);
 	} finally {
 		if (br != null) {
 			try {
@@ -226,7 +227,7 @@ public class Spalovny_combined implements TestFunction {
 
     @Override
     public String name() {
-        return "Projekt_Spaloven_CR";
+        return "Spalovny_preference_mensich";
     }
     
     public static int[] RandomizeArray(int[] array){
@@ -321,6 +322,19 @@ public class Spalovny_combined implements TestFunction {
             return Math.pow(10, 30);
         }
         
+        /**
+         * Creates an array of current capacities
+         */
+        double[] current_capacities = new double[this.facility_count];
+        for(int i = 0; i < current_capacities.length; i++) {
+            if(facility_existence[i] == 1) {
+                if(this.possible_capacities[this.use_incinerator_indexes[i]][0] < 0.00001)
+                    current_capacities[i] = this.possible_capacities[this.use_incinerator_indexes[i]][1];
+                else
+                    current_capacities[i] = this.possible_capacities[this.use_incinerator_indexes[i]][0];
+            }
+        }
+        
         //Where to go from production nodes
         int facility_index;
         double dist, dist_min, transport_cost = 0;
@@ -339,14 +353,19 @@ public class Spalovny_combined implements TestFunction {
         for(int i = 0; i < this.use_producent_indexes.length; i++) {
             
             dist_min = -1;
-            facility_index = 0;
+            //Indicates no selected facility
+            facility_index = -1;
             for(int j = 0; j < this.facility_count; j++) {
                 
                 if(facility_existence[j] == 1) {
                     
                     dist = adjM[this.locations[j]][this.use_producent_indexes[indexes[i]]];
                     if(dist_min == -1 || dist < dist_min) {
-                        if((garbage_sum[j] + garbage_production[this.use_producent_indexes[indexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
+                        /**
+                         * TODO change this to compare the current capacity, not the biggest
+                         */
+//                        if((garbage_sum[j] + garbage_production[this.use_producent_indexes[indexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
+                        if((garbage_sum[j] + garbage_production[this.use_producent_indexes[indexes[i]]]) <= current_capacities[j]) {
                             dist_min = dist;
                             facility_index = j;
                         }
@@ -355,12 +374,55 @@ public class Spalovny_combined implements TestFunction {
                 }
                 
             }
+            
+            if(facility_index == -1) {
+                for(int j = 0; j < this.facility_count; j++) {
+
+                    if(facility_existence[j] == 1) {
+
+                        dist = adjM[this.locations[j]][this.use_producent_indexes[indexes[i]]];
+                        if(dist_min == -1 || dist < dist_min) {
+                            /**
+                             * TODO change this to compare the current capacity, not the biggest
+                             */
+                            if((garbage_sum[j] + garbage_production[this.use_producent_indexes[indexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
+                                dist_min = dist;
+                                facility_index = j;
+                            }
+                        }
+
+                    }
+
+                }
+            }
+
+            /**
+             * Not enough capacity for the garbage production.
+             */
+            if(facility_index == -1)
+            {
+                return Math.pow(10, 30);
+            }
+            
             facility_nodes.get(facility_index).add(this.use_producent_indexes[indexes[i]]);
             
             fitness += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[indexes[i]]]);
             transport_cost += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[indexes[i]]]);
             
             garbage_sum[facility_index] += garbage_production[this.use_producent_indexes[indexes[i]]];
+            /**
+             * Increase the size of used incinerator if it is not sufficient
+             */
+            if(garbage_sum[facility_index] > current_capacities[facility_index]) {
+                
+                for(double cap : this.possible_capacities[this.use_incinerator_indexes[facility_index]]) {
+                    if(cap >= garbage_sum[facility_index]) {
+                        current_capacities[facility_index] = cap;
+                        break;
+                    }
+                }
+                
+            }
 
         }
 
@@ -500,6 +562,19 @@ public class Spalovny_combined implements TestFunction {
         
         map.put("facilities", facility_list);
         
+        /**
+         * Creates an array of current capacities
+         */
+        double[] current_capacities = new double[this.facility_count];
+        for(int i = 0; i < current_capacities.length; i++) {
+            if(facility_existence[i] == 1) {
+                if(this.possible_capacities[this.use_incinerator_indexes[i]][0] < 0.00001)
+                    current_capacities[i] = this.possible_capacities[this.use_incinerator_indexes[i]][1];
+                else
+                    current_capacities[i] = this.possible_capacities[this.use_incinerator_indexes[i]][0];
+            }
+        }
+        
         //Where to go from production nodes
         List<Double> facility_capacities = new ArrayList<>();
         
@@ -513,14 +588,19 @@ public class Spalovny_combined implements TestFunction {
         for(int i = 0; i < this.use_producent_indexes.length; i++) {
             
             dist_min = -1;
-            facility_index = 0;
+            //Indicates no selected facility
+            facility_index = -1;
             for(int j = 0; j < this.facility_count; j++) {
                 
                 if(facility_existence[j] == 1) {
                     
-                    dist = adjM[this.locations[j]][this.use_producent_indexes[bestIndexes[i]]];
+                    dist = adjM[this.locations[j]][this.use_producent_indexes[indexes[i]]];
                     if(dist_min == -1 || dist < dist_min) {
-                        if((garbage_sum[j] + garbage_production[this.use_producent_indexes[bestIndexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
+                        /**
+                         * TODO change this to compare the current capacity, not the biggest
+                         */
+//                        if((garbage_sum[j] + garbage_production[this.use_producent_indexes[indexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
+                        if((garbage_sum[j] + garbage_production[this.use_producent_indexes[indexes[i]]]) <= current_capacities[j]) {
                             dist_min = dist;
                             facility_index = j;
                         }
@@ -529,12 +609,55 @@ public class Spalovny_combined implements TestFunction {
                 }
                 
             }
-            facility_nodes.get(facility_index).add(this.use_producent_indexes[bestIndexes[i]]);
             
-            fitness += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[bestIndexes[i]]]);
-            transport_cost += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[bestIndexes[i]]]);
+            if(facility_index == -1) {
+                for(int j = 0; j < this.facility_count; j++) {
+
+                    if(facility_existence[j] == 1) {
+
+                        dist = adjM[this.locations[j]][this.use_producent_indexes[indexes[i]]];
+                        if(dist_min == -1 || dist < dist_min) {
+                            /**
+                             * TODO change this to compare the current capacity, not the biggest
+                             */
+                            if((garbage_sum[j] + garbage_production[this.use_producent_indexes[indexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
+                                dist_min = dist;
+                                facility_index = j;
+                            }
+                        }
+
+                    }
+
+                }
+            }
+
+            /**
+             * Not enough capacity for the garbage production.
+             */
+            if(facility_index == -1)
+            {
+                return null;
+            }
             
-            garbage_sum[facility_index] += garbage_production[this.use_producent_indexes[bestIndexes[i]]];
+            facility_nodes.get(facility_index).add(this.use_producent_indexes[indexes[i]]);
+            
+            fitness += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[indexes[i]]]);
+            transport_cost += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[indexes[i]]]);
+            
+            garbage_sum[facility_index] += garbage_production[this.use_producent_indexes[indexes[i]]];
+            /**
+             * Increase the size of used incinerator if it is not sufficient
+             */
+            if(garbage_sum[facility_index] > current_capacities[facility_index]) {
+                
+                for(double cap : this.possible_capacities[this.use_incinerator_indexes[facility_index]]) {
+                    if(cap >= garbage_sum[facility_index]) {
+                        current_capacities[facility_index] = cap;
+                        break;
+                    }
+                }
+                
+            }
 
         }
         
@@ -709,16 +832,6 @@ public class Spalovny_combined implements TestFunction {
         
         double[] vector;
         
-        long milis = 10000;
-        
-        long hours = (((milis / 1000) / 60) / 60);
-        milis = milis - hours*60*60*1000;
-        long minutes = ((milis / 1000) / 60);
-        milis = milis - minutes*60*1000;
-        long seconds = milis/1000;
-        
-        System.out.printf("%2d:%2d:%2d",hours,minutes,seconds);
-        
 //        /**
 //         * BEZ PENALIZACE
 //         */
@@ -726,52 +839,52 @@ public class Spalovny_combined implements TestFunction {
 //        /**
 //         * Olomoucky kraj
 //         */
-//        int[] use_prod = new int[]{93,94,95,96,97,98,99,100,101,102,103,104,105};
-//        int[] use_inc = new int[]{7,8,21};
-//        vector = new double[]{0.1, 0.6140815626872104, 0.1};
-//        
-//        /**
-//         * Pro subset
-//         */
-//        Spalovny_combined sp = new Spalovny_combined(use_inc, use_prod);
-//        
-//        for(int i = 0; i < 10; i++) {
-//            System.out.println(sp.fitness(vector));
-//        
-//            Map<String, List> map = sp.getOutput(vector);
-//
-//            System.out.println("=================================");
-//            String line;
-//
-//            if(map == null) {
-//                continue;
-//            }
-//
-//            if(map != null){
-//                for(Map.Entry<String,List> entry : map.entrySet()){
-//                    line = "";
-//                    System.out.print(entry.getKey() + " = ");
-//                    line += "{";
-//    //                System.out.print("{");
-//                    for(int pup = 0; pup < entry.getValue().size(); pup++){
-//    //                    System.out.print(entry.getValue().get(pup));
-//                        line += entry.getValue().get(pup);
-//                        if(pup != entry.getValue().size()-1){
-//    //                       System.out.print(","); 
-//                           line += ",";
-//                        }
-//                    }
-//    //                System.out.println("}");
-//                    line += "};";
-//                    line = line.replace("[", "{");
-//                    line = line.replace("]", "}");
-//                    System.out.println(line);
-//
-//                }
-//            }
-//
-//            System.out.println("=================================");
-//        }
+        int[] use_prod = new int[]{93,94,95,96,97,98,99,100,101,102,103,104,105};
+        int[] use_inc = new int[]{7,8,21};
+        vector = new double[]{0.1, 0.6140815626872104, 0.1};
+        
+        /**
+         * Pro subset
+         */
+        Spalovny_combinedSmall sp = new Spalovny_combinedSmall(use_inc, use_prod);
+        
+        for(int i = 0; i < 1; i++) {
+            System.out.println(sp.fitness(vector));
+        
+            Map<String, List> map = sp.getOutput(vector);
+
+            System.out.println("=================================");
+            String line;
+
+            if(map == null) {
+                continue;
+            }
+
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+    //                System.out.print("{");
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+    //                    System.out.print(entry.getValue().get(pup));
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+    //                       System.out.print(","); 
+                           line += ",";
+                        }
+                    }
+    //                System.out.println("}");
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+
+            System.out.println("=================================");
+        }
     }
     
 }

@@ -1,6 +1,8 @@
 package model;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 
 /**
@@ -95,4 +97,5 @@ public class Individual implements Clusterable {
     public double[] getPoint() {
         return this.vector;
     }
+    
 }
