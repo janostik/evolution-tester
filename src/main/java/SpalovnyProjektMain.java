@@ -17,9 +17,12 @@ import model.dicsrete.tf.DiscreteTestFunction;
 import model.dicsrete.tf.Spalovny_projektDiscrete;
 import model.tf.TestFunction;
 import model.tf.nwf.Spalovny_combined;
+import model.tf.nwf.Spalovny_combinedOrder;
 import model.tf.nwf.Spalovny_combinedProb;
 import model.tf.nwf.Spalovny_combinedSmall;
+import model.tf.nwf.Spalovny_combinedSort;
 import model.tf.nwf.Spalovny_projekt;
+import model.tf.nwf.Spalovny_reasonable;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -3094,6 +3097,418 @@ public class SpalovnyProjektMain {
         
     } 
     
+    /**
+     * 
+     * 
+     * COMBINED Probability
+     * 
+     * 
+     */
+    
+    public static void combinedSortMain(Kraje kraje) throws Exception {
+
+        boolean wholeCR;
+        
+        if(kraje.use_prod == null && kraje.use_inc == null) {
+            wholeCR = true;
+        }
+        else {
+            wholeCR = false;
+        }
+        
+        int[] use_prod = null;
+        int[] use_inc = null;
+        int dimension;
+        TestFunction tf;
+        
+        if(!wholeCR) {
+            use_prod = kraje.use_prod.clone();
+            use_inc = kraje.use_inc.clone();
+            dimension = use_inc.length;
+            tf = new Spalovny_combinedSort(use_inc, use_prod);
+        } else {
+            dimension = 40;
+            tf = new Spalovny_combinedSort();
+        }
+        
+
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NPfinal = 4;
+        int MAXFES = maxfes;
+        
+        int H = 5;
+        util.random.Random generator = new util.random.UniformRandom();
+        DISH_analysis shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Instance: " + kraje.setting);
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        long start,end;
+        
+        start = System.currentTimeMillis();
+        
+        for (int k = 0; k < runs; k++) {
+            
+            if(!wholeCR)
+                tf = new Spalovny_combinedSort(use_inc, use_prod);
+            else
+                tf = new Spalovny_combinedSort();
+            generator = new util.random.UniformRandom();
+            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_combinedSort)tf).getBest_map();
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+                           line += ",";
+                        }
+                    }
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+
+            System.out.println("Best solution found in " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " CFE");
+            
+            /**
+             * History write
+             */
+            writeCombinedResult(home_dir + kraje.path + "\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            
+        }
+        
+        end = System.currentTimeMillis();
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("Time: " + getTimeFromMilis(end-start));
+        System.out.println("Instance: " + kraje.setting);
+        System.out.println("=================================");
+        
+    } 
+    
+    /**
+     * 
+     * 
+     * COMBINED Reasonable
+     * 
+     * 
+     */
+    
+    public static void combinedReasMain(Kraje kraje) throws Exception {
+
+        boolean wholeCR;
+        
+        if(kraje.use_prod == null && kraje.use_inc == null) {
+            wholeCR = true;
+        }
+        else {
+            wholeCR = false;
+        }
+        
+        int[] use_prod = null;
+        int[] use_inc = null;
+        int dimension;
+        TestFunction tf;
+        
+        if(!wholeCR) {
+            use_prod = kraje.use_prod.clone();
+            use_inc = kraje.use_inc.clone();
+            dimension = use_prod.length;
+            tf = new Spalovny_reasonable(use_inc, use_prod);
+        } else {
+            dimension = 206;
+            tf = new Spalovny_reasonable();
+        }
+        
+
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NPfinal = 4;
+        int MAXFES = maxfes;
+        
+        int H = 5;
+        util.random.Random generator = new util.random.UniformRandom();
+        DISH_analysis shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Instance: " + kraje.setting);
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        long start,end;
+        
+        start = System.currentTimeMillis();
+        
+        for (int k = 0; k < runs; k++) {
+            
+            if(!wholeCR)
+                tf = new Spalovny_reasonable(use_inc, use_prod);
+            else
+                tf = new Spalovny_reasonable();
+            generator = new util.random.UniformRandom();
+            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_reasonable)tf).getBest_map();
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+                           line += ",";
+                        }
+                    }
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+
+            System.out.println("Best solution found in " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " CFE");
+            
+            /**
+             * History write
+             */
+            writeCombinedResult(home_dir + kraje.path + "\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            
+        }
+        
+        end = System.currentTimeMillis();
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("Time: " + getTimeFromMilis(end-start));
+        System.out.println("Instance: " + kraje.setting);
+        System.out.println("=================================");
+        
+    } 
+    
+    /**
+     * 
+     * 
+     * COMBINED Order approach
+     * 
+     * 
+     */
+    
+    public static void combinedOrderMain(Kraje kraje) throws Exception {
+
+        boolean wholeCR;
+        
+        if(kraje.use_prod == null && kraje.use_inc == null) {
+            wholeCR = true;
+        }
+        else {
+            wholeCR = false;
+        }
+        
+        int[] use_prod = null;
+        int[] use_inc = null;
+        int dimension;
+        TestFunction tf;
+        
+        if(!wholeCR) {
+            use_prod = kraje.use_prod.clone();
+            use_inc = kraje.use_inc.clone();
+            dimension = use_inc.length + use_prod.length;
+            tf = new Spalovny_combinedOrder(use_inc, use_prod);
+        } else {
+            dimension = 40+206;
+            tf = new Spalovny_combinedOrder();
+        }
+        
+
+        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NPfinal = 4;
+        int MAXFES = maxfes;
+        
+        int H = 5;
+        util.random.Random generator = new util.random.UniformRandom();
+        DISH_analysis shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+        double[] bestArray = new double[runs];
+        int i, best;
+        double min;
+
+        System.out.println("START\n" + new Date());
+        System.out.println("SETTINGS:\n=================================");
+        System.out.println("=================================");
+        System.out.println("Problem: " + tf.name());
+        System.out.println("Instance: " + kraje.setting);
+        System.out.println("Dimension: " + dimension);
+        System.out.println("-------------");
+        System.out.println("Algorithm: " + shade.getName());
+        System.out.println("NP: " + NP);
+        System.out.println("NP final: " + NPfinal);
+        System.out.println("Max. OFEs: " + MAXFES);
+        System.out.println("H: " + H);
+        System.out.println("Runs: " + runs);
+        System.out.println("=================================");
+        System.out.println("=================================");
+        
+        
+        long start,end;
+        
+        start = System.currentTimeMillis();
+        
+        for (int k = 0; k < runs; k++) {
+            
+            if(!wholeCR)
+                tf = new Spalovny_combinedOrder(use_inc, use_prod);
+            else
+                tf = new Spalovny_combinedOrder();
+            generator = new util.random.UniformRandom();
+            shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+
+            shade.run();
+            
+            best = 0;
+            i = 0;
+            min = Double.MAX_VALUE;
+
+            bestArray[k] = shade.getBest().fitness - tf.optimum();
+            System.out.println("===============SOLUTION " + (k+1) + "===============");
+            System.out.println("TIME\n" + new Date());
+            System.out.println("OFV\n" + (shade.getBest().fitness - tf.optimum()));
+            System.out.println("SOLUTION\n" + Arrays.toString(shade.getBest().vector));
+            
+            Map<String, List> map = ((Spalovny_combinedOrder)tf).getBest_map();
+            
+            System.out.println("=================================");
+            String line;
+          
+            if(map != null){
+                for(Map.Entry<String,List> entry : map.entrySet()){
+                    line = "";
+                    System.out.print(entry.getKey() + " = ");
+                    line += "{";
+                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+                        line += entry.getValue().get(pup);
+                        if(pup != entry.getValue().size()-1){
+                           line += ",";
+                        }
+                    }
+                    line += "};";
+                    line = line.replace("[", "{");
+                    line = line.replace("]", "}");
+                    System.out.println(line);
+
+                }
+            }
+            
+            System.out.println("=================================");
+
+            System.out.println("Best solution found in " + shade.getImp_hist().get(shade.getImp_hist().size()-1)[0] + " CFE");
+            
+            /**
+             * History write
+             */
+            writeCombinedResult(home_dir + kraje.path + "\\res" + k + ".txt", shade.getImp_hist(), shade.getBest());
+            
+        }
+        
+        end = System.currentTimeMillis();
+
+        System.out.println("=================================");
+        System.out.println("Min: " + DoubleStream.of(bestArray).min().getAsDouble());
+        System.out.println("Max: " + DoubleStream.of(bestArray).max().getAsDouble());
+        System.out.println("Mean: " + new Mean().evaluate(bestArray));
+        System.out.println("Median: " + new Median().evaluate(bestArray));
+        System.out.println("Std. Dev.: " + new StandardDeviation().evaluate(bestArray));
+        System.out.println("Time: " + getTimeFromMilis(end-start));
+        System.out.println("Instance: " + kraje.setting);
+        System.out.println("=================================");
+        
+    } 
+    
     public static int maxfes = 100_000;
     public static int runs = 10;
 //    public static String home_dir = "E:\\results\\Spalovny\\S PENALIZACI\\";
@@ -3105,33 +3520,35 @@ public class SpalovnyProjektMain {
      */
     public static void main(String[] args) throws Exception {
 
-        home_dir = "D:\\results\\Spalovny\\COMBINED_APPROACH\\";
+        home_dir = "D:\\results\\Spalovny\\COMBINED_order_APPROACH\\";
         
         /**
          * Combined
          */
-        combinedMain(new Kraje("1"));
-        combinedMain(new Kraje("1A"));
-        combinedMain(new Kraje("2"));
-        combinedMain(new Kraje("3"));
-        combinedMain(new Kraje("4"));
-        combinedMain(new Kraje("5"));
-        combinedMain(new Kraje("6"));
-        combinedMain(new Kraje("7"));
-        combinedMain(new Kraje("8"));
-        combinedMain(new Kraje("9"));
-        combinedMain(new Kraje("10"));
-        combinedMain(new Kraje("10A"));
-        combinedMain(new Kraje("11"));
-        combinedMain(new Kraje("12"));
-        combinedMain(new Kraje("13"));
-        combinedMain(new Kraje("CR"));
-        
-        /**
-         * Probability
-         */
+//        combinedMain(new Kraje("1"));
+//        combinedMain(new Kraje("1A"));
+//        combinedMain(new Kraje("2"));
+//        combinedMain(new Kraje("3"));
+//        combinedMain(new Kraje("4"));
+//        combinedMain(new Kraje("5"));
+//        combinedMain(new Kraje("6"));
+//        combinedMain(new Kraje("7"));
+//        combinedMain(new Kraje("8"));
+//        combinedMain(new Kraje("9"));
+//        combinedMain(new Kraje("10"));
+//        combinedMain(new Kraje("10A"));
+//        combinedMain(new Kraje("11"));
+//        combinedMain(new Kraje("12"));
+//        combinedMain(new Kraje("13"));
+//        combinedMain(new Kraje("CR"));
+//        
+//        /**
+//         * Probability
+//         */
+//        maxfes = 10_000;
 //        combinedProbMain(new Kraje("1"));
 //        combinedProbMain(new Kraje("1A"));
+//        maxfes = 100_000;
 //        combinedProbMain(new Kraje("2"));
 //        combinedProbMain(new Kraje("3"));
 //        combinedProbMain(new Kraje("4"));
@@ -3151,26 +3568,89 @@ public class SpalovnyProjektMain {
          * Small
          */
 //        combinedSmallMain(new Kraje("1"));
-/*        combinedSmallMain(new Kraje("1A"));
-        combinedSmallMain(new Kraje("2"));
-        combinedSmallMain(new Kraje("3"));
-        combinedSmallMain(new Kraje("4"));
-        combinedSmallMain(new Kraje("5"));
-        combinedSmallMain(new Kraje("6"));
-        combinedSmallMain(new Kraje("7"));
-        combinedSmallMain(new Kraje("8"));
-        combinedSmallMain(new Kraje("9"));
-        combinedSmallMain(new Kraje("10"));
-        combinedSmallMain(new Kraje("10A"));
-        combinedSmallMain(new Kraje("11"));
-        combinedSmallMain(new Kraje("12"));
-        combinedSmallMain(new Kraje("13"));
-        combinedSmallMain(new Kraje("CR"));
-*/
+//        combinedSmallMain(new Kraje("1A"));
+//        combinedSmallMain(new Kraje("2"));
+//        combinedSmallMain(new Kraje("3"));
+//        combinedSmallMain(new Kraje("4"));
+//        combinedSmallMain(new Kraje("5"));
+//        combinedSmallMain(new Kraje("6"));
+//        combinedSmallMain(new Kraje("7"));
+//        combinedSmallMain(new Kraje("8"));
+//        combinedSmallMain(new Kraje("9"));
+//        combinedSmallMain(new Kraje("10"));
+//        combinedSmallMain(new Kraje("10A"));
+//        combinedSmallMain(new Kraje("11"));
+//        combinedSmallMain(new Kraje("12"));
+//        combinedSmallMain(new Kraje("13"));
+//        combinedSmallMain(new Kraje("CR"));
 
 
+//        /**
+//         * SORT
+//         */
+//        maxfes = 10_000;
+//        combinedSortMain(new Kraje("1"));
+//        combinedSortMain(new Kraje("1A"));
+//        maxfes = 100_000;
+//        combinedSortMain(new Kraje("2"));
+//        combinedSortMain(new Kraje("3"));
+//        combinedSortMain(new Kraje("4"));
+//        combinedSortMain(new Kraje("5"));
+//        combinedSortMain(new Kraje("6"));
+//        combinedSortMain(new Kraje("7"));
+//        combinedSortMain(new Kraje("8"));
+//        combinedSortMain(new Kraje("9"));
+//        combinedSortMain(new Kraje("10"));
+//        combinedSortMain(new Kraje("10A"));
+//        combinedSortMain(new Kraje("11"));
+//        combinedSortMain(new Kraje("12"));
+//        combinedSortMain(new Kraje("13"));
+//        combinedSortMain(new Kraje("CR")); 
 
+//        /**
+//         * Reasonable
+//         */
+//        maxfes = 10_000;
+//        combinedReasMain(new Kraje("1"));
+//        combinedReasMain(new Kraje("1A"));
+//        maxfes = 100_000;
+//        combinedReasMain(new Kraje("2"));
+//        combinedReasMain(new Kraje("3"));
+//        combinedReasMain(new Kraje("4"));
+//        combinedReasMain(new Kraje("5"));
+//        combinedReasMain(new Kraje("6"));
+//        combinedReasMain(new Kraje("7"));
+//        combinedReasMain(new Kraje("8"));
+//        combinedReasMain(new Kraje("9"));
+//        combinedReasMain(new Kraje("10"));
+//        combinedReasMain(new Kraje("10A"));
+//        combinedReasMain(new Kraje("11"));
+//        combinedReasMain(new Kraje("12"));
+//        combinedReasMain(new Kraje("13"));
+//        combinedReasMain(new Kraje("CR"));
+     
         
+//        /**
+//         * Reasonable
+//         */
+        maxfes = 10_000;
+        combinedOrderMain(new Kraje("1"));
+        combinedOrderMain(new Kraje("1A"));
+        maxfes = 100_000;
+        combinedOrderMain(new Kraje("2"));
+        combinedOrderMain(new Kraje("3"));
+        combinedOrderMain(new Kraje("4"));
+        combinedOrderMain(new Kraje("5"));
+        combinedOrderMain(new Kraje("6"));
+        combinedOrderMain(new Kraje("7"));
+        combinedOrderMain(new Kraje("8"));
+        combinedOrderMain(new Kraje("9"));
+        combinedOrderMain(new Kraje("10"));
+        combinedOrderMain(new Kraje("10A"));
+        combinedOrderMain(new Kraje("11"));
+        combinedOrderMain(new Kraje("12"));
+        combinedOrderMain(new Kraje("13"));
+        combinedOrderMain(new Kraje("CR"));
     }
     
 }

@@ -26,12 +26,12 @@ import util.random.UniformRandom;
  *
  * Heuristic solves only number and location of facilities
  * 
- * Garbage is collected to the incinerator randomly selected with probability based on its distance to the producent
- * Capacity of incinerator is given by the sum of garbage - nearest lower and higher options are compared and more suitable one is used.
+ * Garbage is collected to the nearest incinerator
+ * Capacity of incinerator is given by the sum of garbage - nearest lower and higher options are compared and more suitable one is used./
  * 
- * @author wiki on 20/11/2019
+ * @author wiki on 07/06/2019
  */
-public class Spalovny_combinedProb implements TestFunction {
+public class Spalovny_combinedSort implements TestFunction {
 
     double[][] adjM;
     double[] garbage_production;
@@ -67,15 +67,12 @@ public class Spalovny_combinedProb implements TestFunction {
     
     int[] indexes;
     int[] bestIndexes;
-    int repeats = 50;
-    
-    double[] distanceRandoms;
-    double[] bestDistanceRandoms;
+    int repeats = 1;
     
     double best_fitness;
     Map<String, List> best_map;
     
-    public Spalovny_combinedProb() {
+    public Spalovny_combinedSort() {
 
         this.best_fitness = -1;
         
@@ -139,9 +136,9 @@ public class Spalovny_combinedProb implements TestFunction {
 		}
 
 	} catch (FileNotFoundException e) {
-            Logger.getLogger(Spalovny_combinedProb.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(Spalovny_combinedSort.class.getName()).log(Level.SEVERE, null, e);
 	} catch (IOException e) {
-            Logger.getLogger(Spalovny_combinedProb.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(Spalovny_combinedSort.class.getName()).log(Level.SEVERE, null, e);
 	} finally {
 		if (br != null) {
 			try {
@@ -154,7 +151,7 @@ public class Spalovny_combinedProb implements TestFunction {
         
     }
     
-    public Spalovny_combinedProb(int[] use_inc, int[] use_prod) {
+    public Spalovny_combinedSort(int[] use_inc, int[] use_prod) {
 
         this.best_fitness = -1;
         
@@ -212,9 +209,9 @@ public class Spalovny_combinedProb implements TestFunction {
 		}
 
 	} catch (FileNotFoundException e) {
-            Logger.getLogger(Spalovny_combinedProb.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(Spalovny_combinedSort.class.getName()).log(Level.SEVERE, null, e);
 	} catch (IOException e) {
-            Logger.getLogger(Spalovny_combinedProb.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(Spalovny_combinedSort.class.getName()).log(Level.SEVERE, null, e);
 	} finally {
 		if (br != null) {
 			try {
@@ -229,7 +226,31 @@ public class Spalovny_combinedProb implements TestFunction {
 
     @Override
     public String name() {
-        return "Projekt_Spaloven_CR_combined_prob";
+        return "Projekt_Spaloven_CR";
+    }
+    
+    public int[] sortProducents() {
+        
+        int[] sorted_indexes = new int[this.use_producent_indexes.length];
+        double maxBound = Double.MAX_VALUE, maxActual;
+        int ind = -1;
+        
+        for(int i = 0; i < sorted_indexes.length; i++) {
+            
+            maxActual = 0;
+            for(int j = 0; j < sorted_indexes.length; j++) {
+                if(this.garbage_production[this.use_producent_indexes[j]] >= maxActual && this.garbage_production[this.use_producent_indexes[j]] < maxBound) {
+                    ind = j;
+                    maxActual = this.garbage_production[this.use_producent_indexes[j]];
+                }
+            }
+            sorted_indexes[i] = ind;
+            maxBound = maxActual;
+            
+        }
+        
+        return sorted_indexes;
+        
     }
     
     public static int[] RandomizeArray(int[] array){
@@ -261,7 +282,6 @@ public class Spalovny_combinedProb implements TestFunction {
             fit = this.fitnessSingle(vector);
             if(fit <= bestFit) {
                 bestIndexes = indexes.clone();
-                bestDistanceRandoms = distanceRandoms.clone();
                 bestFit = fit;
                 if(this.best_fitness == -1 || bestFit <= this.best_fitness) {
                     this.best_map = this.getOutput(vector);
@@ -273,11 +293,11 @@ public class Spalovny_combinedProb implements TestFunction {
         
         return bestFit;
     }
-
+    
     public Map<String, List> getBest_map() {
         return best_map;
     }
-
+    
     /**
      * Method evaluates the quality of a solution
      * 
@@ -333,59 +353,29 @@ public class Spalovny_combinedProb implements TestFunction {
             garbage_sum[i] = 0;
         }
         
-        indexes = new int[this.use_producent_indexes.length];
-        distanceRandoms = new double[this.use_producent_indexes.length];
-        for(int i = 0; i < indexes.length; i++) {
-            indexes[i]=i;
-        }
-        
-        indexes = RandomizeArray(indexes);
+
+        indexes = new int[this.use_producent_indexes.length];       
+        indexes = this.sortProducents().clone();
         
         for(int i = 0; i < this.use_producent_indexes.length; i++) {
             
             dist_min = -1;
             facility_index = 0;
-            
-            double distance_sum = 0;
-            double[] distances = new double[this.facility_count];
-            
             for(int j = 0; j < this.facility_count; j++) {
                 
                 if(facility_existence[j] == 1) {
                     
-                    /**
-                     * TODO change to probability selection
-                     * 
-                     */
                     dist = adjM[this.locations[j]][this.use_producent_indexes[indexes[i]]];
-                    if((garbage_sum[j] + garbage_production[this.use_producent_indexes[indexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
-                        dist_min = dist;
-                        distances[j] = dist+1;
-                        distance_sum += 1/(dist+1);
+                    if(dist_min == -1 || dist < dist_min) {
+                        if((garbage_sum[j] + garbage_production[this.use_producent_indexes[indexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
+                            dist_min = dist;
+                            facility_index = j;
+                        }
                     }
-
+                    
                 }
                 
             }
-            
-            Random rgen = new UniformRandom();
-            double value = rgen.nextDouble(0, distance_sum);
-            distanceRandoms[i] = value;
-            facility_index = this.facility_count-1;
-            
-            for(int j = 0; j < this.facility_count; j++) {
-                if(distances[j] == 0)
-                    continue;
-                if(value - (1/distances[j]) <= 0) {
-                    facility_index = j;
-                    dist_min = distances[j]-1;
-                    break;
-                }
-                else {
-                    value -= (1/distances[j]);
-                }
-            }
-            
             facility_nodes.get(facility_index).add(this.use_producent_indexes[indexes[i]]);
             
             fitness += (path_penalty * dist_min * garbage_production[this.use_producent_indexes[indexes[i]]]);
@@ -427,7 +417,6 @@ public class Spalovny_combinedProb implements TestFunction {
                             z = 1.0/(a + (b/x) + (c/y));
 
                             fitness += z;     //parameter based penalty
-                            capacity_cost += z;
                         } 
                         
                     }
@@ -449,13 +438,11 @@ public class Spalovny_combinedProb implements TestFunction {
                         
                         if(z < overused) {
                             fitness += z;     //parameter based penalty
-                            capacity_cost += z;
                         }
                         else {
                             capacities[i] = this.possible_capacities[this.use_incinerator_indexes[i]][previous];
                             costs[i] = this.possible_prices[this.use_incinerator_indexes[i]][previous];
                             fitness += overused;
-                            capacity_cost += overused;
                         }
                         
                     }
@@ -469,7 +456,6 @@ public class Spalovny_combinedProb implements TestFunction {
                         capacities[i] = this.possible_capacities[this.use_incinerator_indexes[i]][j];
                         costs[i] = this.possible_prices[this.use_incinerator_indexes[i]][j];
                         fitness += overused;
-                        capacity_cost += overused;
                     }
                 }
                 
@@ -549,44 +535,20 @@ public class Spalovny_combinedProb implements TestFunction {
             
             dist_min = -1;
             facility_index = 0;
-            
-            double distance_sum = 0;
-            double[] distances = new double[this.facility_count];
-            
             for(int j = 0; j < this.facility_count; j++) {
                 
                 if(facility_existence[j] == 1) {
                     
-                    /**
-                     * TODO change to probability selection
-                     */
                     dist = adjM[this.locations[j]][this.use_producent_indexes[bestIndexes[i]]];
-                    if((garbage_sum[j] + garbage_production[this.use_producent_indexes[bestIndexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
-                        dist_min = dist;
-                        distances[j] = dist+1;
-                        distance_sum += 1/(dist+1);
+                    if(dist_min == -1 || dist < dist_min) {
+                        if((garbage_sum[j] + garbage_production[this.use_producent_indexes[bestIndexes[i]]]) <= this.possible_capacities[this.use_incinerator_indexes[j]][this.possible_capacities[this.use_incinerator_indexes[j]].length-1]) {
+                            dist_min = dist;
+                            facility_index = j;
+                        }
                     }
-
+                    
                 }
                 
-            }
-            
-            Random rgen = new UniformRandom();
-//            double value = rgen.nextDouble(0, distance_sum);
-            double value = bestDistanceRandoms[i];
-            facility_index = this.facility_count-1;
-            
-            for(int j = 0; j < this.facility_count; j++) {
-                if(distances[j] == 0)
-                    continue;
-                if(value - (1/distances[j]) <= 0) {
-                    facility_index = j;
-                    dist_min = distances[j]-1;
-                    break;
-                }
-                else {
-                    value -= (1/distances[j]);
-                }
             }
             facility_nodes.get(facility_index).add(this.use_producent_indexes[bestIndexes[i]]);
             
@@ -638,7 +600,6 @@ public class Spalovny_combinedProb implements TestFunction {
                             z = 1.0/(a + (b/x) + (c/y));
 
                             fitness += z;     //parameter based penalty
-                            capacity_cost += z;
                         } 
                         
                     }
@@ -660,13 +621,11 @@ public class Spalovny_combinedProb implements TestFunction {
                         
                         if(z < overused) {
                             fitness += z;     //parameter based penalty
-                            capacity_cost += z;
                         }
                         else {
                             capacities[i] = this.possible_capacities[this.use_incinerator_indexes[i]][previous];
                             costs[i] = this.possible_prices[this.use_incinerator_indexes[i]][previous];
                             fitness += overused;
-                            capacity_cost += overused;
                         }
                         
                     }
@@ -678,9 +637,8 @@ public class Spalovny_combinedProb implements TestFunction {
                     if(j == this.possible_capacities[this.use_incinerator_indexes[i]].length-1) {
                         overused = (garbage_sum[i] - (this.possible_capacities[this.use_incinerator_indexes[i]][j]))*overused_penalty;
                         capacities[i] = this.possible_capacities[this.use_incinerator_indexes[i]][j];
-                        costs[i] = this.possible_prices[this.use_incinerator_indexes[i]][j];                        
+                        costs[i] = this.possible_prices[this.use_incinerator_indexes[i]][j];
                         fitness += overused;
-                        capacity_cost += overused;
                     }
                 }
                 
@@ -716,13 +674,13 @@ public class Spalovny_combinedProb implements TestFunction {
             map.put("span[[" + (i+1) + "]]", paths);
             
         }
-        
+
         separate_costs.add(transport_cost/25.3294);
         separate_costs.add(capacity_cost/25.3294);
         separate_costs.add(fitness/25.3294);
 
         map.put("Transport/Capacity/All", separate_costs);
-
+        
         return map;
     }  
 
@@ -770,22 +728,26 @@ public class Spalovny_combinedProb implements TestFunction {
      */
     public static void main(String[] args) {
         
-        double[] vector;
-
-        int[] use_prod = new int[]{71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
-        int[] use_inc = new int[]{27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
-        vector = new double[]{0.5673882405549004, 0.796974565606024, 0.8393776535314651, 0.7033327471977788, 0.6093689573079982, 0.8189766791530481, 0.7058825642392179, 0.8211560981510151, 0.9981833238459914, 0.7111246599656639, 0.22579194806436098, 0.9292909920058061, 0.6507729227239147, 0.6605235135299079, 0.9578326918243933, 0.031514956933296506, 0.9196802048902187, 0.7751582124610438, 0.6173865848045287};
+//        /**
+//         * BEZ PENALIZACE
+//         */
+//        
+//        /**
+//         * Olomoucky kraj
+//         */
+        int[] use_prod = new int[]{93,94,95,96,97,98,99,100,101,102,103,104,105};
+        int[] use_inc = new int[]{7,8,21};
+        double[] vector = new double[]{0.1, 0.6140815626872104, 0.1};
         
         /**
          * Pro subset
          */
-        Spalovny_combinedProb sp = new Spalovny_combinedProb(use_inc, use_prod);
+        Spalovny_combinedSort sp = new Spalovny_combinedSort(use_inc, use_prod);
         
         for(int i = 0; i < 10; i++) {
-            sp = new Spalovny_combinedProb(use_inc, use_prod);
             System.out.println(sp.fitness(vector));
         
-            Map<String, List> map = sp.getBest_map();
+            Map<String, List> map = sp.getOutput(vector);
 
             System.out.println("=================================");
             String line;
@@ -818,7 +780,6 @@ public class Spalovny_combinedProb implements TestFunction {
             }
 
             System.out.println("=================================");
-
         }
     }
     
