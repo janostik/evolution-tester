@@ -29,7 +29,7 @@ public class NetCDErand1bin extends CDErand1bin {
     }
 
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -155,7 +155,7 @@ public class NetCDErand1bin extends CDErand1bin {
 
             de = new NetCDErand1bin(dimension, NP, MAXFES, tf, generator, f, cr, chaos);
 
-            de.run();
+            de.runAlgorithm();
             
             System.out.println("Node");
             System.out.println("ID: " + ((NetCDErand1bin) de).net.getNodeWithHighestDegree().id);

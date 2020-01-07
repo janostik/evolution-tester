@@ -39,7 +39,7 @@ public class NLfv_SHADE extends Lfv_SHADE {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -292,7 +292,7 @@ public class NLfv_SHADE extends Lfv_SHADE {
 
             shade = new NLfv_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());

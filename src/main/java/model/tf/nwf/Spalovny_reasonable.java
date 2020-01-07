@@ -369,7 +369,9 @@ public class Spalovny_reasonable implements TestFunction {
                                 incineration_cost = z;
                             } 
 
+                            incineration_cost += costs[j];
                             break;
+                            
                         }
                     }
                    
@@ -576,6 +578,7 @@ public class Spalovny_reasonable implements TestFunction {
                                 incineration_cost = z;
                             } 
 
+                            incineration_cost += costs[j];
                             break;
                         }
                     }

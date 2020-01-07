@@ -49,7 +49,7 @@ public class AP_SHADE_main {
             
             de = new AP_ShaDE(dimension, MAXFES, tf, H, NP, generator);
 
-            de.run();
+            de.runAlgorithm();
  
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());
@@ -119,7 +119,7 @@ public class AP_SHADE_main {
             
             de = new AP_ShaDE(dimension, MAXFES, tf, H, NP, generator);
 
-            de.run();
+            de.runAlgorithm();
  
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());
@@ -188,7 +188,7 @@ public class AP_SHADE_main {
             
             de = new AP_ShaDE(dimension, MAXFES, tf, H, NP, generator);
 
-            de.run();
+            de.runAlgorithm();
  
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());
@@ -266,7 +266,7 @@ public class AP_SHADE_main {
             
             de = new AP_ShaDE(dimension, MAXFES, tf, H, NP, generator);
 
-            de.run();
+            de.runAlgorithm();
  
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());
@@ -350,7 +350,7 @@ public class AP_SHADE_main {
             
             de = new AP_ShaDE(dimension, MAXFES, tf, H, NP, generator);
 
-            de.run();
+            de.runAlgorithm();
  
             bestArray[k] = de.getBest().fitness;
             if(de.getBest().fitness < bestMin){

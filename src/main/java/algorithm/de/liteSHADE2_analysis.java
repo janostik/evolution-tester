@@ -152,7 +152,7 @@ public class liteSHADE2_analysis implements Algorithm {
     }
 
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -881,7 +881,7 @@ public class liteSHADE2_analysis implements Algorithm {
             generator = new util.random.UniformRandom();
             shade = new liteSHADE2_analysis(dimension, MAXFES, tf, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -938,7 +938,7 @@ public class liteSHADE2_analysis implements Algorithm {
             generator = new util.random.UniformRandom();
             shade = new liteSHADE2_analysis(dimension, MAXFES, tf, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;

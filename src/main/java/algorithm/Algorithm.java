@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface Algorithm {
 
-    Individual run();
+    Individual runAlgorithm();
 
     List<? extends Individual> getPopulation();
 

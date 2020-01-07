@@ -58,7 +58,7 @@ public class DE_Main {
         for (int k = 0; k < runs; k++) {
 
             de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
-            de.run();
+            de.runAlgorithm();
 
             writer = new PrintWriter(home_dir + resultPath + tf.name() + "-" + k + ".txt", "UTF-8");
 
@@ -142,7 +142,7 @@ public class DE_Main {
         for (int k = 0; k < runs; k++) {
 
             de = new SOF_DErand1bin_AP(dimension, NP, MAXFES, tf, generator);
-            de.run();
+            de.runAlgorithm();
 
             writer = new PrintWriter(home_dir + resultPath + tf.name() + "-" + k + ".txt", "UTF-8");
 

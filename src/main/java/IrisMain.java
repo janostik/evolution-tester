@@ -26,7 +26,7 @@ public class IrisMain {
         SHADE shade;
         shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
 
-        shade.run();
+        shade.runAlgorithm();
         
 //        shade.getBestHistory().stream().forEach((ind) -> {
 //            System.out.println(ind.fitness);
@@ -48,7 +48,7 @@ public class IrisMain {
         SHADE shade;
         shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
 
-        shade.run();
+        shade.runAlgorithm();
         
 //        shade.getBestHistory().stream().forEach((ind) -> {
 //            System.out.println(ind.fitness);

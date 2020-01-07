@@ -61,7 +61,7 @@ public class CL100_SHADE extends SHADE {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -417,7 +417,7 @@ public class CL100_SHADE extends SHADE {
             generator = new util.random.UniformRandom();
             shade = new CL100_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;

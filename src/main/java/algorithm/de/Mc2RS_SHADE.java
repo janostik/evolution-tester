@@ -41,7 +41,7 @@ public class Mc2RS_SHADE extends Mc2_SHADE {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -399,7 +399,7 @@ public class Mc2RS_SHADE extends Mc2_SHADE {
             gens = RankedGenerator.getAllChaosGeneratorsV4();
             shade = new Mc2RS_SHADE(dimension, MAXFES, tf, H, NP, generator, gens);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;

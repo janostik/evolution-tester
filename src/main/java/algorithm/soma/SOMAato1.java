@@ -69,7 +69,7 @@ public class SOMAato1 implements Algorithm {
      * @return 
      */
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
         
         // Creation of the initial population
         this.initializePopulation();
@@ -368,7 +368,7 @@ public class SOMAato1 implements Algorithm {
             
             soma = new SOMAato1(tf, path_length, step_length, PRT, dimension, NP, MAXFES);
 
-            soma.run();
+            soma.runAlgorithm();
 
             bestArray[k] = soma.getBest().fitness;
             System.out.println("Individual: " + Arrays.toString(soma.getBest().vector));

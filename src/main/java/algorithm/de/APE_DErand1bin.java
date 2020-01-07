@@ -35,7 +35,7 @@ public class APE_DErand1bin extends DErand1bin {
     }
 
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -316,7 +316,7 @@ public class APE_DErand1bin extends DErand1bin {
 
             de = new APE_DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
 
-            de.run();
+            de.runAlgorithm();
             
 //            System.out.println(((APE_DErand1bin)de).G);
 //            System.out.println("Node");

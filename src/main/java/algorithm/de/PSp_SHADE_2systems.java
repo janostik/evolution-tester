@@ -49,7 +49,7 @@ public class PSp_SHADE_2systems extends P_SHADE {
      * @return 
      */
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -304,7 +304,7 @@ public class PSp_SHADE_2systems extends P_SHADE {
 
             shade = new PSp_SHADE_2systems(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
 
 //            PrintWriter writer;
 //

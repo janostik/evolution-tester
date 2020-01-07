@@ -131,7 +131,7 @@ public class McNLcg_SHADE extends NLcg_SHADE {
      * @return 
      */
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -401,7 +401,7 @@ public class McNLcg_SHADE extends NLcg_SHADE {
 
             shade = new McNLcg_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
             
 //            try {
 //                shade.printOutNetwork(200);

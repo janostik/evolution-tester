@@ -139,7 +139,7 @@ public class EigSpsL_SHADE implements Algorithm {
     }
 
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -900,7 +900,7 @@ public class EigSpsL_SHADE implements Algorithm {
 //            lshade = new EigSpsLShaDE(dimension, NPinit, NPmin, MAXFES, tf, Finit, ERinit, CRinit, w_F, w_ER, w_CR, CR_min, CR_max, Q, alfa, H, w_ext, p);
             lshade = new EigSpsL_SHADE(list);
 
-            lshade.run();
+            lshade.runAlgorithm();
 
 //            PrintWriter writer;
 //           

@@ -35,7 +35,7 @@ public class DISH_mask_test extends DISH_analysis {
     }
 
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Masking
@@ -538,7 +538,7 @@ public class DISH_mask_test extends DISH_analysis {
 
             shade = new DISH_mask_test(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());

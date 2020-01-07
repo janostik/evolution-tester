@@ -33,7 +33,7 @@ public class NetLDErand1bin extends CDErand1bin {
     }
 
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -214,7 +214,7 @@ public class NetLDErand1bin extends CDErand1bin {
 
             de = new NetLDErand1bin(dimension, NP, MAXFES, tf, generator, f, cr, chaos, minNP);
 
-            de.run();
+            de.runAlgorithm();
             
             System.out.println(((NetLDErand1bin)de).G);
             System.out.println("Node");

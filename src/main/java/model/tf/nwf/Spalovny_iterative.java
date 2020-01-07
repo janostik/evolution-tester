@@ -26,7 +26,7 @@ import util.random.UniformRandom;
  * 
  * 1. Solution is processing of garbage in the nearest facility with enough capacity.
  * 2. The incinerator with the least used capacity is removed and its producents assigned to the second nearest.
- * 3. Step 2 is repeated until the fitness is imrpoving.
+ * 3. Step 2 is repeated until the fitness is improving.
  * 
  * @author wiki on 27/11/2019
  */
@@ -941,66 +941,246 @@ public class Spalovny_iterative implements TestFunction {
     public static void main(String[] args) {
 
         double[] vector;
+        Spalovny_iterative sp;
 
-        int[] use_prod = new int[]{136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
-        int[] use_inc = new int[]{4,5,31,14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
-        
-//        Spalovny_iterative sp = new Spalovny_iterative(use_inc, use_prod);
-//        
-//        double cost = 0;
-//        
-//        for(int i = 0; i < use_prod.length; i++) {
-//            
-//            cost += sp.adjM[101][use_prod[i]]*sp.path_penalty*sp.garbage_production[use_prod[i]];
-//            
-//        }
-//        System.out.println(cost);
-        
+        int[] use_prod = new int[]{93,94,95,96,97,98,99,100,101,102,103,104,105};
+        int[] use_inc = new int[]{7,8,21};
+
         vector = new double[use_prod.length];
         for(int i = 0; i < vector.length; i++) {
             vector[i] = new UniformRandom().nextDouble();
         }
+                    
+        sp = new Spalovny_iterative(use_inc, use_prod);
+        System.out.println(sp.fitness(vector));
+                    
+        use_prod = new int[]{193,194,195,196,197,198,199,200,201,202,203,204,205};
+        use_inc = new int[]{16,17,20,28,29,33};
 
-        /**
-         * Pro subset
-         */
-        Spalovny_iterative sp = new Spalovny_iterative();
-        
-        for(int i = 0; i < 1; i++) {
-            sp = new Spalovny_iterative();
-            System.out.println(sp.fitness(vector));
-        
-            Map<String, List> map = sp.getBest_map();
-
-            System.out.println("=================================");
-            String line;
-
-            if(map == null) {
-                continue;
-            }
-
-            if(map != null){
-                for(Map.Entry<String,List> entry : map.entrySet()){
-                    line = "";
-                    System.out.print(entry.getKey() + " = ");
-                    line += "{";
-                    for(int pup = 0; pup < entry.getValue().size(); pup++){
-                        line += entry.getValue().get(pup);
-                        if(pup != entry.getValue().size()-1){
-                           line += ",";
-                        }
-                    }
-                    line += "};";
-                    line = line.replace("[", "{");
-                    line = line.replace("]", "}");
-                    System.out.println(line);
-
-                }
-            }
-
-            System.out.println("=================================");
-
+        vector = new double[use_prod.length];
+        for(int i = 0; i < vector.length; i++) {
+            vector[i] = new UniformRandom().nextDouble();
         }
+                    
+        sp = new Spalovny_iterative(use_inc, use_prod);
+        System.out.println(sp.fitness(vector));
+        
+        use_prod = new int[]{18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        use_inc = new int[]{1,6,34,16,17,20,28,29,33};
+
+        vector = new double[use_prod.length];
+        for(int i = 0; i < vector.length; i++) {
+            vector[i] = new UniformRandom().nextDouble();
+        }
+                    
+        sp = new Spalovny_iterative(use_inc, use_prod);
+        System.out.println(sp.fitness(vector));
+        
+        
+
+        use_prod = new int[]{93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        use_inc = new int[]{7,8,21,1,6,34,16,17,20,28,29,33};
+
+        vector = new double[use_prod.length];
+        for(int i = 0; i < vector.length; i++) {
+            vector[i] = new UniformRandom().nextDouble();
+        }
+                    
+        sp = new Spalovny_iterative(use_inc, use_prod);
+        System.out.println(sp.fitness(vector));
+        
+        
+
+        use_prod = new int[]{71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        use_inc = new int[]{27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+
+        vector = new double[use_prod.length];
+        for(int i = 0; i < vector.length; i++) {
+            vector[i] = new UniformRandom().nextDouble();
+        }
+                    
+        sp = new Spalovny_iterative(use_inc, use_prod);
+        System.out.println(sp.fitness(vector));
+        
+        
+
+        use_prod = new int[]{106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        use_inc = new int[]{10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+
+        vector = new double[use_prod.length];
+        for(int i = 0; i < vector.length; i++) {
+            vector[i] = new UniformRandom().nextDouble();
+        }
+                    
+        sp = new Spalovny_iterative(use_inc, use_prod);
+        System.out.println(sp.fitness(vector));
+        
+        
+
+        use_prod = new int[]{178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        use_inc = new int[]{12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+
+        vector = new double[use_prod.length];
+        for(int i = 0; i < vector.length; i++) {
+            vector[i] = new UniformRandom().nextDouble();
+        }
+                    
+        sp = new Spalovny_iterative(use_inc, use_prod);
+        System.out.println(sp.fitness(vector));
+        
+        
+
+        use_prod = new int[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        use_inc = new int[]{9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+
+        vector = new double[use_prod.length];
+        for(int i = 0; i < vector.length; i++) {
+            vector[i] = new UniformRandom().nextDouble();
+        }
+                    
+        sp = new Spalovny_iterative(use_inc, use_prod);
+        System.out.println(sp.fitness(vector));
+        
+        
+
+        use_prod = new int[]{46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        use_inc = new int[]{14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+
+        vector = new double[use_prod.length];
+        for(int i = 0; i < vector.length; i++) {
+            vector[i] = new UniformRandom().nextDouble();
+        }
+                    
+        sp = new Spalovny_iterative(use_inc, use_prod);
+        System.out.println(sp.fitness(vector));
+        
+        
+
+        use_prod = new int[]{136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        use_inc = new int[]{4,5,31,14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+
+        vector = new double[use_prod.length];
+        for(int i = 0; i < vector.length; i++) {
+            vector[i] = new UniformRandom().nextDouble();
+        }
+                    
+        sp = new Spalovny_iterative(use_inc, use_prod);
+        System.out.println(sp.fitness(vector));
+        
+        
+  
+        use_prod = new int[]{0,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205};
+        use_inc = new int[]{0,4,5,31,14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33};
+
+        vector = new double[use_prod.length];
+        for(int i = 0; i < vector.length; i++) {
+            vector[i] = new UniformRandom().nextDouble();
+        }
+                    
+        sp = new Spalovny_iterative(use_inc, use_prod);
+        System.out.println(sp.fitness(vector));
+        
+        
+
+        use_prod = new int[]{178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,39,40,41,42,43,44,45,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,0};
+        use_inc = new int[]{12,23,25,10,14,18,2,11,13,26,15,22,24,4,5,31,9,19,3,30,0};
+
+        vector = new double[use_prod.length];
+        for(int i = 0; i < vector.length; i++) {
+            vector[i] = new UniformRandom().nextDouble();
+        }
+                    
+        sp = new Spalovny_iterative(use_inc, use_prod);
+        System.out.println(sp.fitness(vector));
+        
+        
+
+        use_prod = new int[]{0,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205,61,62,63,64,65,66,67,68,69,70};
+        use_inc = new int[]{0,4,5,31,14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33,2};
+
+        vector = new double[use_prod.length];
+        for(int i = 0; i < vector.length; i++) {
+            vector[i] = new UniformRandom().nextDouble();
+        }
+                    
+        sp = new Spalovny_iterative(use_inc, use_prod);
+        System.out.println(sp.fitness(vector));
+        
+        
+
+        use_prod = new int[]{0,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205,61,62,63,64,65,66,67,68,69,70,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135};
+        use_inc = new int[]{0,4,5,31,14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33,2,3,30};
+
+        vector = new double[use_prod.length];
+        for(int i = 0; i < vector.length; i++) {
+            vector[i] = new UniformRandom().nextDouble();
+        }
+                    
+        sp = new Spalovny_iterative(use_inc, use_prod);
+        System.out.println(sp.fitness(vector));
+        
+        
+
+        use_prod = new int[]{0,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,193,194,195,196,197,198,199,200,201,202,203,204,205,61,62,63,64,65,66,67,68,69,70,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177};
+        use_inc = new int[]{0,4,5,31,14,18,9,19,12,23,25,10,27,32,35,36,37,38,39,7,8,21,1,6,34,16,17,20,28,29,33,2,3,30,11,13,26};
+
+        vector = new double[use_prod.length];
+        for(int i = 0; i < vector.length; i++) {
+            vector[i] = new UniformRandom().nextDouble();
+        }
+                    
+        sp = new Spalovny_iterative(use_inc, use_prod);
+        System.out.println(sp.fitness(vector));
+        
+        
+                    
+//        vector = new double[use_prod.length];
+//        for(int i = 0; i < vector.length; i++) {
+//            vector[i] = new UniformRandom().nextDouble();
+//        }
+//
+//        /**
+//         * Pro subset
+//         */
+//        Spalovny_iterative sp = new Spalovny_iterative(use_inc, use_prod);
+//        Spalovny_iterative sp = new Spalovny_iterative();
+        
+//        for(int i = 0; i < 1; i++) {
+//            sp = new Spalovny_iterative(use_inc, use_prod);
+////            sp = new Spalovny_iterative();
+//            System.out.println(sp.fitness(vector));
+//        
+//            Map<String, List> map = sp.getBest_map();
+//
+//            System.out.println("=================================");
+//            String line;
+//
+//            if(map == null) {
+//                continue;
+//            }
+//
+//            if(map != null){
+//                for(Map.Entry<String,List> entry : map.entrySet()){
+//                    line = "";
+//                    System.out.print(entry.getKey() + " = ");
+//                    line += "{";
+//                    for(int pup = 0; pup < entry.getValue().size(); pup++){
+//                        line += entry.getValue().get(pup);
+//                        if(pup != entry.getValue().size()-1){
+//                           line += ",";
+//                        }
+//                    }
+//                    line += "};";
+//                    line = line.replace("[", "{");
+//                    line = line.replace("]", "}");
+//                    System.out.println(line);
+//
+//                }
+//            }
+//
+//            System.out.println("=================================");
+//
+//        }
     }
     
 }

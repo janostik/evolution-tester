@@ -89,7 +89,7 @@ public class DISH_100digit extends SHADE_analysis {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -449,7 +449,7 @@ public class DISH_100digit extends SHADE_analysis {
 
             shade = new DISH_100digit(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
 
 //            PrintWriter writer;
 //

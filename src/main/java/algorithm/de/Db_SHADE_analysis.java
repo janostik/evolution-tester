@@ -28,7 +28,7 @@ public class Db_SHADE_analysis extends SHADE_analysis {
     }
 
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -285,7 +285,7 @@ public class Db_SHADE_analysis extends SHADE_analysis {
             generator = new util.random.UniformRandom();
             shade = new Db_SHADE_analysis(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;

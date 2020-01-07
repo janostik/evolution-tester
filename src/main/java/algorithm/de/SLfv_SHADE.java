@@ -30,7 +30,7 @@ public class SLfv_SHADE extends Lfv_SHADE {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -250,7 +250,7 @@ public class SLfv_SHADE extends Lfv_SHADE {
             generator = new util.random.UniformRandomSeed(seed);
             shade = new SLfv_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
 
 //            PrintWriter writer;
 //

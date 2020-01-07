@@ -42,7 +42,7 @@ public class ArchiveSizeEAShade {
 
                 shade = new EA_SHADE(dimension, MAXFES, tf, H, NP, generator);
                 shade.setAsize(Asize);
-                shade.run();
+                shade.runAlgorithm();
 
                 bestArray[k] = shade.getBest().fitness - tf.optimum();
 

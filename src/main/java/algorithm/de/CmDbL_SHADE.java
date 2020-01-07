@@ -36,7 +36,7 @@ public class CmDbL_SHADE extends DbL_SHADE_analysis {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -385,7 +385,7 @@ public class CmDbL_SHADE extends DbL_SHADE_analysis {
 
             shade = new CmDbL_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());

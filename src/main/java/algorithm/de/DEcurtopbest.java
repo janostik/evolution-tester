@@ -21,7 +21,7 @@ public class DEcurtopbest extends DErand1bin {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -241,7 +241,7 @@ public class DEcurtopbest extends DErand1bin {
 
         Algorithm de = new DEcurtopbest(dimension, NP, MAXFES, tf, generator, f, cr);
         
-        de.run();
+        de.runAlgorithm();
         
         System.out.println(de.getBest().fitness);
         

@@ -104,7 +104,7 @@ public class CjDE extends jDE {
 
             de = new CjDE(dimension, NP, MAXFES, tf, generator, chaos);
             
-            de.run();
+            de.runAlgorithm();
 
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());

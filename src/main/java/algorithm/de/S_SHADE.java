@@ -27,7 +27,7 @@ public class S_SHADE extends SHADE {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -244,7 +244,7 @@ public class S_SHADE extends SHADE {
             generator = new util.random.UniformRandomSeed(seed);
             shade = new S_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
 
 //            PrintWriter writer;
 //

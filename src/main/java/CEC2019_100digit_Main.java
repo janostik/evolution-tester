@@ -50,7 +50,7 @@ public class CEC2019_100digit_Main {
         for (int k = 0; k < runs; k++) {
 
                 dish = new ACID_100digit(dimension, MAXFES, tf, H, NPinit, generator, NPfinal, eps, 3, new ChebyshevDistance(), resolution);
-                dish.run();
+                dish.runAlgorithm();
                 
                 System.out.println(new Date() + " || " + (k+startIndex) + ". run: " + String.format(Locale.US, "%.10f", dish.getBest().fitness - tf.optimum()));
 
@@ -111,7 +111,7 @@ public class CEC2019_100digit_Main {
         for (int k = 0; k < runs; k++) {
 
                 dish = new DISH_100digit(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
-                dish.run();
+                dish.runAlgorithm();
                 
                 System.out.println(new Date() + " || " + (k+startIndex) + ". run: " + String.format(Locale.US, "%.10f", dish.getBest().fitness - tf.optimum()));
 

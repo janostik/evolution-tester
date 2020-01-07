@@ -63,7 +63,7 @@ public class DE_hbrs extends DErand1bin {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -291,7 +291,7 @@ public class DE_hbrs extends DErand1bin {
 
                 de = new DE_hbrs(dimension, NP, MAXFES, tfs[i], generator, f, cr, favor, punish);
 
-                de.run();
+                de.runAlgorithm();
 
                 bestArray[k] = de.getBest().fitness - tfs[i].optimum();
                 System.out.println(de.getBest().fitness - tfs[i].optimum());

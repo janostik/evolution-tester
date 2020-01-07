@@ -41,7 +41,7 @@ public class SwEEL_SHADE extends SHADE {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -324,7 +324,7 @@ public class SwEEL_SHADE extends SHADE {
 
             shade = new SwEEL_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
 
 //            PrintWriter writer;
 //

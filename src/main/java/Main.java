@@ -52,7 +52,7 @@ public class Main {
             double[][] gbestValues = new double[reps][1000];
             for (int i = 0; i < reps; i++) {
                 algorithm = new NetPso(swarmSize, iterations, dim, c1, c2, maxVelocity, new Cec2013(dim, funcNumber), degreeLimit, repulsiveRoundsLimit, maxRepulsionIteration);
-                fitnesses[i] = algorithm.run().fitness;
+                fitnesses[i] = algorithm.runAlgorithm().fitness;
                 roundsInIterations[i] = ((NetPso) algorithm).totalIterationsInRepulsive;
                 repulsiveCycles[i] = ((NetPso) algorithm).repulsiveCycles;
                 gbestValues[i] = ((NetPso) algorithm).gbestValues;

@@ -96,7 +96,7 @@ public class CEC2015timeComplexity {
             shade = new SHADE_analysis(dim, MAXFES, tf, H, NP, generator);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -114,7 +114,7 @@ public class CEC2015timeComplexity {
             shade = new Db_SHADE_analysis(dim, MAXFES, tf, H, NP, generator);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -135,7 +135,7 @@ public class CEC2015timeComplexity {
             shade = new L_SHADE_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -156,7 +156,7 @@ public class CEC2015timeComplexity {
             shade = new DbL_SHADE_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -177,7 +177,7 @@ public class CEC2015timeComplexity {
             shade = new jSO_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -198,7 +198,7 @@ public class CEC2015timeComplexity {
             shade = new Db_jSO_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -250,7 +250,7 @@ public class CEC2015timeComplexity {
             shade = new SHADE_analysis(dim, MAXFES, tf, H, NP, generator);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -268,7 +268,7 @@ public class CEC2015timeComplexity {
             shade = new Db_SHADE_analysis(dim, MAXFES, tf, H, NP, generator);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -289,7 +289,7 @@ public class CEC2015timeComplexity {
             shade = new L_SHADE_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -310,7 +310,7 @@ public class CEC2015timeComplexity {
             shade = new DbL_SHADE_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -331,7 +331,7 @@ public class CEC2015timeComplexity {
             shade = new jSO_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -352,7 +352,7 @@ public class CEC2015timeComplexity {
             shade = new Db_jSO_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -404,7 +404,7 @@ public class CEC2015timeComplexity {
             shade = new SHADE_analysis(dim, MAXFES, tf, H, NP, generator);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -422,7 +422,7 @@ public class CEC2015timeComplexity {
             shade = new Db_SHADE_analysis(dim, MAXFES, tf, H, NP, generator);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -443,7 +443,7 @@ public class CEC2015timeComplexity {
             shade = new L_SHADE_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -464,7 +464,7 @@ public class CEC2015timeComplexity {
             shade = new DbL_SHADE_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -485,7 +485,7 @@ public class CEC2015timeComplexity {
             shade = new jSO_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -506,7 +506,7 @@ public class CEC2015timeComplexity {
             shade = new Db_jSO_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -558,7 +558,7 @@ public class CEC2015timeComplexity {
             shade = new SHADE_analysis(dim, MAXFES, tf, H, NP, generator);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -576,7 +576,7 @@ public class CEC2015timeComplexity {
             shade = new Db_SHADE_analysis(dim, MAXFES, tf, H, NP, generator);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -597,7 +597,7 @@ public class CEC2015timeComplexity {
             shade = new L_SHADE_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -618,7 +618,7 @@ public class CEC2015timeComplexity {
             shade = new DbL_SHADE_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -639,7 +639,7 @@ public class CEC2015timeComplexity {
             shade = new jSO_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;
@@ -660,7 +660,7 @@ public class CEC2015timeComplexity {
             shade = new Db_jSO_analysis(dim, MAXFES, tf, H, NP, generator, NPfinal);
             
             start = System.currentTimeMillis();
-            shade.run();
+            shade.runAlgorithm();
             end = System.currentTimeMillis();
         
             time = end-start;

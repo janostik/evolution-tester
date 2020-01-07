@@ -64,7 +64,7 @@ public class ADEbest extends DEbest{
      * @return 
      */
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * How many individuals should die
@@ -463,7 +463,7 @@ public class ADEbest extends DEbest{
             //DErand1bin(int D, int NP, int MAXFES, TestFunction f, Random rndGenerator, double F, double CR)
             de = new ADEbest(dimension, NP, MAXFES, tf, generator, f, cr, killCount, stagnationStart, stagnationEnd, agingConstant, maxAgeChange);
 
-            de.run();
+            de.runAlgorithm();
 
 //            PrintWriter writer;
 //

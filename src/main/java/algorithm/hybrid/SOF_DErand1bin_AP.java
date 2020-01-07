@@ -282,7 +282,7 @@ public class SOF_DErand1bin_AP extends DErand1bin {
      * @return 
      */
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -396,7 +396,7 @@ public class SOF_DErand1bin_AP extends DErand1bin {
 
             de = new SOF_DErand1bin_AP(dimension, NP, MAXFES, tf, generator);
 
-            de.run();
+            de.runAlgorithm();
 
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());

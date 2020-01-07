@@ -30,7 +30,7 @@ public class CmDb_SHADE extends Db_SHADE_analysis {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -383,7 +383,7 @@ public class CmDb_SHADE extends Db_SHADE_analysis {
             generator = new util.random.UniformRandom();
             shade = new CmDb_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;

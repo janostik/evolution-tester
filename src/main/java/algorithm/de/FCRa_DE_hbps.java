@@ -32,7 +32,7 @@ public class FCRa_DE_hbps extends DE_hbps {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -218,7 +218,7 @@ public class FCRa_DE_hbps extends DE_hbps {
 
             de = new FCRa_DE_hbps(dimension, NP, MAXFES, tf, generator, H, favor, punish);
 
-            de.run();
+            de.runAlgorithm();
 
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());

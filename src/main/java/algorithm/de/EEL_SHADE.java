@@ -44,7 +44,7 @@ public class EEL_SHADE extends SHADE {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -329,7 +329,7 @@ public class EEL_SHADE extends SHADE {
 
             shade = new EEL_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
 
 //            PrintWriter writer;
 //

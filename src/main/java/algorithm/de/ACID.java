@@ -60,7 +60,7 @@ public class ACID extends DISH_analysis {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -1224,7 +1224,7 @@ public class ACID extends DISH_analysis {
 
             shade = new ACID(dimension, MAXFES, tf, H, NP, generator, minNP, eps, 3, new org.apache.commons.math3.ml.distance.EuclideanDistance(), resolution);
 
-            shade.run();
+            shade.runAlgorithm();
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
 //            System.out.println(shade.getBest().fitness - tf.optimum());

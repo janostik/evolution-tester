@@ -63,7 +63,7 @@ public class AP_smetak_main {
             
             dish = new AP_DISH(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            dish.run();
+            dish.runAlgorithm();
  
             bestArray[k] = dish.getBest().fitness - tf.optimum();
             System.out.println(dish.getBest().fitness - tf.optimum());
@@ -148,7 +148,7 @@ public class AP_smetak_main {
             
             dish = new AP_ann_DISH(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            dish.run();
+            dish.runAlgorithm();
  
             bestArray[k] = dish.getBest().fitness - tf.optimum();
             System.out.println(dish.getBest().fitness - tf.optimum());
@@ -233,7 +233,7 @@ public class AP_smetak_main {
             
             dish = new AP_ann_DISH(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            dish.run();
+            dish.runAlgorithm();
  
             bestArray[k] = dish.getBest().fitness - tf.optimum();
             System.out.println(dish.getBest().fitness - tf.optimum());

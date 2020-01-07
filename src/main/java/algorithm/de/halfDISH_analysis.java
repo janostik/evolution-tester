@@ -42,7 +42,7 @@ public class halfDISH_analysis extends DISH_analysis {
     }
 
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -344,7 +344,7 @@ public class halfDISH_analysis extends DISH_analysis {
 
             shade = new halfDISH_analysis(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());

@@ -107,7 +107,7 @@ public class SS_DE extends DErand1bin {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -486,7 +486,7 @@ public class SS_DE extends DErand1bin {
 
                 de = new SS_DE(dimension, NP, MAXFES, tfs[i], generator, f, cr);
 
-                de.run();
+                de.runAlgorithm();
                 
                 clus_sizes = de.cluster_sizes;
                 cluster_sizes_string += "{";

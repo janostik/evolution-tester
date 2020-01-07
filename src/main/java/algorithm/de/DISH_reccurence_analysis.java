@@ -113,7 +113,7 @@ public class DISH_reccurence_analysis extends SHADE_analysis {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         writer.print("{");
         
@@ -592,7 +592,7 @@ public class DISH_reccurence_analysis extends SHADE_analysis {
 
             shade = new DISH_reccurence_analysis(dimension, MAXFES, tf, H, NP, generator, minNP, path + "rec_" + k + ".txt");
 
-            shade.run();
+            shade.runAlgorithm();
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());

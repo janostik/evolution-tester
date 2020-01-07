@@ -40,7 +40,7 @@ public class L_SHADE_analysis extends SHADE_analysis {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -327,7 +327,7 @@ public class L_SHADE_analysis extends SHADE_analysis {
 
             shade = new L_SHADE_analysis(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
 
 //            PrintWriter writer;
 //

@@ -70,7 +70,7 @@ public class MCDErand extends DErand1bin {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -311,7 +311,7 @@ public class MCDErand extends DErand1bin {
         for (int k = 0; k < runs; k++) {
 
             de = new MCDErand(dimension, NP, MAXFES, tf, generator, f, cr);
-            de.run();
+            de.runAlgorithm();
             de.printOutRankings();
 
             bestArray[k] = de.getBest().fitness - tf.optimum();

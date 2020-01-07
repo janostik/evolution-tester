@@ -54,7 +54,7 @@ public class AP_DErand1bin implements Algorithm {
     }
 
     @Override
-    public AP_Individual run() {
+    public AP_Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -439,7 +439,7 @@ public class AP_DErand1bin implements Algorithm {
             
             de = new AP_DErand1bin(dimension, NP, MAXFES, tf, (Random) generator, f, cr);
 
-            de.run();
+            de.runAlgorithm();
 
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());

@@ -101,7 +101,7 @@ public class DISH_PRT_analysis extends SHADE_analysis {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -569,7 +569,7 @@ public class DISH_PRT_analysis extends SHADE_analysis {
 
             shade = new DISH_PRT_analysis(dimension, MAXFES, tf, H, NP, generator, minNP, PRT);
 
-            shade.run();
+            shade.runAlgorithm();
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());

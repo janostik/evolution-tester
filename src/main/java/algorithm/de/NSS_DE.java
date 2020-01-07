@@ -75,7 +75,7 @@ public class NSS_DE extends DErand1bin {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -476,7 +476,7 @@ public class NSS_DE extends DErand1bin {
 
                 de = new NSS_DE(dimension, NP, MAXFES, tfs[i], generator, f, cr);
 
-                de.run();
+                de.runAlgorithm();
 
                 bestArray[k] = de.getBest().fitness - tfs[i].optimum();
                 System.out.println(de.getBest().fitness - tfs[i].optimum());

@@ -40,7 +40,7 @@ public class DE_hbrs2 extends DE_hbrs {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -169,7 +169,7 @@ public class DE_hbrs2 extends DE_hbrs {
 
                 de = new DE_hbrs2(dimension, NP, MAXFES, tfs[i], generator, f, cr, favor, punish);
 
-                de.run();
+                de.runAlgorithm();
 
                 bestArray[k] = de.getBest().fitness - tfs[i].optimum();
                 System.out.println(de.getBest().fitness - tfs[i].optimum());

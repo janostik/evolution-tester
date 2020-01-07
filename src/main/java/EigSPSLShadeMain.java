@@ -476,7 +476,7 @@ public class EigSPSLShadeMain {
             for (int k = 0; k < runs; k++) {
 
                 shade = new EigSpsL_SHADE(list.get(funcNumber-1));
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + funcNumber + "-" + k + ".txt", "UTF-8");
 

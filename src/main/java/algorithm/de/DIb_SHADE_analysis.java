@@ -34,7 +34,7 @@ public class DIb_SHADE_analysis extends Db_SHADE_analysis {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -297,7 +297,7 @@ public class DIb_SHADE_analysis extends Db_SHADE_analysis {
             generator = new util.random.UniformRandom();
             shade = new DIb_SHADE_analysis(dimension, MAXFES, tf, H, NP, generator, wDis, wImp);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;

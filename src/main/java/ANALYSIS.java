@@ -1,7 +1,9 @@
 
+import algorithm.Algorithm;
 import algorithm.de.ACID;
 import algorithm.de.CmDbL_SHADE;
 import algorithm.de.CmDb_SHADE;
+import algorithm.de.DISH;
 import algorithm.de.DISH_PRT_analysis;
 import algorithm.de.DISH_adaptive_mask;
 import algorithm.de.DISH_analysis;
@@ -24,6 +26,9 @@ import algorithm.de.liteSHADE_analysis;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.DoubleStream;
 import model.tf.Cec2013;
 import model.tf.Cec2014;
@@ -74,7 +79,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new SHADE_analysis(dimension, MAXFES, tf, H, NP, generator);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -207,7 +212,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new L_SHADE_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -342,7 +347,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new DIb_SHADE_analysis(dimension, MAXFES, tf, H, NP, generator, wDis, wImp);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -475,7 +480,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new CmDb_SHADE(dimension, MAXFES, tf, H, NP, generator);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -608,7 +613,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new Db_SHADE_analysis(dimension, MAXFES, tf, H, NP, generator);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -741,7 +746,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new Db_SHADE_analysis(dimension, MAXFES, tf, H, NP, generator);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -874,7 +879,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new Db_SHADE_analysis(dimension, MAXFES, tf, H, NP, generator);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -1009,7 +1014,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new DIbL_SHADE_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal, wDis, wImp);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -1142,7 +1147,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new CmDbL_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -1275,7 +1280,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new DbL_SHADE_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -1408,7 +1413,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new DbL_SHADE_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -1541,7 +1546,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new DbL_SHADE_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -1674,7 +1679,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new jSO_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -1807,7 +1812,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new UDb_jSO_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -1940,7 +1945,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new DISHv2_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -2075,7 +2080,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new halfDISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -2214,7 +2219,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new IDISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -2357,7 +2362,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new ACID(dimension, MAXFES, tf, H, NP, generator, NPfinal, eps, 3, new org.apache.commons.math3.ml.distance.EuclideanDistance(), resolution);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -2496,7 +2501,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -2635,7 +2640,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new DISH_adaptive_mask(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -2774,7 +2779,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new DISH_mask_test(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -2913,7 +2918,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new DISH_PRT_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal, PRT);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -3052,7 +3057,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new Db_jSO_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -3190,7 +3195,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new Db_jSO_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -3323,7 +3328,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new EB_DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -3456,7 +3461,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new liteSHADE_analysis(dimension, MAXFES, tf, NP, generator);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -3589,7 +3594,7 @@ public class ANALYSIS {
             for (int k = 0; k < runs; k++) {
 
                 shade = new liteSHADE2_analysis(dimension, MAXFES, tf, NP, generator);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -3690,6 +3695,177 @@ public class ANALYSIS {
     }
     
     /**
+     * MULTITHREAD TESTING
+     */
+    
+    /**
+     * Main class for DISH algorithm
+     * 
+     * @param path
+     * @param H
+     * @param mfpath
+     * @throws Exception 
+     */
+    public static void DISH_mt_cec2015(String path, int H, String mfpath) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 15;
+
+        DISH shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer, final_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        final_writer = new PrintWriter(home_dir + path + "final_res.csv", "UTF-8");
+        
+        res_writer.print("{");
+
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+
+            System.out.println("START: " + new Date());
+            
+            tf = new Cec2015(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            ExecutorService pool = Executors.newFixedThreadPool(51);
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new DISH(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+                
+                pool.submit(new SingleThread(shade, writer, bestArray, tf, k));
+
+            }
+
+            pool.shutdown();
+            
+            if(pool.awaitTermination(10, TimeUnit.DAYS)) {
+            
+                System.out.println("END: " + new Date());
+
+                for(int z = 0; z < bestArray.length; z++) {
+                    final_writer.print(String.format(Locale.US, "%.10f", bestArray[z]));
+
+                    if(z != bestArray.length-1) {
+                        final_writer.print(',');
+                    }
+                    else {
+                        final_writer.println();
+                    }
+                }
+
+                best = DoubleStream.of(bestArray).min().getAsDouble();
+                worst = DoubleStream.of(bestArray).max().getAsDouble();
+                median = new Median().evaluate(bestArray);
+                mean = new Mean().evaluate(bestArray);
+                std = new StandardDeviation().evaluate(bestArray);
+
+                sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+
+                sol_writer.print("{");
+                sol_writer.print(funcNumber);
+                sol_writer.print(",");
+                sol_writer.print(String.format(Locale.US, "%.10f", best));
+                sol_writer.print(",");
+                sol_writer.print(String.format(Locale.US, "%.10f", worst));
+                sol_writer.print(",");
+                sol_writer.print(String.format(Locale.US, "%.10f", median));
+                sol_writer.print(",");
+                sol_writer.print(String.format(Locale.US, "%.10f", mean));
+                sol_writer.print(",");
+                sol_writer.print(String.format(Locale.US, "%.10f", std));
+                sol_writer.print("}");
+
+                sol_writer.close();
+
+                System.out.println(tf.name());
+                System.out.println("=================================");
+                System.out.println("Best: " + best);
+                System.out.println("Worst: " + worst);
+                System.out.println("Median: " + median);
+                System.out.println("Mean: " + mean);
+                System.out.println("Std: " + std);
+                System.out.println("=================================");
+
+                res_writer.print("{");
+                res_writer.print(funcNumber);
+                res_writer.print(",");
+                res_writer.print(String.format(Locale.US, "%.10f", best));
+                res_writer.print(",");
+                res_writer.print(String.format(Locale.US, "%.10f", worst));
+                res_writer.print(",");
+                res_writer.print(String.format(Locale.US, "%.10f", median));
+                res_writer.print(",");
+                res_writer.print(String.format(Locale.US, "%.10f", mean));
+                res_writer.print(",");
+                res_writer.print(String.format(Locale.US, "%.10f", std));
+                res_writer.print("}");
+
+                if(funcNumber < maxFuncNum){
+                   res_writer.print(",");
+                }
+            
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        final_writer.close();
+        
+    }
+    
+    public static class SingleThread implements Runnable {
+
+        Algorithm algorithm;
+        PrintWriter writer;
+        double[] bestArray;
+        TestFunction tf;
+        int runNo;
+        
+        public SingleThread(Algorithm alg, PrintWriter writer, double[] bestArray, TestFunction tf, int runNo) {
+            this.algorithm = alg;
+            this.writer = writer;
+            this.bestArray = bestArray;
+            this.tf = tf;
+            this.runNo = runNo;
+        }
+        
+        @Override
+        public void run() {
+            
+            this.algorithm.runAlgorithm();
+
+            this.writer.print("{");
+
+            for (int i = 0; i < ((DISH)this.algorithm).getImp_hist().size(); i++) {
+
+                writer.print("{" + String.format(Locale.US, "%d", (int)((DISH)this.algorithm).getImp_hist().get(i)[0]) + "," + String.format(Locale.US, "%.10f", ((DISH)this.algorithm).getImp_hist().get(i)[1]) + "}");
+
+                if (i != ((DISH)this.algorithm).getImp_hist().size() - 1) {
+                    writer.print(",");
+                }
+
+            }
+
+            writer.print("}");
+
+            writer.close();
+
+            bestArray[this.runNo] = ((DISH)this.algorithm).getBest().fitness - tf.optimum();
+
+            System.out.println((this.runNo+1) + ". run FES: " + ((DISH)this.algorithm).getImp_hist().get(((DISH)this.algorithm).getImp_hist().size()-1)[0] + " OFV: " + (((DISH)this.algorithm).getImp_hist().get(((DISH)this.algorithm).getImp_hist().size()-1)[1] - tf.optimum()));
+            
+        }
+        
+    }
+    
+    /**
      * Overall
      */
     public static int dimension = 10;
@@ -3717,7 +3893,8 @@ public class ANALYSIS {
         
         int H;
         String path;
-        home_dir = "Z:\\zaloha_exterak\\results\\ANALYSIS\\MASK\\";
+        home_dir = "E:\\results\\MT\\DISH-CEC2015-10-51thread\\";
+        
         
         dimension = 10;
         MAXFES = 10000 * dimension;
@@ -3725,9 +3902,10 @@ public class ANALYSIS {
         NPfinal = 4;
         H = 5;
         
-        path="CEC2015-DISH-adaptive-mask-" + dimension + "\\";
+        path= "DISH-CEC2015-10";
         
-        DISHadaptiveMaskCEC2015(path, H, path);
+        DISH_mt_cec2015(path, H, path);
+
 //        
 //        dimension = 30;
 //        MAXFES = 10000 * dimension;

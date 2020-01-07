@@ -79,7 +79,7 @@ public class LmhDEbest_SHADE {
                 this.tf_master = new SNLs_SHADE_tf(seed, tf_slave, dimension_slave, max_fes_slave, H_slave, NPinit_slave, NPfinal_slave);
 
                 master = new DEbest(dimension_master, NP_master, max_fes_master, tf_master, rndGenerator_master, F_master, CR_master);
-                master.run();
+                master.runAlgorithm();
 
                 System.out.println("Seed " + (seedIt+1) + ": " + master.getBest().fitness);
 

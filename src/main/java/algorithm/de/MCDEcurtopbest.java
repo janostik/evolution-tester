@@ -36,7 +36,7 @@ public class MCDEcurtopbest extends DEcurtopbest {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -326,7 +326,7 @@ public class MCDEcurtopbest extends DEcurtopbest {
             for (int k = 0; k < runs; k++) {
                 
                 de = new MCDEcurtopbest(dimension, NP, MAXFES, tf, generator, f, cr);
-                de.run();
+                de.runAlgorithm();
                 de.printOutRankings();
                 
                 bestArray[k] = de.getBest().fitness - tf.optimum();

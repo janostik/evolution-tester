@@ -32,7 +32,7 @@ public class Lfv_DErand1bin extends DErand1bin {
     }
 
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -196,7 +196,7 @@ public class Lfv_DErand1bin extends DErand1bin {
 
             de = new Lfv_DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr, minNP);
 
-            de.run();
+            de.runAlgorithm();
 
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());

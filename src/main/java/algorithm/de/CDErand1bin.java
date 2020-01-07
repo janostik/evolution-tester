@@ -96,7 +96,7 @@ public class CDErand1bin extends DErand1bin {
 
             de = new CDErand1bin(dimension, NP, MAXFES, tf, generator, f, cr, chaos);
 
-            de.run();
+            de.runAlgorithm();
 
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());

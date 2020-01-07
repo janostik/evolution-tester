@@ -99,7 +99,7 @@ public class jDE implements Algorithm {
     }
 
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -576,7 +576,7 @@ public class jDE implements Algorithm {
 
             de = new jDE(dimension, NP, MAXFES, tf, generator);
 
-            de.run();
+            de.runAlgorithm();
 
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());

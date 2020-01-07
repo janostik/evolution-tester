@@ -59,7 +59,7 @@ public class A_SHADE extends SHADE {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -544,7 +544,7 @@ public class A_SHADE extends SHADE {
 
             shade = new A_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
 
 //            PrintWriter writer;
 //

@@ -44,7 +44,7 @@ public class EB_DISH_analysis extends SHADE_analysis {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -471,7 +471,7 @@ public class EB_DISH_analysis extends SHADE_analysis {
 
             shade = new EB_DISH_analysis(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
 
 //            PrintWriter writer;
 //

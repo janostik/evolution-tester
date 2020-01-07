@@ -62,7 +62,7 @@ public class FCR_SHADE implements Algorithm {
     }
 
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -591,7 +591,7 @@ public class FCR_SHADE implements Algorithm {
 
             shade = new FCR_SHADE(dimension, MAXFES, tf, H, NP, F, CR);
 
-            shade.run();
+            shade.runAlgorithm();
 
 //            PrintWriter writer;
 //

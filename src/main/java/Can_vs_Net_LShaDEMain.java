@@ -64,7 +64,7 @@ public class Can_vs_Net_LShaDEMain {
             for (int k = 0; k < runs; k++) {
 
                 shade = new SHADE(dimension, MAXFES, tf, H, NPinit, generator);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -176,7 +176,7 @@ public class Can_vs_Net_LShaDEMain {
             for (int k = 0; k < runs; k++) {
 
                 shade = new Npb_SHADE(dimension, MAXFES, tf, H, NPinit, generator);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -282,7 +282,7 @@ public class Can_vs_Net_LShaDEMain {
         for (int k = 0; k < runs; k++) {
 
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
-            shade.run();
+            shade.runAlgorithm();
 
             writer = new PrintWriter(home_dir + path + shade.getName() + "-" + func.name() + "-" + dimension + "_" + k + ".txt", "UTF-8");
 
@@ -364,7 +364,7 @@ public class Can_vs_Net_LShaDEMain {
         for (int k = 0; k < runs; k++) {
 
             shade = new NLc_SHADE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
-            shade.run();
+            shade.runAlgorithm();
 
             writer = new PrintWriter(home_dir + path + shade.getName() + "-" + func.name() + "-" + dimension + "_" + k + ".txt", "UTF-8");
 
@@ -452,7 +452,7 @@ public class Can_vs_Net_LShaDEMain {
             for (int k = 0; k < runs; k++) {
 
                 shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -565,7 +565,7 @@ public class Can_vs_Net_LShaDEMain {
             for (int k = 0; k < runs; k++) {
 
                 shade = new NLc_SHADE(dimension, MAXFES, tf, H, NPinit, generator, NPfinal);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 

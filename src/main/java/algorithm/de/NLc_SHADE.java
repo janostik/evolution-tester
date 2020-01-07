@@ -37,7 +37,7 @@ public class NLc_SHADE extends Lfv_SHADE {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -340,7 +340,7 @@ public class NLc_SHADE extends Lfv_SHADE {
 
             shade = new NLc_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
 
 //            PrintWriter writer;
 //

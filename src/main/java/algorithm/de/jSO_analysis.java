@@ -40,7 +40,7 @@ public class jSO_analysis extends SHADE_analysis {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -396,7 +396,7 @@ public class jSO_analysis extends SHADE_analysis {
 
             shade = new jSO_analysis(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
 
 //            PrintWriter writer;
 //

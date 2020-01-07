@@ -48,7 +48,7 @@ public class N_SHADE extends SHADE {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -353,7 +353,7 @@ public class N_SHADE extends SHADE {
             //(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int runNo, int funcNo, String path)
             shade = new N_SHADE(dimension, MAXFES, tf, H, NP, generator, k, funcNumber, path);
 
-            shade.run();
+            shade.runAlgorithm();
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());

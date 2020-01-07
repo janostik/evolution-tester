@@ -46,7 +46,7 @@ public class Pso implements Algorithm {
     }
 
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
         for (int i = 0; i < iterationLimit; i++) {
             //Do iteration
             try {

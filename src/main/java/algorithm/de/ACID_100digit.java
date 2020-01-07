@@ -116,7 +116,7 @@ public class ACID_100digit extends DISH_analysis {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -1290,7 +1290,7 @@ public class ACID_100digit extends DISH_analysis {
 
             shade = new ACID_100digit(dimension, MAXFES, tf, H, NP, generator, minNP, eps, 3, new ChebyshevDistance(), resolution);
 
-            shade.run();
+            shade.runAlgorithm();
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());

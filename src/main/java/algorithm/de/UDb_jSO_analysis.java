@@ -42,7 +42,7 @@ public class UDb_jSO_analysis extends SHADE_analysis {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -466,7 +466,7 @@ public class UDb_jSO_analysis extends SHADE_analysis {
 
             shade = new UDb_jSO_analysis(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
 
 //            PrintWriter writer;
 //

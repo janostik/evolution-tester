@@ -98,7 +98,7 @@ public class SNLs_SHADE extends SNLfv_SHADE {
             generator = new util.random.UniformRandomSeed(seed);
             shade = new SNLs_SHADE(dimension, MAXFES, tf, H, NP, generator, minNP, decrease_list);
 
-            shade.run();
+            shade.runAlgorithm();
 
 //            PrintWriter writer;
 //

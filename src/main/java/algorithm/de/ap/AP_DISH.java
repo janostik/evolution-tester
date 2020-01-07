@@ -308,7 +308,7 @@ public class AP_DISH implements Algorithm {
     }
     
     @Override
-    public AP_Individual run() {
+    public AP_Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -690,7 +690,7 @@ public class AP_DISH implements Algorithm {
             
             de = new AP_ShaDE(dimension, MAXFES, tf, H, NP, generator);
 
-            de.run();
+            de.runAlgorithm();
 
 //            PrintWriter writer;
 //

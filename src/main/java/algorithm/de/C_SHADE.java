@@ -114,7 +114,7 @@ public class C_SHADE extends SHADE {
             
             shade = new C_SHADE(dimension, MAXFES, tf, H, NP, generator, chGenerator);
 
-            shade.run();
+            shade.runAlgorithm();
 
             bestArray[k] = shade.getBest().fitness;
             System.out.println("Individual: " + Arrays.toString(shade.getBest().vector));

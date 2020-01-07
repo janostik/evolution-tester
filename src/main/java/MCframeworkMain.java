@@ -49,7 +49,7 @@ public class MCframeworkMain {
         for (int k = 0; k < runs; k++) {
 
             de = new MCDEbest(dimension, NP, MAXFES, tf, generator, f, cr);
-            de.run();
+            de.runAlgorithm();
 
             writer = new PrintWriter(home_dir + resultPath + tf.name() + "-" + k + ".txt", "UTF-8");
 
@@ -138,7 +138,7 @@ public class MCframeworkMain {
         for (int k = 0; k < runs; k++) {
 
             de = new MCDErand(dimension, NP, MAXFES, tf, generator, f, cr);
-            de.run();
+            de.runAlgorithm();
 
             writer = new PrintWriter(home_dir + resultPath + tf.name() + "-" + k + ".txt", "UTF-8");
 
@@ -227,7 +227,7 @@ public class MCframeworkMain {
         for (int k = 0; k < runs; k++) {
 
             de = new MCDEcurtopbest(dimension, NP, MAXFES, tf, generator, f, cr);
-            de.run();
+            de.runAlgorithm();
 
             writer = new PrintWriter(home_dir + resultPath + tf.name() + "-" + k + ".txt", "UTF-8");
 
@@ -316,7 +316,7 @@ public class MCframeworkMain {
         for (int k = 0; k < runs; k++) {
 
             de = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
-            de.run();
+            de.runAlgorithm();
 
             writer = new PrintWriter(home_dir + resultPath + tf.name() + "-" + k + ".txt", "UTF-8");
 
@@ -407,7 +407,7 @@ public class MCframeworkMain {
 
             gens = RankedGenerator.getAllChaosGeneratorsV4();
             de = new Mc2_SHADE(dimension, MAXFES, tf, H, NP, generator, gens);
-            de.run();
+            de.runAlgorithm();
 
             writer = new PrintWriter(home_dir + resultPath + tf.name() + "-" + k + ".txt", "UTF-8");
 
@@ -496,7 +496,7 @@ public class MCframeworkMain {
         for (int k = 0; k < runs; k++) {
 
             de = new PSp_SHADE_5systems(dimension, MAXFES, tf, H, NP, generator);
-            de.run();
+            de.runAlgorithm();
 
             writer = new PrintWriter(home_dir + resultPath + tf.name() + "-" + k + ".txt", "UTF-8");
 
@@ -585,7 +585,7 @@ public class MCframeworkMain {
         for (int k = 0; k < runs; k++) {
 
             de = new SHADE(dimension, MAXFES, tf, H, NP, generator);
-            de.run();
+            de.runAlgorithm();
 
             writer = new PrintWriter(home_dir + resultPath + tf.name() + "-" + k + ".txt", "UTF-8");
 

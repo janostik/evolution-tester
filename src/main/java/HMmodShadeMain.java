@@ -24,7 +24,7 @@ public class HMmodShadeMain {
         for(int i=0; i<runs; i++){
             
             shade = new FCR_SHADE(D, MAXFES, tf, H, NP, Finit, CRinit);
-            shade.run();
+            shade.runAlgorithm();
             
             res[i] = shade.getBest().fitness;
             

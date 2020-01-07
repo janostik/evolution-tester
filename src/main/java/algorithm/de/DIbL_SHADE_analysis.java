@@ -36,7 +36,7 @@ public class DIbL_SHADE_analysis extends DbL_SHADE_analysis {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -295,7 +295,7 @@ public class DIbL_SHADE_analysis extends DbL_SHADE_analysis {
 
             shade = new DIbL_SHADE_analysis(dimension, MAXFES, tf, H, NP, generator, minNP, wDis, wImp);
 
-            shade.run();
+            shade.runAlgorithm();
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());

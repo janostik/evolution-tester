@@ -122,7 +122,7 @@ public class NetCDEbest extends NetCDErand1bin {
 
             de = new NetCDEbest(dimension, NP, MAXFES, tf, generator, f, cr, chaos);
 
-            de.run();
+            de.runAlgorithm();
             
             System.out.println("Node");
             System.out.println("ID: " + ((NetCDEbest) de).net.getNodeWithHighestDegree().id);

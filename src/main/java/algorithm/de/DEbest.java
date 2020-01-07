@@ -47,7 +47,7 @@ public class DEbest extends DErand1bin {
             
             de = new DEbest(dimension, NP, MAXFES, tf, generator, f, cr);
 
-            de.run();
+            de.runAlgorithm();
 
             bestArray[k] = de.getBest().fitness;
             System.out.println("Individual: " + Arrays.toString(de.getBest().vector));

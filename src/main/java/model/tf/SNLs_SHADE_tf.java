@@ -50,7 +50,7 @@ public class SNLs_SHADE_tf implements TestFunction{
         this.rndGenerator = new util.random.UniformRandomSeed(seed);
         String[] id_list = this.getIDs(vector);
         SNLs_SHADE shade = new SNLs_SHADE(dimension, max_fes, tf, H, NPinit, rndGenerator, NPfinal, id_list);
-        shade.run();
+        shade.runAlgorithm();
         
         return shade.getBest().fitness;
     }
@@ -66,7 +66,7 @@ public class SNLs_SHADE_tf implements TestFunction{
         this.rndGenerator = new util.random.UniformRandomSeed(seed);
         String[] id_list = this.getIDs(vector);
         SNLs_SHADE shade = new SNLs_SHADE(dimension, max_fes, tf, H, NPinit, rndGenerator, NPfinal, id_list);
-        shade.run();
+        shade.runAlgorithm();
         
         return shade.dead_list;
     }

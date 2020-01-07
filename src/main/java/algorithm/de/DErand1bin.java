@@ -98,7 +98,7 @@ public class DErand1bin implements Algorithm {
     }
 
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -562,7 +562,7 @@ public class DErand1bin implements Algorithm {
             
             de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
 
-            de.run();
+            de.runAlgorithm();
 
             bestArray[k] = de.getBest().fitness;
             System.out.println("Individual: " + Arrays.toString(de.getBest().vector));
@@ -669,7 +669,7 @@ public class DErand1bin implements Algorithm {
             
             de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
 
-            de.run();
+            de.runAlgorithm();
 
             bestArray[k] = de.getBest().fitness;
             System.out.println("Individual: " + Arrays.toString(de.getBest().vector));
@@ -775,7 +775,7 @@ public class DErand1bin implements Algorithm {
 
             de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
 
-            de.run();
+            de.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -839,7 +839,7 @@ public class DErand1bin implements Algorithm {
 
             de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
 
-            de.run();
+            de.runAlgorithm();
             
 //            System.out.println(((APE_DErand1bin)de).G);
 //            System.out.println("Node");

@@ -209,7 +209,7 @@ public class MCDEbest extends DEbest {
      * @return 
      */
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population

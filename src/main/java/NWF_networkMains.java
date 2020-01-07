@@ -58,7 +58,7 @@ public class NWF_networkMains {
             
             shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
 //            shade.printOutRankings();
 
             bestArray[k] = shade.getBest().fitness;
@@ -137,7 +137,7 @@ public class NWF_networkMains {
             
             shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
 //            shade.printOutRankings();
 
             PrintWriter writer;
@@ -249,7 +249,7 @@ public class NWF_networkMains {
             
             shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
 //            shade.printOutRankings();
 
 //            PrintWriter writer;
@@ -375,7 +375,7 @@ public class NWF_networkMains {
             
             shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
 //            shade.printOutRankings();
 
 //            PrintWriter writer;
@@ -502,7 +502,7 @@ public class NWF_networkMains {
             
             de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
 
-            de.run();
+            de.runAlgorithm();
 //            shade.printOutRankings();
 
 //            PrintWriter writer;
@@ -631,7 +631,7 @@ public class NWF_networkMains {
             
             shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
 //            shade.printOutRankings();
 
 //            PrintWriter writer;
@@ -771,7 +771,7 @@ public class NWF_networkMains {
             
             shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
 //            shade.printOutRankings();
 
 //            PrintWriter writer;
@@ -912,7 +912,7 @@ public class NWF_networkMains {
             
             de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
 
-            de.run();
+            de.runAlgorithm();
 //            shade.printOutRankings();
 
 //            PrintWriter writer;
@@ -1045,7 +1045,7 @@ public class NWF_networkMains {
             
             shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
 //            shade.printOutRankings();
 
 //            PrintWriter writer;
@@ -1178,7 +1178,7 @@ public class NWF_networkMains {
             
             shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
 //            shade.printOutRankings();
 
             PrintWriter writer;
@@ -1310,7 +1310,7 @@ public class NWF_networkMains {
             generator = new util.random.UniformRandom();
             shade = new Mc_SHADE(dimension, MAXFES, tf, H, NP, generator);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;

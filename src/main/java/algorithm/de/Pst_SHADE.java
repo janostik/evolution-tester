@@ -73,7 +73,7 @@ public class Pst_SHADE extends SHADE{
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -550,7 +550,7 @@ public class Pst_SHADE extends SHADE{
         for (int k = 0; k < runs; k++) {
 
             de = new Pst_SHADE(dimension, MAXFES, tf, H, NP, generator);
-            de.run();
+            de.runAlgorithm();
 
             writer = new PrintWriter(home_dir + resultPath + tf.name() + "-" + k + ".txt", "UTF-8");
             pop_writer = new PrintWriter(home_dir + resultPath + tf.name() + "-population-" + k + ".txt", "UTF-8");

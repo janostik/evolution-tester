@@ -74,7 +74,7 @@ public class P_SHADE extends SHADE {
     }
 
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization

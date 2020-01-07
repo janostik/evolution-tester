@@ -165,7 +165,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -282,7 +282,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -399,7 +399,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -516,7 +516,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -633,7 +633,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -750,7 +750,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -867,7 +867,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -984,7 +984,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -1101,7 +1101,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -1218,7 +1218,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -1335,7 +1335,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -1451,7 +1451,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -1567,7 +1567,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -1794,7 +1794,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -1910,7 +1910,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -2026,7 +2026,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -2143,7 +2143,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -2254,7 +2254,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new Lfv_SHADE(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -2761,7 +2761,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -2899,7 +2899,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -3036,7 +3036,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -3173,7 +3173,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -3310,7 +3310,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -3448,7 +3448,7 @@ public class SpalovnyProjektMain {
             generator = new util.random.UniformRandom();
             shade = new DISH_analysis(dimension, MAXFES, tf, H, NP, generator, NPfinal);
 
-            shade.run();
+            shade.runAlgorithm();
             
             best = 0;
             i = 0;
@@ -3520,7 +3520,7 @@ public class SpalovnyProjektMain {
      */
     public static void main(String[] args) throws Exception {
 
-        home_dir = "D:\\results\\Spalovny\\COMBINED_order_APPROACH\\";
+        home_dir = "D:\\results\\Spalovny\\COMBINED_reas2_APPROACH\\";
         
         /**
          * Combined
@@ -3607,50 +3607,50 @@ public class SpalovnyProjektMain {
 //        combinedSortMain(new Kraje("13"));
 //        combinedSortMain(new Kraje("CR")); 
 
-//        /**
-//         * Reasonable
-//         */
-//        maxfes = 10_000;
-//        combinedReasMain(new Kraje("1"));
-//        combinedReasMain(new Kraje("1A"));
-//        maxfes = 100_000;
-//        combinedReasMain(new Kraje("2"));
-//        combinedReasMain(new Kraje("3"));
-//        combinedReasMain(new Kraje("4"));
-//        combinedReasMain(new Kraje("5"));
-//        combinedReasMain(new Kraje("6"));
-//        combinedReasMain(new Kraje("7"));
-//        combinedReasMain(new Kraje("8"));
-//        combinedReasMain(new Kraje("9"));
-//        combinedReasMain(new Kraje("10"));
-//        combinedReasMain(new Kraje("10A"));
-//        combinedReasMain(new Kraje("11"));
-//        combinedReasMain(new Kraje("12"));
-//        combinedReasMain(new Kraje("13"));
-//        combinedReasMain(new Kraje("CR"));
+        /**
+         * Reasonable
+         */
+        maxfes = 10_000;
+        combinedReasMain(new Kraje("1"));
+        combinedReasMain(new Kraje("1A"));
+        maxfes = 100_000;
+        combinedReasMain(new Kraje("2"));
+        combinedReasMain(new Kraje("3"));
+        combinedReasMain(new Kraje("4"));
+        combinedReasMain(new Kraje("5"));
+        combinedReasMain(new Kraje("6"));
+        combinedReasMain(new Kraje("7"));
+        combinedReasMain(new Kraje("8"));
+        combinedReasMain(new Kraje("9"));
+        combinedReasMain(new Kraje("10"));
+        combinedReasMain(new Kraje("10A"));
+        combinedReasMain(new Kraje("11"));
+        combinedReasMain(new Kraje("12"));
+        combinedReasMain(new Kraje("13"));
+        combinedReasMain(new Kraje("CR"));
      
         
 //        /**
-//         * Reasonable
+//         * Order
 //         */
-        maxfes = 10_000;
-        combinedOrderMain(new Kraje("1"));
-        combinedOrderMain(new Kraje("1A"));
-        maxfes = 100_000;
-        combinedOrderMain(new Kraje("2"));
-        combinedOrderMain(new Kraje("3"));
-        combinedOrderMain(new Kraje("4"));
-        combinedOrderMain(new Kraje("5"));
-        combinedOrderMain(new Kraje("6"));
-        combinedOrderMain(new Kraje("7"));
-        combinedOrderMain(new Kraje("8"));
-        combinedOrderMain(new Kraje("9"));
-        combinedOrderMain(new Kraje("10"));
-        combinedOrderMain(new Kraje("10A"));
-        combinedOrderMain(new Kraje("11"));
-        combinedOrderMain(new Kraje("12"));
-        combinedOrderMain(new Kraje("13"));
-        combinedOrderMain(new Kraje("CR"));
+//        maxfes = 10_000;
+//        combinedOrderMain(new Kraje("1"));
+//        combinedOrderMain(new Kraje("1A"));
+//        maxfes = 100_000;
+//        combinedOrderMain(new Kraje("2"));
+//        combinedOrderMain(new Kraje("3"));
+//        combinedOrderMain(new Kraje("4"));
+//        combinedOrderMain(new Kraje("5"));
+//        combinedOrderMain(new Kraje("6"));
+//        combinedOrderMain(new Kraje("7"));
+//        combinedOrderMain(new Kraje("8"));
+//        combinedOrderMain(new Kraje("9"));
+//        combinedOrderMain(new Kraje("10"));
+//        combinedOrderMain(new Kraje("10A"));
+//        combinedOrderMain(new Kraje("11"));
+//        combinedOrderMain(new Kraje("12"));
+//        combinedOrderMain(new Kraje("13"));
+//        combinedOrderMain(new Kraje("CR"));
     }
     
 }

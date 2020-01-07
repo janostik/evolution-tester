@@ -37,7 +37,7 @@ public class IDISH_analysis extends DISH_analysis {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -334,7 +334,7 @@ public class IDISH_analysis extends DISH_analysis {
 
             shade = new IDISH_analysis(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
 
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());

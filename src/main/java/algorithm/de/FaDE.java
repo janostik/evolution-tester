@@ -34,7 +34,7 @@ public class FaDE extends DErand1bin {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initial population
@@ -207,7 +207,7 @@ public class FaDE extends DErand1bin {
 
             de = new FaDE(dimension, NP, MAXFES, tf, generator, f, cr, H);
 
-            de.run();
+            de.runAlgorithm();
 
             bestArray[k] = de.getBest().fitness - tf.optimum();
             System.out.println(de.getBest().fitness - tf.optimum());

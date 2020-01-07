@@ -39,7 +39,7 @@ public class DbL_SHADE_analysis extends SHADE_analysis {
     }
     
     @Override
-    public Individual run() {
+    public Individual runAlgorithm() {
 
         /**
          * Initialization
@@ -323,7 +323,7 @@ public class DbL_SHADE_analysis extends SHADE_analysis {
 
             shade = new DbL_SHADE_analysis(dimension, MAXFES, tf, H, NP, generator, minNP);
 
-            shade.run();
+            shade.runAlgorithm();
 
 //            PrintWriter writer;
 //

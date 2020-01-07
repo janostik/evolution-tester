@@ -82,7 +82,7 @@ public class CEC2015main {
             for (int k = 0; k < runs; k++) {
 
                 de = new DErand1bin(dimension, NP, MAXFES, tf, generator, f, cr);
-                de.run();
+                de.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -191,7 +191,7 @@ public class CEC2015main {
             for (int k = 0; k < runs; k++) {
 
                 de = new CDErand1bin(dimension, NP, MAXFES, tf, generator, f, cr, chGenerator);
-                de.run();
+                de.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -300,7 +300,7 @@ public class CEC2015main {
             for (int k = 0; k < runs; k++) {
 
                 de = new DEbest(dimension, NP, MAXFES, tf, generator, f, cr);
-                de.run();
+                de.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -409,7 +409,7 @@ public class CEC2015main {
             for (int k = 0; k < runs; k++) {
 
                 de = new CDEbest(dimension, NP, MAXFES, tf, generator, f, cr, chGenerator);
-                de.run();
+                de.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -518,7 +518,7 @@ public class CEC2015main {
             for (int k = 0; k < runs; k++) {
 
                 de = new jDE(dimension, NP, MAXFES, tf, generator);
-                de.run();
+                de.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -627,7 +627,7 @@ public class CEC2015main {
             for (int k = 0; k < runs; k++) {
 
                 de = new CjDE(dimension, NP, MAXFES, tf, generator, chGenerator);
-                de.run();
+                de.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -736,7 +736,7 @@ public class CEC2015main {
             for (int k = 0; k < runs; k++) {
 
                 shade = new SHADE(dimension, MAXFES, tf, H, NP, generator);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -845,7 +845,7 @@ public class CEC2015main {
             for (int k = 0; k < runs; k++) {
 
                 shade = new C_SHADE(dimension, MAXFES, tf, H, NP, generator, chGenerator);
-                shade.run();
+                shade.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -954,7 +954,7 @@ public class CEC2015main {
             for (int k = 0; k < runs; k++) {
 
                 de = new uDE(dimension, NP, MAXFES, tf, generator);
-                de.run();
+                de.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -1061,7 +1061,7 @@ public class CEC2015main {
             for (int k = 0; k < runs; k++) {
 
                 de = new DE_hbrs(dimension, NP, MAXFES, tf, generator, f, cr, favor, punish);
-                de.run();
+                de.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -1168,7 +1168,7 @@ public class CEC2015main {
             for (int k = 0; k < runs; k++) {
 
                 de = new DE_hbps(dimension, NP, MAXFES, tf, generator, f, cr, favor, punish);
-                de.run();
+                de.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
@@ -1275,7 +1275,7 @@ public class CEC2015main {
             for (int k = 0; k < runs; k++) {
 
                 de = new FCRa_DE_hbps(dimension, NP, MAXFES, tf, generator, H, favor, punish);
-                de.run();
+                de.runAlgorithm();
 
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
 
