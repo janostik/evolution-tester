@@ -1,6 +1,5 @@
 package model.tf;
 
-import model.tf.TestFunction;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -8,6 +7,8 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Individual;
 import util.IndividualUtil;
 import util.random.Random;
@@ -28,10 +29,11 @@ public class Cec2020 implements TestFunction {
     int ini_flag,n_flag,func_flag;
     int[] SS;
     
-    int nx, func_num;
+    int nx, func_num, func_real;
     
     public Cec2020(int nx, int func_num0) throws Exception {
         
+        this.func_real = func_num0;
         this.nx = nx;
         int[] Func_num = {1,2,3,7,4,16,6,22,24,25};
         this.func_num = Func_num[func_num0-1];
@@ -219,12 +221,18 @@ public class Cec2020 implements TestFunction {
     
     @Override
     public double fitness(Individual individual) {
+
         return this.fitness(individual.vector);
     }
 
     @Override
     public double fitness(double[] vector) {
        
+        //1,2,3,7,4,16,6,22,24,25
+        if(this.func_num == 6 && this.nx == 5) {
+            return this.optimum();
+        }
+        
         double[] t = new double[nx];
         double out = 0;
         
@@ -246,21 +254,21 @@ public class Cec2020 implements TestFunction {
                 out=bi_rastrigin_func(t,out,nx,OShift,M,1,1);
                 out+=700.0;
                 break;
-            case 4:	
-                out=hf01(t,out,nx,OShift,M,SS,1,1);
-                out+=1700.0;
-                break;
-            case 6:
-                out=hf05(t,out,nx,OShift,M,SS,1,1);
-                out+=2100.0;
-                break;
             case 7:	
                 out=griewank_func(t,out,nx,OShift,M,1,1);
                 out+=1900.0;
                 break;
+            case 4:	
+                out=hf01(t,out,nx,OShift,M,SS,1,1);
+                out+=1700.0;
+                break;
             case 16:	
                 out=hf06(t,out,nx,OShift,M,SS,1,1);
                 out+=1600.0;
+                break;
+            case 6:
+                out=hf05(t,out,nx,OShift,M,SS,1,1);
+                out+=2100.0;
                 break;
             case 22:	
                 out=cf02(t,out,nx,OShift,M,1);
@@ -279,6 +287,10 @@ public class Cec2020 implements TestFunction {
                 System.out.println("\nError: There are only 30 test functions in this test suite!");
                 out = 0.0;
                 break;
+        }
+        
+        if((out-this.optimum())<(1e-8)) {
+            out = this.optimum();
         }
         
         return out;
@@ -305,7 +317,44 @@ public class Cec2020 implements TestFunction {
 
     @Override
     public double optimum() {
-        return this.func_num*100;
+        
+        
+        //1,2,3,7,4,16,6,22,24,25
+        switch(this.func_num) {
+            case 1:
+                return 100;
+
+            case 2:
+                return 1100;
+
+            case 3:
+                return 700;
+
+            case 7:
+                return 1900;
+
+            case 4:
+                return 1700;
+
+            case 16:
+                return 1600;
+
+            case 6:
+                return 2100;
+
+            case 22:
+                return 2200;
+
+            case 24:
+                return 2400;
+
+            case 25:
+                return 2500;
+                
+            default:
+                return 0;
+
+        }
     }
 
     @Override
@@ -1868,7 +1917,27 @@ public class Cec2020 implements TestFunction {
         
     @Override
     public String name() {
-        return "CEC2020-f" + this.func_num;
+        return "CEC2020-f" + this.func_real;
+    }
+    
+    public static void main(String[] args) {
+        
+        Cec2020 test;
+        try {
+            test = new Cec2020(10, 6);
+            double res = 0;
+
+            res = test.fitness(new double[]{-10,-10,-10,-10,-10,-10,-10,-10,-10,-10});
+            System.out.println(res);
+            
+            res = test.fitness(new double[]{0,0,0,0,0,0,0,0,0,0});
+            System.out.println(res);
+
+            
+        } catch (Exception ex) {
+            Logger.getLogger(Cec2020.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
     
 }

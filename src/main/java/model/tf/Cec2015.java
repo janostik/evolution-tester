@@ -1595,7 +1595,7 @@ public class Cec2015 implements TestFunction {
             return "CEC2015-f" + this.func_num;
         }
         
-        public static void main(String[] args) {
+    public static void main(String[] args) {
         
         Cec2015 test;
         try {

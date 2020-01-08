@@ -8,6 +8,7 @@ import algorithm.de.DISH_PRT_analysis;
 import algorithm.de.DISH_adaptive_mask;
 import algorithm.de.DISH_analysis;
 import algorithm.de.DISH_mask_test;
+import algorithm.de.DISHsec;
 import algorithm.de.DISHv2_analysis;
 import algorithm.de.DIbL_SHADE_analysis;
 import algorithm.de.DIb_SHADE_analysis;
@@ -34,6 +35,7 @@ import model.tf.Cec2013;
 import model.tf.Cec2014;
 import model.tf.Cec2015;
 import model.tf.Cec2017;
+import model.tf.Cec2020;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -3820,6 +3822,250 @@ public class ANALYSIS {
         
     }
     
+    /**
+     * Main class for DISH algorithm
+     * 
+     * @param path
+     * @param H
+     * @param mfpath
+     * @throws Exception 
+     */
+    public static void DISH_mt_cec2020(String path, int H, String mfpath) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 10;
+
+        DISH shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer, final_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        final_writer = new PrintWriter(home_dir + path + "final_res.csv", "UTF-8");
+        
+        res_writer.print("{");
+
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+
+            System.out.println("START: " + new Date());
+            
+            tf = new Cec2020(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            ExecutorService pool = Executors.newFixedThreadPool(30);
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new DISH(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+                
+                pool.submit(new SingleThread(shade, writer, bestArray, tf, k));
+
+            }
+
+            pool.shutdown();
+            
+            if(pool.awaitTermination(10, TimeUnit.DAYS)) {
+            
+                System.out.println("END: " + new Date());
+
+                for(int z = 0; z < bestArray.length; z++) {
+                    final_writer.print(String.format(Locale.US, "%.10f", bestArray[z]));
+
+                    if(z != bestArray.length-1) {
+                        final_writer.print(',');
+                    }
+                    else {
+                        final_writer.println();
+                    }
+                }
+
+                best = DoubleStream.of(bestArray).min().getAsDouble();
+                worst = DoubleStream.of(bestArray).max().getAsDouble();
+                median = new Median().evaluate(bestArray);
+                mean = new Mean().evaluate(bestArray);
+                std = new StandardDeviation().evaluate(bestArray);
+
+                sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+
+                sol_writer.print("{");
+                sol_writer.print(funcNumber);
+                sol_writer.print(",");
+                sol_writer.print(String.format(Locale.US, "%.10f", best));
+                sol_writer.print(",");
+                sol_writer.print(String.format(Locale.US, "%.10f", worst));
+                sol_writer.print(",");
+                sol_writer.print(String.format(Locale.US, "%.10f", median));
+                sol_writer.print(",");
+                sol_writer.print(String.format(Locale.US, "%.10f", mean));
+                sol_writer.print(",");
+                sol_writer.print(String.format(Locale.US, "%.10f", std));
+                sol_writer.print("}");
+
+                sol_writer.close();
+
+                System.out.println(tf.name());
+                System.out.println("=================================");
+                System.out.println("Best: " + best);
+                System.out.println("Worst: " + worst);
+                System.out.println("Median: " + median);
+                System.out.println("Mean: " + mean);
+                System.out.println("Std: " + std);
+                System.out.println("=================================");
+
+                res_writer.print("{");
+                res_writer.print(funcNumber);
+                res_writer.print(",");
+                res_writer.print(String.format(Locale.US, "%.10f", best));
+                res_writer.print(",");
+                res_writer.print(String.format(Locale.US, "%.10f", worst));
+                res_writer.print(",");
+                res_writer.print(String.format(Locale.US, "%.10f", median));
+                res_writer.print(",");
+                res_writer.print(String.format(Locale.US, "%.10f", mean));
+                res_writer.print(",");
+                res_writer.print(String.format(Locale.US, "%.10f", std));
+                res_writer.print("}");
+
+                if(funcNumber < maxFuncNum){
+                   res_writer.print(",");
+                }
+            
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        final_writer.close();
+        
+    }
+    
+    /**
+     * Main class for DISH algorithm
+     * 
+     * @param path
+     * @param H
+     * @param mfpath
+     * @throws Exception 
+     */
+    public static void DISHsec_mt_cec2020(String path, int H, String mfpath) throws Exception{
+
+        TestFunction tf;
+        util.random.Random generator = new util.random.UniformRandom();
+        int maxFuncNum = 10;
+
+        DISHsec shade;
+
+        double[] bestArray;
+        PrintWriter writer, sol_writer,res_writer, final_writer;
+        double best,worst,median,mean,std;
+
+        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
+        final_writer = new PrintWriter(home_dir + path + "final_res.csv", "UTF-8");
+        
+        res_writer.print("{");
+
+        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
+
+            System.out.println("START: " + new Date());
+            
+            tf = new Cec2020(dimension, funcNumber);
+            bestArray = new double[runs];
+            
+            ExecutorService pool = Executors.newFixedThreadPool(30);
+            
+            for (int k = 0; k < runs; k++) {
+
+                shade = new DISHsec(dimension, MAXFES, tf, H, NP, generator, NPfinal);
+                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
+                
+                pool.submit(new SingleThread(shade, writer, bestArray, tf, k));
+
+            }
+
+            pool.shutdown();
+            
+            if(pool.awaitTermination(10, TimeUnit.DAYS)) {
+            
+                System.out.println("END: " + new Date());
+
+                for(int z = 0; z < bestArray.length; z++) {
+                    final_writer.print(String.format(Locale.US, "%.10f", bestArray[z]));
+
+                    if(z != bestArray.length-1) {
+                        final_writer.print(',');
+                    }
+                    else {
+                        final_writer.println();
+                    }
+                }
+
+                best = DoubleStream.of(bestArray).min().getAsDouble();
+                worst = DoubleStream.of(bestArray).max().getAsDouble();
+                median = new Median().evaluate(bestArray);
+                mean = new Mean().evaluate(bestArray);
+                std = new StandardDeviation().evaluate(bestArray);
+
+                sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
+
+                sol_writer.print("{");
+                sol_writer.print(funcNumber);
+                sol_writer.print(",");
+                sol_writer.print(String.format(Locale.US, "%.10f", best));
+                sol_writer.print(",");
+                sol_writer.print(String.format(Locale.US, "%.10f", worst));
+                sol_writer.print(",");
+                sol_writer.print(String.format(Locale.US, "%.10f", median));
+                sol_writer.print(",");
+                sol_writer.print(String.format(Locale.US, "%.10f", mean));
+                sol_writer.print(",");
+                sol_writer.print(String.format(Locale.US, "%.10f", std));
+                sol_writer.print("}");
+
+                sol_writer.close();
+
+                System.out.println(tf.name());
+                System.out.println("=================================");
+                System.out.println("Best: " + best);
+                System.out.println("Worst: " + worst);
+                System.out.println("Median: " + median);
+                System.out.println("Mean: " + mean);
+                System.out.println("Std: " + std);
+                System.out.println("=================================");
+
+                res_writer.print("{");
+                res_writer.print(funcNumber);
+                res_writer.print(",");
+                res_writer.print(String.format(Locale.US, "%.10f", best));
+                res_writer.print(",");
+                res_writer.print(String.format(Locale.US, "%.10f", worst));
+                res_writer.print(",");
+                res_writer.print(String.format(Locale.US, "%.10f", median));
+                res_writer.print(",");
+                res_writer.print(String.format(Locale.US, "%.10f", mean));
+                res_writer.print(",");
+                res_writer.print(String.format(Locale.US, "%.10f", std));
+                res_writer.print("}");
+
+                if(funcNumber < maxFuncNum){
+                   res_writer.print(",");
+                }
+            
+            }
+            
+        }
+
+        res_writer.print("}");
+        
+        res_writer.close();
+        final_writer.close();
+        
+    }
+    
     public static class SingleThread implements Runnable {
 
         Algorithm algorithm;
@@ -3870,7 +4116,7 @@ public class ANALYSIS {
      */
     public static int dimension = 10;
     public static int MAXFES = 10000 * dimension;
-    public static final int runs = 51; //51
+    public static final int runs = 30; //51
     public static String home_dir = "C:\\Users\\wiki\\Documents\\";
     
     /**
@@ -3893,18 +4139,47 @@ public class ANALYSIS {
         
         int H;
         String path;
-        home_dir = "E:\\results\\MT\\DISH-CEC2015-10-51thread\\";
-        
-        
-        dimension = 10;
+        home_dir = "E:\\results\\MT\\";
+
+        dimension = 5;
         MAXFES = 10000 * dimension;
         NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
         NPfinal = 4;
         H = 5;
         
-        path= "DISH-CEC2015-10";
+        path= "CEC2020-DISHsec-" + dimension + "\\";
         
-        DISH_mt_cec2015(path, H, path);
+        DISHsec_mt_cec2020(path, H, path);
+        
+        dimension = 10;
+        MAXFES = 100000 * dimension;
+        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        NPfinal = 4;
+        H = 5;
+        
+        path= "CEC2020-DISHsec-" + dimension + "\\";
+        
+        DISHsec_mt_cec2020(path, H, path);
+        
+        dimension = 15;
+        MAXFES = 200000 * dimension;
+        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        NPfinal = 4;
+        H = 5;
+        
+        path= "CEC2020-DISHsec-" + dimension + "\\";
+        
+        DISHsec_mt_cec2020(path, H, path);
+        
+        dimension = 20;
+        MAXFES = 500000 * dimension;
+        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        NPfinal = 4;
+        H = 5;
+        
+        path= "CEC2020-DISHsec-" + dimension + "\\";
+        
+        DISHsec_mt_cec2020(path, H, path);
 
 //        
 //        dimension = 30;
