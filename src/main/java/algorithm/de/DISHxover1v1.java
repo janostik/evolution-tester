@@ -19,18 +19,18 @@ import util.random.Random;
 
 /**
  * 
- * DISH algorithm - multithreaded - exponential crossover
+ * DISH algorithm - multithreaded - shuffled exponential and binomial crossover 1 v 1
  * 
- * @author adam on 08/01/2020
+ * @author adam on 09/01/2020
  */
-public class DISHsec extends SHADE_analysis implements Runnable {
+public class DISHxover1v1 extends SHADE_analysis implements Runnable {
 
     protected final int minPopSize;
     protected final int maxPopSize;
     
     protected List<double[]> imp_hist;
     
-    public DISHsec(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
+    public DISHxover1v1(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
         super(D, MAXFES, f, H, NP, rndGenerator);
         this.minPopSize = minPopSize;
         this.maxPopSize = NP;
@@ -39,7 +39,7 @@ public class DISHsec extends SHADE_analysis implements Runnable {
  
     @Override
     public String getName() {
-        return "DISHexp";
+        return "DISHxover1v1";
     }
     
     /**
@@ -145,6 +145,7 @@ public class DISHsec extends SHADE_analysis implements Runnable {
         int[] rIndexes;
         double[][] parents;
         List<Individual> newPop, pBestArray;
+        boolean sec = false;
 
         EuclideanDistance euclid = new EuclideanDistance();
         
@@ -244,7 +245,13 @@ public class DISHsec extends SHADE_analysis implements Runnable {
                 /**
                  * Crossover
                  */
-                u = secCrossover(CRg, v, x.vector);
+                if(sec) {
+                    u = secCrossover(CRg, v, x.vector);
+                }
+                else {
+                    u = crossover(CRg, v, x.vector);
+                }
+                sec = !sec;
 
                 /**
                  * Constrain check
@@ -554,7 +561,7 @@ public class DISHsec extends SHADE_analysis implements Runnable {
         long seed = 10304050L;
         util.random.Random generator = new util.random.UniformRandom();
 
-        DISHsec shade;
+        DISHxover1v1 shade;
 
         int runs = 10;
         double[] bestArray = new double[runs];
@@ -563,7 +570,7 @@ public class DISHsec extends SHADE_analysis implements Runnable {
         
         for (int k = 0; k < runs; k++) {
 
-            shade = new DISHsec(dimension, MAXFES, tf, H, NP, generator, minNP);
+            shade = new DISHxover1v1(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.runAlgorithm();
 
