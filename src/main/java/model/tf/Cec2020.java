@@ -1924,14 +1924,12 @@ public class Cec2020 implements TestFunction {
         
         Cec2020 test;
         try {
-            test = new Cec2020(10, 6);
+            test = new Cec2020(5, 10);
             double res = 0;
 
-            res = test.fitness(new double[]{-10,-10,-10,-10,-10,-10,-10,-10,-10,-10});
+            res = test.fitness(new double[]{15.230991,-66.206783,3.506308,26.059466,-79.598500});
             System.out.println(res);
-            
-            res = test.fitness(new double[]{0,0,0,0,0,0,0,0,0,0});
-            System.out.println(res);
+
 
             
         } catch (Exception ex) {

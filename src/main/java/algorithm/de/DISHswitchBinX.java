@@ -19,29 +19,27 @@ import util.random.Random;
 
 /**
  * 
- * DISHaXover algorithm - multithreaded - SEcrossover and binomial crossover are selected based on the probability based on distance adaptation
+ * DISH algorithm - multithreaded - crossover switch (binomial/shuffled exponential) and bin crossover with history
  * 
- * @author adam on 10/01/2020
+ * @author adam on 15/01/2020
  */
-public class DISHaXover extends SHADE_analysis implements Runnable {
+public class DISHswitchBinX extends SHADE_analysis implements Runnable {
 
     protected final int minPopSize;
     protected final int maxPopSize;
     
     protected List<double[]> imp_hist;
-    protected List<Double> xoverProbability;
     
-    public DISHaXover(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
+    public DISHswitchBinX(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
         super(D, MAXFES, f, H, NP, rndGenerator);
         this.minPopSize = minPopSize;
         this.maxPopSize = NP;
         this.imp_hist = new ArrayList<>();
-        this.xoverProbability = new ArrayList<>();
     }
  
     @Override
     public String getName() {
-        return "DISHaXover";
+        return "DISHswitchBinX";
     }
     
     /**
@@ -95,7 +93,12 @@ public class DISHaXover extends SHADE_analysis implements Runnable {
     @Override
     protected void writeHistory() {
         
-        this.imp_hist.add(new double[]{this.FES, this.best.fitness});
+        double[] input = new double[2+this.D];
+        input[0] = this.FES;
+        input[1] = this.best.fitness;
+        System.arraycopy(this.best.vector, 0, input, 2, this.D);
+        
+        this.imp_hist.add(input);
 
     }
     
@@ -136,31 +139,27 @@ public class DISHaXover extends SHADE_analysis implements Runnable {
                 this.M_CR[h] = 0.9;
             }
         }
-        
-        int r, Psize, pbestIndex, memoryIndex, k = 0;
-        double Fg, CRg, Fw, gg, pmin = 0.125, pmax = 0.25, p, wSsum, meanS_F1, meanS_F2, meanS_CR1, meanS_CR2;
-        Individual trial, x;
-        double[] v, pbest, pr1, pr2, u, wsList = new double[NP], SFlist = new double[NP], SCRlist = new double[NP];
-        int[] rIndexes;
-        double[][] parents;
-        List<Individual> newPop, pBestArray;
-        double secProbability = 0.5, secDistance, binDistance, dist;
-        boolean sec;
 
-        EuclideanDistance euclid = new EuclideanDistance();
-        this.xoverProbability.add(secProbability);
-        
         /**
          * Generation iteration;
          */
+        int r, Psize, pbestIndex, memoryIndex, k = 0;
+        double Fg, CRg, Fw, gg, pmin = 0.125, pmax = 0.25, p, wSsum, meanS_F1, meanS_F2, meanS_CR1, meanS_CR2;
+        Individual trial, x;
+        double[] v, pbest, pr1, pr2, u, wsList = new double[NP], SFlist = new double[NP], SCRlist = new double[NP], histX;
+        int[] rIndexes;
+        double[][] parents;
+        List<Individual> newPop, pBestArray;
+        boolean sec = false;
+
+        EuclideanDistance euclid = new EuclideanDistance();
+        
         while (true) {
 
             this.G++;
             newPop = new ArrayList<>();
                 
             memoryIndex = 0;
-            secDistance = 0;
-            binDistance = 0;
 
             p = ((pmax - pmin)/(double) this.MAXFES) * this.FES + pmin;
 
@@ -251,14 +250,19 @@ public class DISHaXover extends SHADE_analysis implements Runnable {
                 /**
                  * Crossover
                  */
-                if(rndGenerator.nextDouble() <= secProbability) {
+
+                histX = new double[this.D];
+                System.arraycopy(this.getImp_hist().get(rndGenerator.nextInt(this.getImp_hist().size())), 2, histX, 0, this.D);
+                
+                if(sec) {
                     u = secCrossover(CRg, v, x.vector);
-                    sec = true;
+                    u = crossover(CRg, u, histX);
                 }
                 else {
                     u = crossover(CRg, v, x.vector);
-                    sec = false;
+                    u = crossover(CRg, u, histX);
                 }
+                sec = !sec;
 
                 /**
                  * Constrain check
@@ -281,20 +285,9 @@ public class DISHaXover extends SHADE_analysis implements Runnable {
                     SFlist[memoryIndex] = Fg;
                     SCRlist[memoryIndex] = CRg;
                     /**
-                     * distance
+                     * inverse distance
                      */
-                    dist = euclid.getDistance(x.vector, trial.vector);
-                    wsList[memoryIndex] = dist;
-                    
-                    /**
-                     * Distance sums for xover adaptation
-                     */
-                    if(sec) {
-                        secDistance += dist;
-                    }
-                    else {
-                        binDistance += dist;
-                    }
+                    wsList[memoryIndex] = euclid.getDistance(x.vector, trial.vector);
 
                     memoryIndex++;
 
@@ -306,7 +299,7 @@ public class DISHaXover extends SHADE_analysis implements Runnable {
                 if(this.isBest(trial)) {
                     this.writeHistory();
                 }
-                if(this.FES >= this.MAXFES || (this.best.fitness - this.f.optimum()) < 1e-8) {
+                if (this.FES >= this.MAXFES) {
                     break;
                 }
 
@@ -314,7 +307,7 @@ public class DISHaXover extends SHADE_analysis implements Runnable {
 
             }
 
-            if(this.FES >= this.MAXFES || (this.best.fitness - this.f.optimum()) < 1e-8) {
+            if(this.FES >= this.MAXFES) {
                 break;
             }
 
@@ -351,24 +344,6 @@ public class DISHaXover extends SHADE_analysis implements Runnable {
                     k = 0;
                 }
             }
-            /**
-             * xover probabilities update
-             */
-            if(secDistance == 0 && binDistance == 0) {
-                //no update for xover probability
-            }
-            else {
-                secProbability = secDistance / (secDistance + binDistance);
-                
-                //check bounds
-                if(secProbability > 0.9)
-                    secProbability = 0.9;
-                if(secProbability < 0.1)
-                    secProbability = 0.1;
-
-            }
-//            System.out.println("Xover probability: " + secProbability);
-            this.xoverProbability.add(secProbability);
             
             /**
              * Resize of population and archives
@@ -568,10 +543,6 @@ public class DISHaXover extends SHADE_analysis implements Runnable {
         
         return out;
     }
-
-    public List<Double> getXoverProbability() {
-        return xoverProbability;
-    }
     
     /**
      * @param args the command line arguments
@@ -579,18 +550,29 @@ public class DISHaXover extends SHADE_analysis implements Runnable {
      */
     public static void main(String[] args) throws Exception {
         
+//        int dimension = 10;
+//        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+//        int minNP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
         int dimension = 10;
-        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        int NP = 200;
         int minNP = 4;
         int MAXFES = 10000 * dimension;
         int funcNumber = 6;
         TestFunction tf = new Cec2015(dimension, funcNumber);
 
+//        int[][] order;
+//        int[] stock = new int[]{5840};
+//        int cut_through = 4;
+//        order = new int[][]{{3665,2},{2660,4},{2650,12},{2625,4},{2615,4},{2425,2},{2405,10},{2395,6},{2385,8},{2295,16},{2290,4},{2045,4},{1925,2},{1680,2},{765,2},{595,2},{565,2}};
+//        
+//        TestFunction tf = new CuttingStock1D(order, stock, cut_through);
+//        TestFunction tf = new CuttingStock1D();
+        
         int H = 5;
         long seed = 10304050L;
         util.random.Random generator = new util.random.UniformRandom();
 
-        DISHaXover shade;
+        DISHswitchBinX shade;
 
         int runs = 10;
         double[] bestArray = new double[runs];
@@ -599,7 +581,7 @@ public class DISHaXover extends SHADE_analysis implements Runnable {
         
         for (int k = 0; k < runs; k++) {
 
-            shade = new DISHaXover(dimension, MAXFES, tf, H, NP, generator, minNP);
+            shade = new DISHswitchBinX(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.runAlgorithm();
 
