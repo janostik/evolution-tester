@@ -15,7 +15,7 @@ import model.Individual;
 import model.tf.Ackley;
 import model.tf.Cec2015;
 import model.tf.Dejong;
-import model.tf.Rastrigin;
+import model.tf.Kromer;
 import model.tf.Rosenbrock;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
@@ -574,9 +574,9 @@ public class SS_DE extends DErand1bin {
                 
                 NP = NPs[npiter];
                 
-                tfs = new TestFunction[]{new Ackley(),new Dejong(), new Rastrigin(), new Rosenbrock(), new Schwefel()};
-                
-                writeStatisticsOfScore(tfs, dimension, NP, iter, runs);
+//                tfs = new TestFunction[]{new Ackley(),new Dejong(), new Kromer(), new Rosenbrock(), new Schwefel()};
+//                
+//                writeStatisticsOfScore(tfs, dimension, NP, iter, runs);
                 
             }
             

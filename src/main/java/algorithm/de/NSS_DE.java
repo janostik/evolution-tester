@@ -16,7 +16,7 @@ import model.net.UnidirectionalEdge;
 import model.tf.Ackley;
 import model.tf.Cec2015;
 import model.tf.Dejong;
-import model.tf.Rastrigin;
+import model.tf.Kromer;
 import model.tf.Rosenbrock;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
@@ -583,8 +583,8 @@ public class NSS_DE extends DErand1bin {
 //        
         dimension = 5;
         NP = 30;
-        tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Rastrigin()};
-        writeStatisticsOfScore(tfs, dimension, NP, iter);
+//        tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Kromer()};
+//        writeStatisticsOfScore(tfs, dimension, NP, iter);
 
 //        int dimension = 10;
 //        int NP = 100;

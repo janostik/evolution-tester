@@ -6,7 +6,7 @@ import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.Ackley;
 import model.tf.Dejong;
-import model.tf.Rastrigin;
+import model.tf.Kromer;
 import model.tf.Rosenbrock;
 import model.tf.Schwefel;
 import model.tf.TestFunction;
@@ -207,115 +207,115 @@ public class DE_hbrs2 extends DE_hbrs {
 //
 //                writeCECstatistics(dims, NPs, iter);
 
-                dimension = 5;
-                NP = 20;
-                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Rastrigin()};
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 10;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 20;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 5;
-                NP = 30;
-                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Rastrigin()};
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 10;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 20;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 5;
-                NP = 30;
-                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Rastrigin()};
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 10;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 20;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 5;
-                NP = 40;
-                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Rastrigin()};
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 10;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 20;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 5;
-                NP = 50;
-                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Rastrigin()};
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 10;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 20;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 5;
-                NP = 60;
-                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Rastrigin()};
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 10;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 20;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 5;
-                NP = 70;
-                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Rastrigin()};
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 10;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 20;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 5;
-                NP = 80;
-                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Rastrigin()};
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 10;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 20;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 5;
-                NP = 90;
-                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Rastrigin()};
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 10;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 20;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 5;
-                NP = 100;
-                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Rastrigin()};
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 10;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
-                
-                dimension = 20;
-                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                dimension = 5;
+//                NP = 20;
+//                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Kromer()};
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 10;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 20;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 5;
+//                NP = 30;
+//                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Kromer()};
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 10;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 20;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 5;
+//                NP = 30;
+//                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Kromer()};
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 10;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 20;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 5;
+//                NP = 40;
+//                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Kromer()};
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 10;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 20;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 5;
+//                NP = 50;
+//                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Kromer()};
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 10;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 20;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 5;
+//                NP = 60;
+//                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Kromer()};
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 10;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 20;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 5;
+//                NP = 70;
+//                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Kromer()};
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 10;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 20;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 5;
+//                NP = 80;
+//                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Kromer()};
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 10;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 20;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 5;
+//                NP = 90;
+//                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Kromer()};
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 10;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 20;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 5;
+//                NP = 100;
+//                tfs = new TestFunction[]{new Schwefel(), new Ackley(), new Dejong(), new Rosenbrock(), new Kromer()};
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 10;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
+//                
+//                dimension = 20;
+//                writeStatisticsOfScore(tfs, dimension, NP, iter);
         
     }
 

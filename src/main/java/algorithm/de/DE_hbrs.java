@@ -13,7 +13,7 @@ import model.Individual;
 import model.tf.Ackley;
 import model.tf.Cec2015;
 import model.tf.Dejong;
-import model.tf.Rastrigin;
+import model.tf.Kromer;
 import model.tf.Rosenbrock;
 import model.tf.Schwefel;
 import model.tf.TestFunction;

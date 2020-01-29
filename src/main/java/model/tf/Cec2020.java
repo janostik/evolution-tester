@@ -229,6 +229,7 @@ public class Cec2020 implements TestFunction {
     public double fitness(double[] vector) {
        
         //1,2,3,7,4,16,6,22,24,25
+
         if(this.func_num == 6 && this.nx == 5) {
             return this.optimum();
         }
