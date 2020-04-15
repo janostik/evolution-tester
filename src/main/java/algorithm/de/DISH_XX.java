@@ -21,16 +21,16 @@ import util.random.Random;
  * 
  * DISH algorithm - multithreaded - binary crossover with mutant and then with best history
  * 
- * @author adam on 29/01/2020
+ * @author adam on 14/01/2020
  */
-public class DISH_XXCR extends SHADE_analysis implements Runnable {
+public class DISH_XX extends SHADE_analysis implements Runnable {
 
     protected final int minPopSize;
     protected final int maxPopSize;
     
     protected List<double[]> imp_hist;
     
-    public DISH_XXCR(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
+    public DISH_XX(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
         super(D, MAXFES, f, H, NP, rndGenerator);
         this.minPopSize = minPopSize;
         this.maxPopSize = NP;
@@ -39,7 +39,7 @@ public class DISH_XXCR extends SHADE_analysis implements Runnable {
  
     @Override
     public String getName() {
-        return "DISH-XXCR";
+        return "DISH-XX";
     }
     
     /**
@@ -122,7 +122,6 @@ public class DISH_XXCR extends SHADE_analysis implements Runnable {
         this.bestHistory = new ArrayList<>();
         
 
-        double[] M_CR2 = new double[this.H];
         /**
          * Initial population
          */
@@ -134,12 +133,10 @@ public class DISH_XXCR extends SHADE_analysis implements Runnable {
         for (int h = 0; h < this.H; h++) {
             this.M_F[h] = 0.5;
             this.M_CR[h] = 0.8;
-            M_CR2[h] = 0.8;
             
             if(h == this.H-1) {
                 this.M_F[h] = 0.9;
                 this.M_CR[h] = 0.9;
-                M_CR2[h] = 0.9;
             }
         }
 
@@ -147,9 +144,9 @@ public class DISH_XXCR extends SHADE_analysis implements Runnable {
          * Generation iteration;
          */
         int r, Psize, pbestIndex, memoryIndex, k = 0;
-        double Fg, CRg, CRg2, Fw, gg, pmin = 0.125, pmax = 0.25, p, wSsum, meanS_F1, meanS_F2, meanS_CR1, meanS_CR2, meanS_CR12, meanS_CR22;
+        double Fg, CRg, Fw, gg, pmin = 0.125, pmax = 0.25, p, wSsum, meanS_F1, meanS_F2, meanS_CR1, meanS_CR2;
         Individual trial, x;
-        double[] v, pbest, pr1, pr2, u, wsList = new double[NP], SFlist = new double[NP], SCRlist = new double[NP],SCRlist2 = new double[NP], histX;
+        double[] v, pbest, pr1, pr2, u, wsList = new double[NP], SFlist = new double[NP], SCRlist = new double[NP], histX;
         int[] rIndexes;
         double[][] parents;
         List<Individual> newPop, pBestArray;
@@ -179,20 +176,11 @@ public class DISH_XXCR extends SHADE_analysis implements Runnable {
 
 
                 CRg = OtherDistributionsUtil.normal(this.M_CR[r], 0.1);
-                
                 if(CRg > 1) {
                     CRg = 1;
                 }
                 else if(CRg < 0) {
                     CRg = 0;
-                }
-                
-                CRg2 = OtherDistributionsUtil.normal(M_CR2[r], 0.1);
-                if(CRg2 > 1) {
-                    CRg2 = 1;
-                }
-                else if(CRg2 < 0) {
-                    CRg2 = 0;
                 }
 
                 /**
@@ -266,7 +254,7 @@ public class DISH_XXCR extends SHADE_analysis implements Runnable {
                 System.arraycopy(this.getImp_hist().get(rndGenerator.nextInt(this.getImp_hist().size())), 2, histX, 0, this.D);
                 
                 u = crossover(CRg, v, x.vector);
-                u = crossover(CRg2, u, histX);
+                u = crossover(CRg, u, histX);
 
 
                 /**
@@ -289,7 +277,6 @@ public class DISH_XXCR extends SHADE_analysis implements Runnable {
 
                     SFlist[memoryIndex] = Fg;
                     SCRlist[memoryIndex] = CRg;
-                    SCRlist2[memoryIndex] = CRg2;
                     /**
                      * inverse distance
                      */
@@ -330,16 +317,12 @@ public class DISH_XXCR extends SHADE_analysis implements Runnable {
                 meanS_F2 = 0;
                 meanS_CR1 = 0;
                 meanS_CR2 = 0;
-                meanS_CR12 = 0;
-                meanS_CR22 = 0;
 
                 for (int s = 0; s < memoryIndex; s++) {
                     meanS_F1 += (wsList[s] / wSsum) * SFlist[s] * SFlist[s];
                     meanS_F2 += (wsList[s] / wSsum) * SFlist[s];
                     meanS_CR1 += (wsList[s] / wSsum) * SCRlist[s] * SCRlist[s];
                     meanS_CR2 += (wsList[s] / wSsum) * SCRlist[s];
-                    meanS_CR12 += (wsList[s] / wSsum) * SCRlist2[s] * SCRlist2[s];
-                    meanS_CR22 += (wsList[s] / wSsum) * SCRlist2[s];
                 }
 
                 if(meanS_F2 != 0) {
@@ -347,9 +330,6 @@ public class DISH_XXCR extends SHADE_analysis implements Runnable {
                 }
                 if(meanS_CR2 != 0) {
                     this.M_CR[k] = ((meanS_CR1 / meanS_CR2) + this.M_CR[k])/2;
-                }
-                if(meanS_CR22 != 0) {
-                    M_CR2[k] = ((meanS_CR12 / meanS_CR22) + M_CR2[k])/2;
                 }
 
                 k++;
@@ -586,7 +566,7 @@ public class DISH_XXCR extends SHADE_analysis implements Runnable {
         long seed = 10304050L;
         util.random.Random generator = new util.random.UniformRandom();
 
-        DISH_XXCR shade;
+        DISH_XX shade;
 
         int runs = 31;
         double[] bestArray = new double[runs];
@@ -595,7 +575,7 @@ public class DISH_XXCR extends SHADE_analysis implements Runnable {
         
         for (int k = 0; k < runs; k++) {
 
-            shade = new DISH_XXCR(dimension, MAXFES, tf, H, NP, generator, minNP);
+            shade = new DISH_XX(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.runAlgorithm();
 

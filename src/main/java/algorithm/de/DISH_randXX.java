@@ -19,18 +19,20 @@ import util.random.Random;
 
 /**
  * 
- * DISH algorithm - multithreaded - binary crossover with mutant and then with best history
+ * DISH-randXX algorithm - multithreaded
+ * - binary crossover with mutant and then with best history
+ * - first half of the evaluation uses random mutation 
  * 
- * @author adam on 14/01/2020
+ * @author adam on 15/04/2020
  */
-public class DISHbinDxover extends SHADE_analysis implements Runnable {
+public class DISH_randXX extends SHADE_analysis implements Runnable {
 
     protected final int minPopSize;
     protected final int maxPopSize;
     
     protected List<double[]> imp_hist;
     
-    public DISHbinDxover(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
+    public DISH_randXX(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
         super(D, MAXFES, f, H, NP, rndGenerator);
         this.minPopSize = minPopSize;
         this.maxPopSize = NP;
@@ -39,7 +41,7 @@ public class DISHbinDxover extends SHADE_analysis implements Runnable {
  
     @Override
     public String getName() {
-        return "DISHbinDxover";
+        return "DISH-randXX";
     }
     
     /**
@@ -213,43 +215,54 @@ public class DISHbinDxover extends SHADE_analysis implements Runnable {
 
                 pBestArray = this.resize(this.P, Psize);
 
-                /**
-                 * Parent selection
-                 */
-                pbestIndex = this.getIndexOfRandBestFromList(pBestArray, x.id);
-                pbest = this.P.get(pbestIndex).vector.clone();
-                rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
-                pr1 = this.P.get(rIndexes[0]).vector.clone();
-                if(rIndexes[1] > this.NP - 1) {
-                    pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
-                }else {
-                    pr2 = this.P.get(rIndexes[1]).vector.clone();
-                }
+                
                 parents = new double[4][D];
-                parents[0] = x.vector;
-                parents[1] = pbest;
-                parents[2] = pr1;
-                parents[3] = pr2;
-
-                if(gg < 0.2) {
-                    Fw = 0.7 * Fg;
-                }
-                else if(gg < 0.4) {
-                    Fw = 0.8 * Fg;
+                /**
+                 * Mutation - updated
+                 * First half of the evaluations -> rand/1
+                 * Second half of the evaluations -> current-to-pbest-w/1
+                 */   
+                if(gg < 0.5) {
+                    
+                    parents = this.getParents(i);
+                    
+                    v = mutation(parents, Fg);
                 }
                 else {
-                    Fw = 1.2 * Fg;
+                    /**
+                     * Parent selection
+                     */
+                    pbestIndex = this.getIndexOfRandBestFromList(pBestArray, x.id);
+                    pbest = this.P.get(pbestIndex).vector.clone();
+                    rIndexes = this.genRandIndexes(i, this.NP, this.NP + this.Aext.size(), pbestIndex);
+                    pr1 = this.P.get(rIndexes[0]).vector.clone();
+                    if(rIndexes[1] > this.NP - 1) {
+                        pr2 = this.Aext.get(rIndexes[1] - this.NP).vector.clone();
+                    }else {
+                        pr2 = this.P.get(rIndexes[1]).vector.clone();
+                    }
+                    
+                    parents[0] = x.vector;
+                    parents[1] = pbest;
+                    parents[2] = pr1;
+                    parents[3] = pr2;
+
+                    if(gg < 0.2) {
+                        Fw = 0.7 * Fg;
+                    }
+                    else if(gg < 0.4) {
+                        Fw = 0.8 * Fg;
+                    }
+                    else {
+                        Fw = 1.2 * Fg;
+                    }
+                    v = mutationDISH(parents, Fg, Fw);
                 }
 
-                /**
-                 * Mutation
-                 */               
-                v = mutationDISH(parents, Fg, Fw);
 
                 /**
                  * Crossover
                  */
-
                 histX = new double[this.D];
                 System.arraycopy(this.getImp_hist().get(rndGenerator.nextInt(this.getImp_hist().size())), 2, histX, 0, this.D);
                 
@@ -353,38 +366,22 @@ public class DISHbinDxover extends SHADE_analysis implements Runnable {
     }
     
     /**
-     * Shuffled Exponential Crossover
-     * @param CR
-     * @param v
-     * @param x
-     * @return 
+     *
+     * rand/1 mutation scheme
+     * 
+     * @param parents
+     * @param F
+     * @return
      */
-    protected double[] secCrossover(double CR, double[] v, double[] x){
-        
-        ArrayList<Integer> indexes = new ArrayList<Integer>();
-        for(int i = 0; i < this.D; i++) {
-            indexes.add(i);
-        }
-        Collections.shuffle(indexes);
-        
-        /**
-         * Sequential Exponential Crossover
-         */
-        double[] u;
-        int k = 0;
-        int j;
+    protected double[] mutation(double[][] parents, double F) {
 
-        u = x.clone();
-        
-        do {
-            j = indexes.get(k);
-            u[j] = v[j];
-            k++;
-            
-        } while((getRandomCR() < CR) && (k < (this.D-1)));
-        
-        return u;
-        
+        double[] v = new double[D];
+        for (int i = 0; i < D; i++) {
+            v[i] = parents[1][i] + F * (parents[2][i] - parents[3][i]);
+        }
+
+        return v;
+
     }
     
     /**
@@ -402,29 +399,6 @@ public class DISHbinDxover extends SHADE_analysis implements Runnable {
         }
 
         return index;
-
-    }
-    
-    /**
-     *
-     * @param parentArray
-     * @param F
-     * @return
-     */
-    protected double[] mutationRand1(double[][] parentArray, double F) {
-
-        double[] u = new double[D];
-        double[] a = parentArray[1];
-        double[] b = parentArray[2];
-        double[] c = parentArray[3];
-
-        for (int i = 0; i < D; i++) {
-
-            u[i] = a[i] + F * (b[i] - c[i]);
-
-        }
-
-        return u;
 
     }
     
@@ -546,13 +520,13 @@ public class DISHbinDxover extends SHADE_analysis implements Runnable {
 //        int dimension = 10;
 //        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
 //        int minNP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        int dimension = 60;
+        int dimension = 100;
         int NP = (int) (50*Math.log(dimension)*Math.sqrt(dimension));
         int minNP = 4;
-        int MAXFES = 1000000;
+        int MAXFES = 1000;
         int funcNumber = 6;
 //        TestFunction tf = new Cec2015(dimension, funcNumber);
-        TestFunction tf = new Kromer("/Kromer-data/srflp/Anjos/AnKeVa_2005_60dept_set1.txt");
+        TestFunction tf = new Kromer("/Kromer-data/srflp/sko/QAP_sko100_04_n.txt");
 
 //        int[][] order;
 //        int[] stock = new int[]{5840};
@@ -566,7 +540,7 @@ public class DISHbinDxover extends SHADE_analysis implements Runnable {
         long seed = 10304050L;
         util.random.Random generator = new util.random.UniformRandom();
 
-        DISHbinDxover shade;
+        DISH_randXX shade;
 
         int runs = 31;
         double[] bestArray = new double[runs];
@@ -575,7 +549,7 @@ public class DISHbinDxover extends SHADE_analysis implements Runnable {
         
         for (int k = 0; k < runs; k++) {
 
-            shade = new DISHbinDxover(dimension, MAXFES, tf, H, NP, generator, minNP);
+            shade = new DISH_randXX(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.runAlgorithm();
 

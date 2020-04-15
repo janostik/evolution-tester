@@ -1,6 +1,6 @@
 
 import algorithm.Algorithm;
-import algorithm.de.DISHbinDxover;
+import algorithm.de.DISH_XX;
 import model.tf.Cec2020;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -89,7 +89,7 @@ public class CEC2020timeComplexity {
         for(int i = 0; i < runs; i++) {
             
             generator = new util.random.UniformRandom();
-            dishxx = new DISHbinDxover(dim, MAXFES, tf, H, NPinit, generator, NPfinal);
+            dishxx = new DISH_XX(dim, MAXFES, tf, H, NPinit, generator, NPfinal);
             
             start = System.currentTimeMillis();
             dishxx.runAlgorithm();
