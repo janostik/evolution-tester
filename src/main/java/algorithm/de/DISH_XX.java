@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.DoubleStream;
 import model.Individual;
+import model.tf.Cec2020;
 import model.tf.Kromer;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -543,24 +544,13 @@ public class DISH_XX extends SHADE_analysis implements Runnable {
      */
     public static void main(String[] args) throws Exception {
         
-//        int dimension = 10;
-//        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-//        int minNP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        int dimension = 100;
+    int dimension = 5;
         int NP = (int) (50*Math.log(dimension)*Math.sqrt(dimension));
         int minNP = 4;
-        int MAXFES = 1000000;
-        int funcNumber = 6;
-//        TestFunction tf = new Cec2015(dimension, funcNumber);
-        TestFunction tf = new Kromer("/Kromer-data/srflp/sko/QAP_sko100_04_n.txt");
+        int MAXFES = 50000;
+        int funcNumber = 10;
+        TestFunction tf = new Cec2020(dimension, funcNumber);
 
-//        int[][] order;
-//        int[] stock = new int[]{5840};
-//        int cut_through = 4;
-//        order = new int[][]{{3665,2},{2660,4},{2650,12},{2625,4},{2615,4},{2425,2},{2405,10},{2395,6},{2385,8},{2295,16},{2290,4},{2045,4},{1925,2},{1680,2},{765,2},{595,2},{565,2}};
-//        
-//        TestFunction tf = new CuttingStock1D(order, stock, cut_through);
-//        TestFunction tf = new CuttingStock1D();
         
         int H = 5;
         long seed = 10304050L;
@@ -568,7 +558,7 @@ public class DISH_XX extends SHADE_analysis implements Runnable {
 
         DISH_XX shade;
 
-        int runs = 31;
+        int runs = 30;
         double[] bestArray = new double[runs];
 
         System.out.println("START: " + new Date());

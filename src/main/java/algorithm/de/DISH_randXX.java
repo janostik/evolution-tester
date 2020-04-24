@@ -146,7 +146,7 @@ public class DISH_randXX extends SHADE_analysis implements Runnable {
          * Generation iteration;
          */
         int r, Psize, pbestIndex, memoryIndex, k = 0;
-        double Fg, CRg, Fw, gg, pmin = 0.125, pmax = 0.25, p, wSsum, meanS_F1, meanS_F2, meanS_CR1, meanS_CR2;
+        double Fg, CRg, Fw, gg, pmin = 0.125, pmax = 0.25, p, wSsum, meanS_F1, meanS_F2, meanS_CR1, meanS_CR2, Frand = 1.2;
         Individual trial, x;
         double[] v, pbest, pr1, pr2, u, wsList = new double[NP], SFlist = new double[NP], SCRlist = new double[NP], histX;
         int[] rIndexes;
@@ -222,11 +222,11 @@ public class DISH_randXX extends SHADE_analysis implements Runnable {
                  * First half of the evaluations -> rand/1
                  * Second half of the evaluations -> current-to-pbest-w/1
                  */   
-                if(gg < 0.5) {
+                if(gg < 0.1) {
                     
                     parents = this.getParents(i);
                     
-                    v = mutation(parents, Fg);
+                    v = mutation(parents, Frand);
                 }
                 else {
                     /**

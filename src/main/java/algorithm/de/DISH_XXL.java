@@ -1,13 +1,13 @@
 package algorithm.de;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.DoubleStream;
 import model.Individual;
 import model.tf.Cec2020;
-import model.tf.CuttingStock1D;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -16,21 +16,23 @@ import util.IndividualComparator;
 import util.OtherDistributionsUtil;
 import util.distance.EuclideanDistance;
 import util.random.Random;
+import util.random.UniformRandom;
 
 /**
  * 
- * DISH algorithm - multithreaded
+ * DISH algorithm - multithreaded - binary crossover with mutant and then with best history
+ * - local search by DISH after 80% of evaluations
  * 
- * @author adam on 09/12/2019
+ * @author adam on 20/04/2020
  */
-public class DISH extends SHADE_analysis implements Runnable {
+public class DISH_XXL extends SHADE_analysis implements Runnable {
 
     protected final int minPopSize;
     protected final int maxPopSize;
     
     protected List<double[]> imp_hist;
     
-    public DISH(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
+    public DISH_XXL(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
         super(D, MAXFES, f, H, NP, rndGenerator);
         this.minPopSize = minPopSize;
         this.maxPopSize = NP;
@@ -39,7 +41,7 @@ public class DISH extends SHADE_analysis implements Runnable {
  
     @Override
     public String getName() {
-        return "DISH";
+        return "DISH-XXL";
     }
     
     /**
@@ -93,7 +95,12 @@ public class DISH extends SHADE_analysis implements Runnable {
     @Override
     protected void writeHistory() {
         
-        this.imp_hist.add(new double[]{this.FES, this.best.fitness});
+        double[] input = new double[2+this.D];
+        input[0] = this.FES;
+        input[1] = this.best.fitness;
+        System.arraycopy(this.best.vector, 0, input, 2, this.D);
+        
+        this.imp_hist.add(input);
 
     }
     
@@ -139,12 +146,18 @@ public class DISH extends SHADE_analysis implements Runnable {
          * Generation iteration;
          */
         int r, Psize, pbestIndex, memoryIndex, k = 0;
-        double Fg, CRg, Fw, gg, pmin = 0.125, pmax = 0.25, p, wSsum, meanS_F1, meanS_F2, meanS_CR1, meanS_CR2;
+        double Fg, CRg, Fw, gg = 0, pmin = 0.125, pmax = 0.25, p, wSsum, meanS_F1, meanS_F2, meanS_CR1, meanS_CR2;
         Individual trial, x;
-        double[] v, pbest, pr1, pr2, u, wsList = new double[NP], SFlist = new double[NP], SCRlist = new double[NP];
+        double[] v, pbest, pr1, pr2, u, wsList = new double[NP], SFlist = new double[NP], SCRlist = new double[NP], histX;
         int[] rIndexes;
         double[][] parents;
         List<Individual> newPop, pBestArray;
+        boolean reinit = false;
+        double[][] bounds = new double[this.D][2];
+        for(int i = 0; i < this.D; i++) {
+            bounds[i][0] = this.f.min(i);
+            bounds[i][1] = this.f.max(i);
+        }
 
         EuclideanDistance euclid = new EuclideanDistance();
         
@@ -244,7 +257,15 @@ public class DISH extends SHADE_analysis implements Runnable {
                 /**
                  * Crossover
                  */
+
+                histX = new double[this.D];
+                System.arraycopy(this.getImp_hist().get(rndGenerator.nextInt(this.getImp_hist().size())), 2, histX, 0, this.D);
+                
                 u = crossover(CRg, v, x.vector);
+                if(reinit == false) {
+                    u = crossover(CRg, u, histX);
+                }
+
 
                 /**
                  * Constrain check
@@ -334,11 +355,196 @@ public class DISH extends SHADE_analysis implements Runnable {
             this.P.addAll(newPop);
             NP = (int) Math.round(this.maxPopSize - ((double) this.FES/(double) this.MAXFES)*(this.maxPopSize - this.minPopSize));
             P = this.resizePop(P, NP);
+            
+            
+            /**
+             * local search population reinit
+             */
+            
+            if(gg >= 0.7 && !reinit) {
+
+                double[] features;
+                Individual ind;
+                bounds = this.localReinit();
+                reinit = true;
+                
+                this.P = new ArrayList<>();
+                this.Aext = new ArrayList<>();
+                this.P.add(this.best);
+                
+                for(int i = 1; i < NP; i++) {
+                    id++;
+                    features = this.generateTrialReinit(this.D, bounds).clone();
+                    ind = new Individual(String.valueOf(id), features, this.f.fitness(features));
+                    this.P.add(ind);
+                    this.FES++;
+                    if(this.isBest(ind)) {
+                        this.writeHistory();
+                    }
+                    if(this.FES >= this.MAXFES) {
+                        break;
+                    }
+                }
+                
+                if(this.FES >= this.MAXFES) {
+                    break;
+                }
+                
+            }
 
         }
 
         return this.best;
 
+    }
+    
+    protected double[] constrainCheckReinit(double[] u, double[] x, double[][] bounds){
+        /**
+         * Constrain check
+         */
+        for (int d = 0; d < this.D; d++) {
+            if (u[d] < bounds[d][0]) {
+                u[d] = (bounds[d][0] + x[d]) / 2.0;
+            } else if (u[d] > bounds[d][1]) {
+                u[d] = (bounds[d][1] + x[d]) / 2.0;
+            }
+        }
+        
+        return u;
+    }
+    
+    protected double[] generateTrialReinit(int dim, double[][] bounds) {
+        double[] vector = new double[dim];
+        Random rnd = new UniformRandom();
+        for (int i = 0; i < dim; i++) vector[i] = rnd.nextDouble(bounds[i][0], bounds[i][1]);
+        return vector;
+    }
+    
+    /**
+     * 
+     * @return new bounds of the search space
+     */
+    protected double[][] localReinit() {
+        
+//        double[] min = new double[this.D];
+//        double[] max = new double[this.D];
+//        double[] exp = new double[D];
+        double[][] bounds = new double[this.D][2];
+        double[] ind;
+        
+        for(int i = 0; i < this.P.size(); i++) {
+            ind = this.P.get(i).vector;
+            
+            for(int d = 0; d < this.D; d++) {
+                if(i == 0 || bounds[d][0] > ind[d]) {
+                    bounds[d][0] = ind[d];
+                }
+                if(i == 0 || bounds[d][1] < ind[d]) {
+                    bounds[d][1] = ind[d];
+                }
+            }
+            
+        }
+        
+//        for(int i = 0; i < this.P.size(); i++) {
+//            ind = this.P.get(i).vector;
+//            
+//            for(int d = 0; d < this.D; d++) {
+//                if(i == 0 || min[d] > ind[d]) {
+//                    min[d] = ind[d];
+//                }
+//                if(i == 0 || max[d] < ind[d]) {
+//                    max[d] = ind[d];
+//                }
+//            }
+//            
+//        }
+//        double diff, expt;
+//        /**
+//         * Find exponents
+//         */
+//        for(int i = 0; i < this.D; i++) {
+//            diff = Math.abs(max[i]-min[i]);
+//            expt = 0;
+//            
+//            if(diff >= 100) {
+//                exp[i] = 2;
+//            }
+//            else if(diff >= 10) {
+//                exp[i] = 1;
+//            }
+//            else if(diff >= 1){
+//                exp[i] = 0;
+//            } 
+//            else if(diff < Math.pow(10,-16)) {
+//                exp[i] = -16;
+//            } else {
+//                while((diff % 10 <= 1) && (expt > -16)) {
+//
+//                    expt--;
+//
+//                    diff *= 10;
+//                }
+//                exp[i] = expt;
+//            }
+//            
+//        }
+//        
+//        /**
+//         * find bounds
+//         */
+//        
+//        double[] bestVector = this.best.vector;
+//        
+//        for(int i = 0; i < this.D; i++) {
+//            
+//            bounds[i][0] = bestVector[i]-Math.pow(10,exp[i]);
+//            bounds[i][1] = bestVector[i]+Math.pow(10,exp[i]);
+//            if(bounds[i][0] < this.f.min(i)) {
+//                bounds[i][0] = this.f.min(i);
+//            }
+//            if(bounds[i][1] > this.f.max(i)) {
+//                bounds[i][1] = this.f.max(i);
+//            }
+//            
+//        }
+        
+        return bounds;
+    }
+    
+    /**
+     * Shuffled Exponential Crossover
+     * @param CR
+     * @param v
+     * @param x
+     * @return 
+     */
+    protected double[] secCrossover(double CR, double[] v, double[] x){
+        
+        ArrayList<Integer> indexes = new ArrayList<Integer>();
+        for(int i = 0; i < this.D; i++) {
+            indexes.add(i);
+        }
+        Collections.shuffle(indexes);
+        
+        /**
+         * Sequential Exponential Crossover
+         */
+        double[] u;
+        int k = 0;
+        int j;
+
+        u = x.clone();
+        
+        do {
+            j = indexes.get(k);
+            u[j] = v[j];
+            k++;
+            
+        } while((getRandomCR() < CR) && (k < (this.D-1)));
+        
+        return u;
+        
     }
     
     /**
@@ -496,9 +702,9 @@ public class DISH extends SHADE_analysis implements Runnable {
      * @throws java.lang.Exception
      */
     public static void main(String[] args) throws Exception {
-        
-    int dimension = 5;
-        int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+
+        int dimension = 5;
+        int NP = (int) (50*Math.log(dimension)*Math.sqrt(dimension));
         int minNP = 4;
         int MAXFES = 50000;
         int funcNumber = 2;
@@ -509,7 +715,7 @@ public class DISH extends SHADE_analysis implements Runnable {
         long seed = 10304050L;
         util.random.Random generator = new util.random.UniformRandom();
 
-        DISH shade;
+        DISH_XXL shade;
 
         int runs = 30;
         double[] bestArray = new double[runs];
@@ -518,7 +724,7 @@ public class DISH extends SHADE_analysis implements Runnable {
         
         for (int k = 0; k < runs; k++) {
 
-            shade = new DISH(dimension, MAXFES, tf, H, NP, generator, minNP);
+            shade = new DISH_XXL(dimension, MAXFES, tf, H, NP, generator, minNP);
 
             shade.runAlgorithm();
 
