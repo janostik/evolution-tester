@@ -32,7 +32,6 @@ import algorithm.de.Nwd_SHADE;
 import algorithm.de.PSp_SHADE_3systems;
 import algorithm.de.SwEEL_SHADE;
 import algorithm.de.SwEE_SHADE;
-import algorithm.hybrid.SOF_DErand1bin_AP;
 import algorithm.pso.NetPso;
 import algorithm.pso.Pso;
 import java.io.PrintWriter;
@@ -101,113 +100,6 @@ public class ShadeMain {
                 writer.close();
 
                 bestArray[k] = shade.getBest().fitness - tf.optimum();
-
-            }
-            
-            best = DoubleStream.of(bestArray).min().getAsDouble();
-            worst = DoubleStream.of(bestArray).max().getAsDouble();
-            median = new Median().evaluate(bestArray);
-            mean = new Mean().evaluate(bestArray);
-            std = new StandardDeviation().evaluate(bestArray);
-
-            sol_writer = new PrintWriter(home_dir + path + "results_" + funcNumber + ".txt", "UTF-8");
-            
-            sol_writer.print("{");
-            sol_writer.print(funcNumber);
-            sol_writer.print(",");
-            sol_writer.print(String.format(Locale.US, "%.10f", best));
-            sol_writer.print(",");
-            sol_writer.print(String.format(Locale.US, "%.10f", worst));
-            sol_writer.print(",");
-            sol_writer.print(String.format(Locale.US, "%.10f", median));
-            sol_writer.print(",");
-            sol_writer.print(String.format(Locale.US, "%.10f", mean));
-            sol_writer.print(",");
-            sol_writer.print(String.format(Locale.US, "%.10f", std));
-            sol_writer.print("}");
-            
-            sol_writer.close();
-
-            System.out.println(tf.name());
-            System.out.println("=================================");
-            System.out.println("Best: " + best);
-            System.out.println("Worst: " + worst);
-            System.out.println("Median: " + median);
-            System.out.println("Mean: " + mean);
-            System.out.println("Std: " + std);
-            System.out.println("=================================");
-            
-            res_writer.print("{");
-            res_writer.print(funcNumber);
-            res_writer.print(",");
-            res_writer.print(String.format(Locale.US, "%.10f", best));
-            res_writer.print(",");
-            res_writer.print(String.format(Locale.US, "%.10f", worst));
-            res_writer.print(",");
-            res_writer.print(String.format(Locale.US, "%.10f", median));
-            res_writer.print(",");
-            res_writer.print(String.format(Locale.US, "%.10f", mean));
-            res_writer.print(",");
-            res_writer.print(String.format(Locale.US, "%.10f", std));
-            res_writer.print("}");
-        
-            if(funcNumber < maxFuncNum){
-               res_writer.print(",");
-            }
-            
-        }
-
-        res_writer.print("}");
-        
-        res_writer.close();
-        
-    }
-    
-    public static void SOF_DErand1bin_APMainCEC2015(String path) throws Exception{
-
-        TestFunction tf;
-        util.random.Random generator = new util.random.UniformRandom();
-        int maxFuncNum = 15;
-
-        SOF_DErand1bin_AP de;
-
-        double[] bestArray;
-        PrintWriter writer, sol_writer,res_writer;
-        double best,worst,median,mean,std;
-
-        res_writer = new PrintWriter(home_dir + path + "results.txt", "UTF-8");
-        
-        res_writer.print("{");
-        
-        for (int funcNumber = 1; funcNumber <= maxFuncNum; funcNumber++){
-        
-            tf = new Cec2015(dimension, funcNumber);
-            bestArray = new double[runs];
-            
-            for (int k = 0; k < runs; k++) {
-
-                de = new SOF_DErand1bin_AP(dimension, NP, MAXFES, tf, generator);
-                de.runAlgorithm();
-
-                writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
-
-                writer.print("{");
-
-                for (int i = 0; i < de.getBestHistory().size(); i++) {
-
-                    writer.print(String.format(Locale.US, "%.10f", de.getBestHistory().get(i).fitness));
-
-                    if (i != de.getBestHistory().size() - 1) {
-                        writer.print(",");
-                    }
-
-                }
-
-                writer.print("}");
-
-                writer.close();
-
-                bestArray[k] = de.getBest().fitness - tf.optimum();
 
             }
             

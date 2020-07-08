@@ -497,7 +497,7 @@ public class DISH extends SHADE_analysis implements Runnable {
      */
     public static void main(String[] args) throws Exception {
         
-    int dimension = 5;
+        int dimension = 5;
         int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
         int minNP = 4;
         int MAXFES = 50000;
