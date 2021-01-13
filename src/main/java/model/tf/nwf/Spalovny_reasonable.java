@@ -834,5 +834,10 @@ public class Spalovny_reasonable implements TestFunction {
     public double min(int dim) {
         return 0;
     }
+
+    @Override
+    public double[] optimumPosition() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

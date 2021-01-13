@@ -100,6 +100,11 @@ public class IrisDataset implements TestFunction {
         return "iris";
     }
 
+    @Override
+    public double[] optimumPosition() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     public class IrisCentroid {
 
         private double sepal_length;

@@ -1347,4 +1347,9 @@ public class Cec2013 implements TestFunction {
     public String name() {
         return "CEC2013-f" + this.func_num;
     }
+
+    @Override
+    public double[] optimumPosition() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

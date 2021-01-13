@@ -137,4 +137,9 @@ public class PupilCostFunction implements TestFunction {
         return new int[]{row, column};
         
     }
+
+    @Override
+    public double[] optimumPosition() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

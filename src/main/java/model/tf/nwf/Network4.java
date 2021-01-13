@@ -572,4 +572,9 @@ public class Network4 implements TestFunction {
             System.out.println("}");
         
     }
+
+    @Override
+    public double[] optimumPosition() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

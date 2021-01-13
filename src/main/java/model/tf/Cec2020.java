@@ -16,6 +16,23 @@ import util.random.UniformRandom;
 
 /**
  *
+ * CEC 2020 becnhmark set
+ * 
+ * 10 functions
+ * - 1 unimodal
+ * - 3 basic multimodal
+ * - 3 hybrid
+ * - 3 composition
+ * 
+ * Search range - [-100, 100]^D
+ * 
+ * Supported dimensions - 5, 10, 15, 20
+ * - F6, F7 only 10, 15, 20
+ * 
+ * MaxFES - 50 000, 1 000 000, 3 000 000, 10 000 000
+ * 
+ * 30 runs
+ * 
  * @author adam on 06/01/2020
  */
 public class Cec2020 implements TestFunction {
@@ -316,6 +333,12 @@ public class Cec2020 implements TestFunction {
         return 0;
     }
 
+    public double[] optimumPosition() {
+        
+        return this.OShift;
+        
+    }
+    
     @Override
     public double optimum() {
         
@@ -1963,6 +1986,11 @@ public class Cec2020 implements TestFunction {
             res = test.fitness(new double[]{-1.4386804758751207e+01,7.092451e+01,5.4035479973086844e+01,-5.0249947519157985e+01,5.9854126935756824e+01,5.5338090773363639e+01,6.9756035554109161e+01,-8.9322980162372332e+00,3.8997577178756508e+01,4.1910300289238947e+01,-2.5503293682589799e+01,3.8681264045965513e+01,1.4585345438954116e+01,5.2297602990780776e+00,-4.2492532913802442e+01,-3.1909567445474476e+01,2.4433991652184162e+01,-6.0037932192924401e+01});
             System.out.println(res);
             res = test.fitness(new double[]{-1.4386804758751207e+01,7.09245e+01,5.4035479973086844e+01,-5.0249947519157985e+01,5.9854126935756824e+01,5.5338090773363639e+01,6.9756035554109161e+01,-8.9322980162372332e+00,3.8997577178756508e+01,4.1910300289238947e+01,-2.5503293682589799e+01,3.8681264045965513e+01,1.4585345438954116e+01,5.2297602990780776e+00,-4.2492532913802442e+01,-3.1909567445474476e+01,2.4433991652184162e+01,-6.0037932192924401e+01});
+            System.out.println(res);
+            
+            
+            System.out.println("Check this out!");
+            res = test.fitness(test.optimumPosition());
             System.out.println(res);
 
             

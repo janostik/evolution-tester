@@ -26,6 +26,8 @@ public interface TestFunction {
     double fixedAccLevel();
 
     double optimum();
+    
+    double[] optimumPosition();
 
     double max(int dim);
 

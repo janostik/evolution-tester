@@ -65,4 +65,9 @@ public class Rosenbrock implements TestFunction {
     public String name() {
         return "Rosenbrock";
     }
+
+    @Override
+    public double[] optimumPosition() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

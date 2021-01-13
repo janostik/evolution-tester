@@ -10,6 +10,9 @@ public class UniformRandom implements Random {
 
     final private static java.util.Random rnd = new java.util.Random();
 
+    public UniformRandom() {
+    }
+
     @Override
     public double nextDouble() {
         return rnd.nextDouble();

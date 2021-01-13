@@ -366,4 +366,9 @@ public class Network2 implements TestFunction {
         System.out.println(((Network2)tf).getNode_path().toString());
         
     }
+
+    @Override
+    public double[] optimumPosition() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

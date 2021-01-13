@@ -9,7 +9,7 @@ import java.util.List;
  * Created by jakub on 27/10/15.
  */
 public interface Algorithm {
-
+    
     Individual runAlgorithm();
 
     List<? extends Individual> getPopulation();

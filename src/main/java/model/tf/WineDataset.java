@@ -102,6 +102,11 @@ public class WineDataset implements TestFunction {
         return "wine";
     }
 
+    @Override
+    public double[] optimumPosition() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     public class WineCentroid {
 
         private int wine_class;

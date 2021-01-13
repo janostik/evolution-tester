@@ -156,4 +156,9 @@ public class Kromer implements TestFunction {
         System.out.println("Fitness: " + kr.fitness(vector));
 
     }
+
+    @Override
+    public double[] optimumPosition() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

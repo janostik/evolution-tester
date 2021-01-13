@@ -142,6 +142,11 @@ public class SNLs_SHADE_tf implements TestFunction{
     public double fixedAccLevel() {
         return 10^-7;
     }
+
+    @Override
+    public double[] optimumPosition() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
     
     

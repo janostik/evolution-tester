@@ -904,5 +904,10 @@ public class CuttingStock1D_solver implements TestFunction {
 
         
     }
+
+    @Override
+    public double[] optimumPosition() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

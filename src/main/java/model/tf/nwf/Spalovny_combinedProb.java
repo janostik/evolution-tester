@@ -821,5 +821,10 @@ public class Spalovny_combinedProb implements TestFunction {
 
         }
     }
+
+    @Override
+    public double[] optimumPosition() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

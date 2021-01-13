@@ -64,4 +64,9 @@ public class Rastrigin implements TestFunction {
     public String name() {
         return "Rastrigin";
     }
+
+    @Override
+    public double[] optimumPosition() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

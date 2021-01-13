@@ -5,9 +5,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.DoubleStream;
+import static javax.print.attribute.standard.MediaSizeName.D;
+import static javax.swing.text.html.HTML.Tag.P;
 import model.Individual;
 import model.tf.Cec2020;
-import model.tf.CuttingStock1D;
 import model.tf.TestFunction;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -30,6 +31,8 @@ public class DISH extends SHADE_analysis implements Runnable {
     
     protected List<double[]> imp_hist;
     
+    
+    
     public DISH(int D, int MAXFES, TestFunction f, int H, int NP, Random rndGenerator, int minPopSize) {
         super(D, MAXFES, f, H, NP, rndGenerator);
         this.minPopSize = minPopSize;
@@ -37,6 +40,8 @@ public class DISH extends SHADE_analysis implements Runnable {
         this.imp_hist = new ArrayList<>();
     }
  
+    
+    
     @Override
     public String getName() {
         return "DISH";
@@ -256,6 +261,40 @@ public class DISH extends SHADE_analysis implements Runnable {
                  */
                 id++;
                 trial = new Individual(String.valueOf(id), u, f.fitness(u));
+                
+                /**
+                 * Optimim hit checker
+                 */
+                if(this.optimum_hit_flag) {
+                    
+                    int[] hit = this.checkOptimumHit(u);
+                    if(hit != null) {
+                        String hitString = "{" + id + "," + FES + "," + (trial.fitness-this.f.optimum()) + ",{";
+                        for(int bz = 0; bz < u.length; bz++) {
+                            hitString += u[bz];
+                            if(bz!=u.length-1) {
+                                hitString += ",";
+                            }
+                        }
+                        
+                        hitString += "}," + hit.length + ",{";
+                        for(int bz = 0; bz < hit.length; bz++) {
+                            hitString += hit[bz];
+                            if(bz!=hit.length-1) {
+                                hitString += ",";
+                            }
+                        }
+                        hitString += "}";
+                        
+                        if(this.optimum_hit_file_empty) {
+                            this.optimum_hit_writer.print(hitString);
+                            this.optimum_hit_file_empty = false;
+                        } else {
+                            this.optimum_hit_writer.print("," + hitString);
+                        }
+                    }
+                    
+                }
 
                 /**
                  * Trial is better
@@ -501,7 +540,7 @@ public class DISH extends SHADE_analysis implements Runnable {
         int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
         int minNP = 4;
         int MAXFES = 50000;
-        int funcNumber = 2;
+        int funcNumber = 1;
         TestFunction tf = new Cec2020(dimension, funcNumber);
 
         
@@ -511,17 +550,25 @@ public class DISH extends SHADE_analysis implements Runnable {
 
         DISH shade;
 
-        int runs = 30;
+        int runs = 5;
         double[] bestArray = new double[runs];
 
         System.out.println("START: " + new Date());
         
+        String pathBase = "D:\\results\\Optimum_hit\\CEC2020\\DISH-"+dimension+"\\";
+        
         for (int k = 0; k < runs; k++) {
 
             shade = new DISH(dimension, MAXFES, tf, H, NP, generator, minNP);
+            
+            //optimum hit initialize
+            shade.initOptimumHit(pathBase+funcNumber+"-"+k+".txt");
 
             shade.runAlgorithm();
 
+            //optimum hit deinitialize
+            shade.deinitOptimumHit();
+            
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());
             System.out.println(shade.getNiceVector(shade.getBest().vector));

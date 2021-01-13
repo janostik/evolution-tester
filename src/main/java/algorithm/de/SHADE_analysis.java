@@ -66,7 +66,17 @@ public class SHADE_analysis implements Algorithm {
     double cl_eps;
     DistanceMeasure cl_distance;
     
-    
+    /**
+     * Optimum hit checker 
+     */
+    //check for optimum hit boolean
+    protected boolean optimum_hit_flag = false;
+    protected boolean optimum_hit_file_empty = true;
+    //path to optimum hit check file
+    protected String optimum_hit_path;
+    protected PrintWriter optimum_hit_writer;
+    protected double[] optimum_position;
+
     /**
      * @param D
      * @param MAXFES
@@ -82,6 +92,57 @@ public class SHADE_analysis implements Algorithm {
         this.H = H;
         this.NP = NP;
         this.rndGenerator = rndGenerator;
+    }
+    
+    /**
+     * Optimum hit functions
+     * @param path 
+     */
+    public void initOptimumHit(String path) {
+        
+        this.optimum_hit_flag = true;
+        this.optimum_hit_path = path;
+        this.optimum_position = this.f.optimumPosition();
+        try {
+            this.optimum_hit_writer = new PrintWriter(this.optimum_hit_path, "UTF-8");
+            this.optimum_hit_writer.print("{");
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            Logger.getLogger(SHADE_analysis.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
+    public void deinitOptimumHit() {
+        
+        if(this.optimum_hit_flag==true){
+            this.optimum_hit_flag=false;
+            this.optimum_hit_writer.print("}");
+            this.optimum_hit_writer.close();
+        }
+        
+    }
+    
+    protected int[] checkOptimumHit(double[] x) {
+        
+        ArrayList<Integer> resList = new ArrayList<>();
+        
+        for(int i = 0; i < x.length; i++) {
+            if(Math.abs(x[i]-this.optimum_position[i])<10e-5) {
+                resList.add(i);
+            }
+        }
+        
+        if(resList.isEmpty()) {
+            return null;
+        } else {
+            int[] r = new int[resList.size()];
+            for(int i = 0; i < r.length; i++) {
+                r[i] = resList.get(i);
+            }
+            
+            return r;
+        }
+        
     }
     
     /**
