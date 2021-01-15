@@ -1,10 +1,13 @@
 package util;
 
-import static java.lang.System.out;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,6 +65,58 @@ public class CECsensitivityAnalysis {
         return res;
     }
     
+    public HashMap<Integer, int[][]> testCEC2020sensitivity(String path) {
+        
+        HashMap<Integer, int[][]> res = new HashMap<>();
+        int[] dims = {5,10,15,20};
+        int[] fns = {1,2,3,4,5,6,7,8,9,10};
+        PrintWriter pw;
+        
+        for(int D : dims) {
+            int[][] value = new int[fns.length][D];
+            for(int ff : fns) {
+                try {
+                    int[] sens = this.getFuntionSensitivity(new Cec2020(D, ff));
+                    value[ff-1] = sens;
+                } catch (Exception ex) {
+                    Logger.getLogger(CECsensitivityAnalysis.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            res.put(D, value);
+            try {
+                pw = new PrintWriter(path + String.valueOf(D) + ".txt", "UTF-8");
+                pw.print("{");
+                for(int i = 0; i < value.length; i++) {
+                    
+                    pw.print("{");
+                    for(int j = 0; j < value[i].length; j++) {
+
+                        pw.print(value[i][j]);
+
+                        if(j != value[i].length-1) {
+                            pw.print(",");
+                        }
+                    }
+                    pw.print("}");
+                    
+                    
+                    if(i != value.length-1) {
+                        pw.print(",");
+                    }
+                }
+                pw.print("}");
+                pw.close();
+                
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(CECsensitivityAnalysis.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(CECsensitivityAnalysis.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return res;
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -69,11 +124,16 @@ public class CECsensitivityAnalysis {
         
         CECsensitivityAnalysis an = new CECsensitivityAnalysis();
         
-        try {
-            TestFunction tf = new Cec2020(20, 10);
-            System.out.println(Arrays.toString(an.getFuntionSensitivity(tf)));
-        } catch (Exception ex) {
-            Logger.getLogger(CECsensitivityAnalysis.class.getName()).log(Level.SEVERE, null, ex);
+        HashMap<Integer,int[][]> hm = an.testCEC2020sensitivity("D:\\results\\CEC sensitivity\\Java\\CEC2020\\");
+        
+        for(int key : hm.keySet()) {
+            System.out.println(key);
+            int[][] value = hm.get(key);
+            int fn = 1;
+            for(int[] dd : value) {
+                System.out.println(fn + " - " + Arrays.toString(dd));
+                fn++;
+            }
         }
         
     }

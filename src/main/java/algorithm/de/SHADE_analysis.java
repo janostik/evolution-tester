@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 import model.Individual;
+import model.tf.CECbase;
 import model.tf.Cec2015;
 import model.tf.PupilCostFunction;
 import model.tf.TestFunction;
@@ -127,7 +128,7 @@ public class SHADE_analysis implements Algorithm {
         ArrayList<Integer> resList = new ArrayList<>();
         
         for(int i = 0; i < x.length; i++) {
-            if(Math.abs(x[i]-this.optimum_position[i])<10e-5) {
+            if(Math.abs(x[i]-this.optimum_position[i])<((CECbase)this.f).getSensitivity(D, ((CECbase)this.f).fn, i)) {
                 resList.add(i);
             }
         }

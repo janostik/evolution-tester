@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -35,13 +37,13 @@ import util.random.UniformRandom;
  * 
  * @author adam on 06/01/2020
  */
-public class Cec2020 implements TestFunction {
+public class Cec2020 extends CECbase/*implements TestFunction*/ {
 
     final double INF = 1.0e99;
     final double EPS = 1.0e-14;
     final double E  = 2.7182818284590452353602874713526625;
     final double PI = 3.1415926535897932384626433832795029;
-
+    
     double[] OShift,M,y,z,x_bound;
     int ini_flag,n_flag,func_flag;
     int[] SS;
@@ -49,6 +51,13 @@ public class Cec2020 implements TestFunction {
     int nx, func_num, func_real;
     
     public Cec2020(int nx, int func_num0) throws Exception {
+
+        this.fn = func_num0;
+        this.sensitivity = new HashMap<>();
+        this.sensitivity.put(5, new int[][]{{6,5,5,5,5},{4,4,4,4,4},{4,4,4,4,4},{4,4,4,4,4},{4,4,4,4,4},{0,0,0,0,0},{0,0,0,0,0},{7,7,7,7,7},{8,8,8,8,8},{9,9,9,9,9}});
+        this.sensitivity.put(10, new int[][]{{6,6,6,6,6,6,6,6,6,6},{4,4,4,4,4,4,4,4,4,4},{4,4,4,4,4,4,4,4,4,4},{4,4,4,4,4,4,4,4,4,4},{6,6,6,6,6,6,6,6,6,6},{13,13,13,13,13,13,13,13,13,13},{4,4,4,4,4,4,4,4,4,4},{7,7,7,7,7,7,7,7,7,7},{8,8,8,8,8,8,8,8,8,8},{9,9,9,9,9,9,9,9,9,9}});
+        this.sensitivity.put(15, new int[][]{{6,6,6,6,6,6,6,6,6,6,6,6,6,6,6},{4,4,4,4,4,4,4,4,4,4,4,4,4,4,4},{4,4,4,4,4,4,4,4,4,4,4,4,4,4,4},{4,4,4,4,4,4,4,4,4,4,4,4,4,4,4},{4,4,4,4,4,4,4,4,4,4,4,4,4,4,4},{13,13,13,13,13,13,13,13,13,13,13,13,13,13,13},{4,4,4,4,4,4,4,4,4,4,4,4,4,4,4},{8,8,8,8,8,8,8,8,8,8,8,8,8,8,8},{8,8,8,8,8,8,8,8,8,8,8,8,8,8,8},{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}});
+        this.sensitivity.put(20, new int[][]{{6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6},{4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4},{4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4},{4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4},{3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},{3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},{13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13},{8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8},{8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8},{9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}});
         
         this.func_real = func_num0;
         this.nx = nx;
@@ -333,9 +342,10 @@ public class Cec2020 implements TestFunction {
         return 0;
     }
 
+    @Override
     public double[] optimumPosition() {
-        
-        return this.OShift;
+   
+        return Arrays.copyOf(this.OShift,this.nx);
         
     }
     

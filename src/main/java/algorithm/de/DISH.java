@@ -294,8 +294,16 @@ public class DISH extends SHADE_analysis implements Runnable {
                         }
                     }
                     
+                    if((trial.fitness-this.f.optimum())==0.0) {
+                        this.optimum_hit_flag = false;
+                    }
+                    
                 }
 
+//                if("NaN".equals(String.valueOf(trial.fitness-this.f.optimum()))) {
+//                    System.out.println("FUCK");
+//                }
+                
                 /**
                  * Trial is better
                  */
@@ -341,28 +349,31 @@ public class DISH extends SHADE_analysis implements Runnable {
                     wSsum += wsList[i];
                 }
 
-                meanS_F1 = 0;
-                meanS_F2 = 0;
-                meanS_CR1 = 0;
-                meanS_CR2 = 0;
+                if(wSsum!=0) {
 
-                for (int s = 0; s < memoryIndex; s++) {
-                    meanS_F1 += (wsList[s] / wSsum) * SFlist[s] * SFlist[s];
-                    meanS_F2 += (wsList[s] / wSsum) * SFlist[s];
-                    meanS_CR1 += (wsList[s] / wSsum) * SCRlist[s] * SCRlist[s];
-                    meanS_CR2 += (wsList[s] / wSsum) * SCRlist[s];
-                }
+                    meanS_F1 = 0;
+                    meanS_F2 = 0;
+                    meanS_CR1 = 0;
+                    meanS_CR2 = 0;
 
-                if(meanS_F2 != 0) {
-                    this.M_F[k] = ((meanS_F1 / meanS_F2) + this.M_F[k])/2;
-                }
-                if(meanS_CR2 != 0) {
-                    this.M_CR[k] = ((meanS_CR1 / meanS_CR2) + this.M_CR[k])/2;
-                }
+                    for (int s = 0; s < memoryIndex; s++) {
+                        meanS_F1 += (wsList[s] / wSsum) * SFlist[s] * SFlist[s];
+                        meanS_F2 += (wsList[s] / wSsum) * SFlist[s];
+                        meanS_CR1 += (wsList[s] / wSsum) * SCRlist[s] * SCRlist[s];
+                        meanS_CR2 += (wsList[s] / wSsum) * SCRlist[s];
+                    }
 
-                k++;
-                if (k >= (this.H - 1)) {
-                    k = 0;
+                    if(meanS_F2 != 0) {
+                        this.M_F[k] = ((meanS_F1 / meanS_F2) + this.M_F[k])/2;
+                    }
+                    if(meanS_CR2 != 0) {
+                        this.M_CR[k] = ((meanS_CR1 / meanS_CR2) + this.M_CR[k])/2;
+                    }
+
+                    k++;
+                    if (k >= (this.H - 1)) {
+                        k = 0;
+                    }
                 }
             }
             
@@ -540,7 +551,7 @@ public class DISH extends SHADE_analysis implements Runnable {
         int NP = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
         int minNP = 4;
         int MAXFES = 50000;
-        int funcNumber = 1;
+        int funcNumber = 2;
         TestFunction tf = new Cec2020(dimension, funcNumber);
 
         

@@ -8,7 +8,7 @@ import model.Individual;
  * Created by jakub on 27/10/15.
  */
 public interface TestFunction {
-
+    
     double fitness(Individual individual);
 
     /**

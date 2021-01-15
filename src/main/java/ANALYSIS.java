@@ -1,4 +1,3 @@
-
 import algorithm.Algorithm;
 import algorithm.de.ACID;
 import algorithm.de.CmDbL_SHADE;
@@ -4648,25 +4647,25 @@ public class ANALYSIS {
         String path;
         home_dir = "D:\\results\\Optimum_hit\\CEC2020\\";
 
-        dimension = 5;
-        MAXFES = 10000 * dimension;
-        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        NPfinal = 4;
-        H = 5;
-        
-        path= "DISH-" + dimension + "\\";
-        
-        DISH_mt_cec2020(path, H, path);
-        
-        dimension = 10;
-        MAXFES = 100000 * dimension;
-        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        NPfinal = 4;
-        H = 5;
-        
-        path= "DISH-" + dimension + "\\";
-        
-        DISH_mt_cec2020(path, H, path);
+//        dimension = 5;
+//        MAXFES = 10000 * dimension;
+//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+//        NPfinal = 4;
+//        H = 5;
+//        
+//        path= "DISH-" + dimension + "\\";
+//        
+//        DISH_mt_cec2020(path, H, path);
+//        
+//        dimension = 10;
+//        MAXFES = 100000 * dimension;
+//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+//        NPfinal = 4;
+//        H = 5;
+//        
+//        path= "DISH-" + dimension + "\\";
+//        
+//        DISH_mt_cec2020(path, H, path);
         
         dimension = 15;
         MAXFES = 200000 * dimension;
