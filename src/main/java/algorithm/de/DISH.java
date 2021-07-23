@@ -285,7 +285,7 @@ public class DISH extends SHADE_analysis implements Runnable {
                                 hitString += ",";
                             }
                         }
-                        hitString += "}";
+                        hitString += "}}";
                         
 //                        if(this.optimum_hit_file_empty) {
 //                            this.optimum_hit_writer.print(hitString);

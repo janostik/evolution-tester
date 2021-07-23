@@ -4668,8 +4668,18 @@ public class ANALYSIS {
         String path;
         home_dir = "D:\\results\\Optimum_hit\\CEC2020\\";
 
-        dimension = 5;
-        MAXFES = 10000 * dimension;
+//        dimension = 5;
+//        MAXFES = 10000 * dimension;
+//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+//        NPfinal = 4;
+//        H = 5;
+//        
+//        path= "DISH-" + dimension + "\\";
+//        
+//        DISH_mt_cec2020(path, H, path);
+        
+        dimension = 10;
+        MAXFES = 100000 * dimension;
         NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
         NPfinal = 4;
         H = 5;
@@ -4678,35 +4688,25 @@ public class ANALYSIS {
         
         DISH_mt_cec2020(path, H, path);
         
-//        dimension = 10;
-//        MAXFES = 100000 * dimension;
-//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-//        NPfinal = 4;
-//        H = 5;
-//        
-//        path= "DISH-" + dimension + "\\";
-//        
-//        DISH_mt_cec2020(path, H, path);
-//        
-//        dimension = 15;
-//        MAXFES = 200000 * dimension;
-//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-//        NPfinal = 4;
-//        H = 5;
-//        
-//        path= "DISH-" + dimension + "\\";
-//        
-//        DISH_mt_cec2020(path, H, path);
-//        
-//        dimension = 20;
-//        MAXFES = 500000 * dimension;
-//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-//        NPfinal = 4;
-//        H = 5;
-//        
-//        path= "DISH-" + dimension + "\\";
-//        
-//        DISH_mt_cec2020(path, H, path);
+        dimension = 15;
+        MAXFES = 200000 * dimension;
+        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        NPfinal = 4;
+        H = 5;
+        
+        path= "DISH-" + dimension + "\\";
+        
+        DISH_mt_cec2020(path, H, path);
+        
+        dimension = 20;
+        MAXFES = 500000 * dimension;
+        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        NPfinal = 4;
+        H = 5;
+        
+        path= "DISH-" + dimension + "\\";
+        
+        DISH_mt_cec2020(path, H, path);
 
              
     }
