@@ -10,10 +10,15 @@ import model.Individual;
 public class CECbase implements TestFunction {
     
     protected HashMap<Integer,int[][]> sensitivity;
+    protected double[][] limits;
     public int fn;
 
     public int getSensitivity(int D, int fn, int curD) {
         return this.sensitivity.get(D)[fn][curD];
+    }
+    
+    public double[] getLimits(int curD) {
+        return this.limits[curD];
     }
     
     @Override

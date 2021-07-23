@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.DoubleStream;
-import static javax.print.attribute.standard.MediaSizeName.D;
-import static javax.swing.text.html.HTML.Tag.P;
 import model.Individual;
 import model.tf.Cec2020;
 import model.tf.TestFunction;
@@ -153,6 +151,9 @@ public class DISH extends SHADE_analysis implements Runnable {
 
         EuclideanDistance euclid = new EuclideanDistance();
         
+        //Optimum hit detection
+        this.initOptimumHit();
+        
         while (true) {
 
             this.G++;
@@ -269,7 +270,7 @@ public class DISH extends SHADE_analysis implements Runnable {
                     
                     int[] hit = this.checkOptimumHit(u);
                     if(hit != null) {
-                        String hitString = "{" + id + "," + FES + "," + (trial.fitness-this.f.optimum()) + ",{";
+                        String hitString = "{" + FES + "," + (trial.fitness-this.f.optimum()) + ",{";
                         for(int bz = 0; bz < u.length; bz++) {
                             hitString += u[bz];
                             if(bz!=u.length-1) {
@@ -286,12 +287,14 @@ public class DISH extends SHADE_analysis implements Runnable {
                         }
                         hitString += "}";
                         
-                        if(this.optimum_hit_file_empty) {
-                            this.optimum_hit_writer.print(hitString);
-                            this.optimum_hit_file_empty = false;
-                        } else {
-                            this.optimum_hit_writer.print("," + hitString);
-                        }
+//                        if(this.optimum_hit_file_empty) {
+//                            this.optimum_hit_writer.print(hitString);
+//                            this.optimum_hit_file_empty = false;
+//                        } else {
+//                            this.optimum_hit_writer.print("," + hitString);
+//                        }
+                        this.optimum_string.add(hitString);
+
                     }
                     
                     if((trial.fitness-this.f.optimum())==0.0) {
@@ -299,10 +302,6 @@ public class DISH extends SHADE_analysis implements Runnable {
                     }
                     
                 }
-
-//                if("NaN".equals(String.valueOf(trial.fitness-this.f.optimum()))) {
-//                    System.out.println("FUCK");
-//                }
                 
                 /**
                  * Trial is better
@@ -349,7 +348,7 @@ public class DISH extends SHADE_analysis implements Runnable {
                     wSsum += wsList[i];
                 }
 
-                if(wSsum!=0) {
+                if(wSsum != 0) {
 
                     meanS_F1 = 0;
                     meanS_F2 = 0;
@@ -386,7 +385,10 @@ public class DISH extends SHADE_analysis implements Runnable {
             P = this.resizePop(P, NP);
 
         }
-
+        
+        //Optimum hit detection
+        this.deinitOptimumHit();
+        
         return this.best;
 
     }
@@ -573,12 +575,12 @@ public class DISH extends SHADE_analysis implements Runnable {
             shade = new DISH(dimension, MAXFES, tf, H, NP, generator, minNP);
             
             //optimum hit initialize
-            shade.initOptimumHit(pathBase+funcNumber+"-"+k+".txt");
+//            shade.initOptimumHit(pathBase+funcNumber+"-"+k+".txt");
 
             shade.runAlgorithm();
 
             //optimum hit deinitialize
-            shade.deinitOptimumHit();
+//            shade.deinitOptimumHit();
             
             bestArray[k] = shade.getBest().fitness - tf.optimum();
             System.out.println(shade.getBest().fitness - tf.optimum());

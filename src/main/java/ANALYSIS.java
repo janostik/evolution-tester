@@ -33,6 +33,7 @@ import algorithm.de.jSO_analysis;
 import algorithm.de.liteSHADE2_analysis;
 import algorithm.de.liteSHADE_analysis;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
@@ -3717,7 +3718,7 @@ public class ANALYSIS {
         DISH shade;
 
         double[] bestArray;
-        PrintWriter writer, sol_writer,res_writer, final_writer, prob_writer;
+        PrintWriter writer, sol_writer,res_writer, final_writer, prob_writer, oh_writer;
         double best,worst,median,mean,std;
         String hit_path;
 
@@ -3731,19 +3732,18 @@ public class ANALYSIS {
             System.out.println("START: " + new Date());
             bestArray = new double[runs];
             
-            ExecutorService pool = Executors.newFixedThreadPool(30);
+            ExecutorService pool = Executors.newFixedThreadPool(30); //Change this to set the thread count
             
             for (int k = 0; k < runs; k++) {
 
                 shade = new DISH(dimension, MAXFES, new Cec2020(dimension, funcNumber), H, NP, new util.random.UniformRandom(), NPfinal);
                 hit_path = home_dir + path + "oh-" + funcNumber + "-" + k + ".txt";
-                shade.initOptimumHit(hit_path);
+                
+                oh_writer = new PrintWriter(hit_path, "UTF-8");
                 writer = new PrintWriter(home_dir + path + funcNumber + "-" + k + ".txt", "UTF-8");
                 prob_writer = new PrintWriter(home_dir + path + "xoverProbability" + funcNumber + "-" + k + ".txt", "UTF-8");
                 
-                pool.submit(new SingleThread(shade, writer, prob_writer, bestArray, new Cec2020(dimension, funcNumber), k));
-                
-                
+                pool.submit(new SingleThread(shade, writer, prob_writer, oh_writer, bestArray, new Cec2020(dimension, funcNumber), k));
 
             }
 
@@ -4274,14 +4274,16 @@ public class ANALYSIS {
         Algorithm algorithm;
         PrintWriter writer;
         PrintWriter prob_writer;
+        PrintWriter oh_writer;
         double[] bestArray;
         TestFunction tf;
         int runNo;
         
-        public SingleThread(Algorithm alg, PrintWriter writer, PrintWriter prob_writer, double[] bestArray, TestFunction tf, int runNo) {
+        public SingleThread(Algorithm alg, PrintWriter writer, PrintWriter prob_writer, PrintWriter oh_writer, double[] bestArray, TestFunction tf, int runNo) {
             this.algorithm = alg;
             this.writer = writer;
             this.prob_writer = prob_writer;
+            this.oh_writer = oh_writer;
             this.bestArray = bestArray;
             this.tf = tf;
             this.runNo = runNo;
@@ -4292,8 +4294,6 @@ public class ANALYSIS {
             
             this.algorithm.runAlgorithm();
 
-            ((DISH)this.algorithm).deinitOptimumHit();
-            
             this.writer.print("{");
 
             for (int i = 0; i < ((DISH)this.algorithm).getImp_hist().size(); i++) {
@@ -4335,11 +4335,32 @@ public class ANALYSIS {
 //            prob_writer.print("}");
 
             prob_writer.close();
+            
+            /**
+             * OH writing
+             */
+            this.oh_writer.print("{");
+
+            ArrayList<String> ohstrings = (ArrayList<String>) ((DISH)this.algorithm).getOptimumString();
+            
+            for(int i = 0; i < ohstrings.size(); i++) {
+                
+                oh_writer.print(ohstrings.get(i));
+                
+                if(i < ohstrings.size()-1) {
+                    oh_writer.print(",");
+                }
+                
+            }
+
+            oh_writer.print("}");
+            oh_writer.close();
+            
 
             bestArray[this.runNo] = ((DISH)this.algorithm).getBest().fitness - tf.optimum();
 
             System.out.println((this.runNo+1) + ". run FES: " + ((DISH)this.algorithm).getImp_hist().get(((DISH)this.algorithm).getImp_hist().size()-1)[0] + " OFV: " + (((DISH)this.algorithm).getImp_hist().get(((DISH)this.algorithm).getImp_hist().size()-1)[1] - tf.optimum()));
-            
+
         }
         
     }
@@ -4647,16 +4668,16 @@ public class ANALYSIS {
         String path;
         home_dir = "D:\\results\\Optimum_hit\\CEC2020\\";
 
-//        dimension = 5;
-//        MAXFES = 10000 * dimension;
-//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-//        NPfinal = 4;
-//        H = 5;
-//        
-//        path= "DISH-" + dimension + "\\";
-//        
-//        DISH_mt_cec2020(path, H, path);
-//        
+        dimension = 5;
+        MAXFES = 10000 * dimension;
+        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+        NPfinal = 4;
+        H = 5;
+        
+        path= "DISH-" + dimension + "\\";
+        
+        DISH_mt_cec2020(path, H, path);
+        
 //        dimension = 10;
 //        MAXFES = 100000 * dimension;
 //        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
@@ -4666,26 +4687,26 @@ public class ANALYSIS {
 //        path= "DISH-" + dimension + "\\";
 //        
 //        DISH_mt_cec2020(path, H, path);
-        
-        dimension = 15;
-        MAXFES = 200000 * dimension;
-        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        NPfinal = 4;
-        H = 5;
-        
-        path= "DISH-" + dimension + "\\";
-        
-        DISH_mt_cec2020(path, H, path);
-        
-        dimension = 20;
-        MAXFES = 500000 * dimension;
-        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
-        NPfinal = 4;
-        H = 5;
-        
-        path= "DISH-" + dimension + "\\";
-        
-        DISH_mt_cec2020(path, H, path);
+//        
+//        dimension = 15;
+//        MAXFES = 200000 * dimension;
+//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+//        NPfinal = 4;
+//        H = 5;
+//        
+//        path= "DISH-" + dimension + "\\";
+//        
+//        DISH_mt_cec2020(path, H, path);
+//        
+//        dimension = 20;
+//        MAXFES = 500000 * dimension;
+//        NPinit = (int) (25*Math.log(dimension)*Math.sqrt(dimension));
+//        NPfinal = 4;
+//        H = 5;
+//        
+//        path= "DISH-" + dimension + "\\";
+//        
+//        DISH_mt_cec2020(path, H, path);
 
              
     }

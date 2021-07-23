@@ -74,9 +74,10 @@ public class SHADE_analysis implements Algorithm {
     protected boolean optimum_hit_flag = false;
     protected boolean optimum_hit_file_empty = true;
     //path to optimum hit check file
-    protected String optimum_hit_path;
-    protected PrintWriter optimum_hit_writer;
+//    protected String optimum_hit_path;
+//    protected PrintWriter optimum_hit_writer;
     protected double[] optimum_position;
+    protected List<String> optimum_string;
 
     /**
      * @param D
@@ -96,20 +97,29 @@ public class SHADE_analysis implements Algorithm {
     }
     
     /**
-     * Optimum hit functions
-     * @param path 
+     * Optimum string getter
+     * @return 
      */
-    public void initOptimumHit(String path) {
+    public List getOptimumString() {
+        return this.optimum_string;
+    }
+    
+    /**
+     * Optimum hit functions
+     */
+    public void initOptimumHit() {
+        
+        this.optimum_string = new ArrayList<>();
         
         this.optimum_hit_flag = true;
-        this.optimum_hit_path = path;
+//        this.optimum_hit_path = path;
         this.optimum_position = this.f.optimumPosition();
-        try {
-            this.optimum_hit_writer = new PrintWriter(this.optimum_hit_path, "UTF-8");
-            this.optimum_hit_writer.print("{");
-        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-            Logger.getLogger(SHADE_analysis.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            this.optimum_hit_writer = new PrintWriter(this.optimum_hit_path, "UTF-8");
+//            this.optimum_hit_writer.print("{");
+//        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+//            Logger.getLogger(SHADE_analysis.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         
     }
     
@@ -117,8 +127,8 @@ public class SHADE_analysis implements Algorithm {
         
         if(this.optimum_hit_flag==true){
             this.optimum_hit_flag=false;
-            this.optimum_hit_writer.print("}");
-            this.optimum_hit_writer.close();
+//            this.optimum_hit_writer.print("}");
+//            this.optimum_hit_writer.close();
         }
         
     }
@@ -128,9 +138,14 @@ public class SHADE_analysis implements Algorithm {
         ArrayList<Integer> resList = new ArrayList<>();
         
         for(int i = 0; i < x.length; i++) {
-            if(Math.abs(x[i]-this.optimum_position[i])<((CECbase)this.f).getSensitivity(D, ((CECbase)this.f).fn, i)) {
+            
+            if(x[i] >= ((CECbase)this.f).getLimits(i)[0] && x[i] <= ((CECbase)this.f).getLimits(i)[1]) {
                 resList.add(i);
             }
+            
+//            if(Math.abs(x[i]-this.optimum_position[i]) < Math.pow(10,-((CECbase)this.f).getSensitivity(D, ((CECbase)this.f).fn, i))) {
+//                resList.add(i);
+//            }
         }
         
         if(resList.isEmpty()) {

@@ -314,28 +314,31 @@ public class DISH_XX extends SHADE_analysis implements Runnable {
                     wSsum += wsList[i];
                 }
 
-                meanS_F1 = 0;
-                meanS_F2 = 0;
-                meanS_CR1 = 0;
-                meanS_CR2 = 0;
+                if(wSsum != 0) {
+                
+                    meanS_F1 = 0;
+                    meanS_F2 = 0;
+                    meanS_CR1 = 0;
+                    meanS_CR2 = 0;
 
-                for (int s = 0; s < memoryIndex; s++) {
-                    meanS_F1 += (wsList[s] / wSsum) * SFlist[s] * SFlist[s];
-                    meanS_F2 += (wsList[s] / wSsum) * SFlist[s];
-                    meanS_CR1 += (wsList[s] / wSsum) * SCRlist[s] * SCRlist[s];
-                    meanS_CR2 += (wsList[s] / wSsum) * SCRlist[s];
-                }
+                    for (int s = 0; s < memoryIndex; s++) {
+                        meanS_F1 += (wsList[s] / wSsum) * SFlist[s] * SFlist[s];
+                        meanS_F2 += (wsList[s] / wSsum) * SFlist[s];
+                        meanS_CR1 += (wsList[s] / wSsum) * SCRlist[s] * SCRlist[s];
+                        meanS_CR2 += (wsList[s] / wSsum) * SCRlist[s];
+                    }
 
-                if(meanS_F2 != 0) {
-                    this.M_F[k] = ((meanS_F1 / meanS_F2) + this.M_F[k])/2;
-                }
-                if(meanS_CR2 != 0) {
-                    this.M_CR[k] = ((meanS_CR1 / meanS_CR2) + this.M_CR[k])/2;
-                }
+                    if(meanS_F2 != 0) {
+                        this.M_F[k] = ((meanS_F1 / meanS_F2) + this.M_F[k])/2;
+                    }
+                    if(meanS_CR2 != 0) {
+                        this.M_CR[k] = ((meanS_CR1 / meanS_CR2) + this.M_CR[k])/2;
+                    }
 
-                k++;
-                if (k >= (this.H - 1)) {
-                    k = 0;
+                    k++;
+                    if (k >= (this.H - 1)) {
+                        k = 0;
+                    }
                 }
             }
             

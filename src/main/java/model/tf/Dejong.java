@@ -12,6 +12,16 @@ import util.random.UniformRandom;
  * Created by jakub on 27/10/15.
  */
 public class Dejong implements TestFunction {
+    
+    public int dim;
+
+    public Dejong(int dim) {
+        this.dim = dim;
+    }
+
+    public Dejong() {
+    }
+    
     @Override
     public double fitness(Individual individual) {
         return fitness(individual.vector);
@@ -62,6 +72,74 @@ public class Dejong implements TestFunction {
 
     @Override
     public double[] optimumPosition() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new double[this.dim];
     }
+    
+    /**
+     * 
+     * @return 
+     */
+    private double[][] findLimits() {
+        
+        double[][] limits = new double[dim][2];
+        
+        double threshold = Math.pow(10,-15), sens = Math.pow(10, -8);
+        double mid = 0, left, right, res;
+        double[] active;
+        
+        for(int i = 0; i < dim; i++) {
+            //Finds the lower optimum limit
+            left = this.min(dim);
+            right = this.optimumPosition()[i];
+            while(Math.abs(left-right) > threshold) {
+                
+                mid = (left+right)/2.0;
+                active = this.optimumPosition();
+                active[i] = mid;
+                res = this.fitness(active);
+                if(Math.abs(res - this.optimum()) <= sens) {
+                    right = mid;
+                } else {
+                    left = mid;
+                }
+                
+            }
+            limits[i][0] = mid;
+            
+            //Finds the upper optimum limit
+            right = this.max(dim);
+            left = this.optimumPosition()[i];
+            while(Math.abs(left-right) > threshold) {
+                
+                mid = (left+right)/2.0;
+                active = this.optimumPosition();
+                active[i] = mid;
+                res = this.fitness(active);
+                if(Math.abs(res - this.optimum()) <= sens) {
+                    left = mid;
+                } else {
+                    right = mid;
+                }
+                
+            }
+            limits[i][1] = mid;
+            
+        }
+        
+        return limits;
+    }
+    
+    public static void main(String[] args) {
+    
+        Dejong sphere = new Dejong(2);
+        double[][] limits = sphere.findLimits();
+
+        for(int i = 0; i < limits.length; i++) {
+
+            System.out.println("dim: " + (i+1) + " - [" + limits[i][0] + ", " + limits[i][1] + "]");
+
+        }
+        
+    }
+    
 }
